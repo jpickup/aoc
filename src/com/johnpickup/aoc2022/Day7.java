@@ -45,7 +45,7 @@ public class Day7 {
                             System.out.println("ls " + argument);
                             break;
                         default:
-                            System.out.println("*** UNKNNOWN " + command);
+                            System.err.println("*** UNKNOWN " + command);
                     }
                 }
                 else {
@@ -121,12 +121,12 @@ public class Day7 {
     }
 
     static class Directory extends Node {
+        Map<String, Node> entries = new TreeMap<>();
+
         @Override
         public String toString() {
             return parent == null ? "" : parent + "/" + name;
         }
-
-        Map<String, Node> entries = new TreeMap<>();
 
         @Override
         long size() {
