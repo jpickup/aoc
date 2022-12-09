@@ -1,0 +1,252 @@
+inp w		w = digit 1
+mul x 0     x = 0
+add x z     x = 0
+mod x 26.   x = 0
+div z 1     z = 0
+add x 10.   x = 10
+eql x w.    x = w?   Is first == 10? can't be. x = 0
+eql x 0.    x = 1
+mul y 0.    y = 0
+add y 25.   y = 25
+mul y x.    y = 25
+add y 1.    y = 26
+mul z y.    z = 0
+mul y 0.    y = 0
+add y w.    y = w = digit 1
+add y 12.   y = digit 1 + 12
+mul y x.    y = (w + 12) * 1 = digit1 + 12
+add z y.    z = digit1 + 12
+inp w.      w = digit2
+mul x 0.    x = 0
+add x z.    x = x+digit1 + 12 = digit1 + 12
+mod x 26.   x = (digit1 + 12)%26
+div z 1.    z = z
+add x 10.   x = (digit1 + 12)%26 + 10
+eql x w.    x = (digit1 + 12)%26 + 10 == digit 2) = 0
+eql x 0.    x = 1
+mul y 0.    y = 0
+add y 25.   y = 25
+mul y x.    y = 25
+add y 1.    y = 26
+mul z y.    z = (digit1 + 12) * 26
+mul y 0.    y = 0
+add y w.    y = w = digit2
+add y 10.   y = digit2 + 10
+mul y x.    y = digit2 + 10
+add z y.    z = (digit1 + 12) * 26 + digit2 + 10
+inp w.      w = digit3
+mul x 0.    x = 0
+add x z.    x = (digit1 + 12) * 26 + digit2 + 10
+mod x 26.   x = ((digit1 + 12) * 26 + digit2 + 10) % 26
+div z 1.    z = (digit1 + 12) * 26 + digit2 + 10
+add x 12.   x = ((digit1 + 12) * 26 + digit2 + 10) % 26 + 12
+eql x w.    x = 0.                (can't be == digit 3 as >= 12)
+eql x 0.    x = 1
+mul y 0.    y = 0
+add y 25.   y = 25
+mul y x.    y = 25
+add y 1.    y = 26
+mul z y.    z = (digit1 + 12) * 26 + digit2 + 10
+mul y 0.    y = 0
+add y w.    y = digit3
+add y 8.    y = digit3 + 8
+mul y x.    y = digit3 + 8
+add z y.    z = (digit1 + 12) * 26 + digit2 + 10 + digit3 + 8
+inp w.      w = digit4
+mul x 0.    x = 0
+add x z.    x = (digit1 + 12) * 26 + digit2 + 10 + digit3 + 8
+mod x 26.   x = ((digit1 + 12) * 26 + digit2 + 10 + digit3 + 8) % 26
+div z 1
+add x 11
+eql x w
+eql x 0
+mul y 0.    y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0.    y = 0
+add y w
+add y 4
+mul y x
+add z y
+inp w
+mul x 0.    x = 0
+add x z
+mod x 26
+div z 26
+add x 0.    x = x
+eql x w
+eql x 0
+mul y 0.    y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0     y = 0
+add y w
+add y 3
+mul y x
+add z y
+inp w
+mul x 0.    x = 0
+add x z
+mod x 26
+div z 1
+add x 15
+eql x w
+eql x 0
+mul y 0.     y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 10
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 13
+eql x w
+eql x 0
+mul y 0.    y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0.    y = 0
+add y w
+add y 6
+mul y x
+add z y
+inp w
+mul x 0.    x = 0
+add x z
+mod x 26
+div z 26
+add x -12
+eql x w
+eql x 0
+mul y 0.    y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0.    y = 0
+add y w
+add y 13
+mul y x
+add z y
+inp w
+mul x 0.    x = 0
+add x z
+mod x 26
+div z 26
+add x -15
+eql x w
+eql x 0
+mul y 0.    y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0.    y = 0
+add y w
+add y 8
+mul y x
+add z y
+inp w
+mul x 0.    x = 0
+add x z
+mod x 26
+div z 26
+add x -15
+eql x w
+eql x 0
+mul y 0.    y = 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 1
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -4
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 7
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 10
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 6
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -5
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 9
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -12
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 9
+mul y x
+add z y
