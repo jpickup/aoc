@@ -21,6 +21,9 @@ public class Day12 {
             Coord start = null;
             Coord end = null;
             int row=0;
+
+            List<Coord> starts = new ArrayList<>();
+
             for (String line : lines) {
                 for (int col=0; col<line.length(); col++) {
                     heights[row][col] = line.charAt(col)-'a';
@@ -32,21 +35,28 @@ public class Day12 {
                         end = Coord.builder().x(col).y(row).build();
                         heights[row][col] = 25;
                     }
+                    if (heights[row][col] == 0) {
+                        starts.add(Coord.builder().x(col).y(row).build());
+                    }
                 }
                 row++;
             }
 
-            Day12 solver = new Day12();
+            System.out.println("No of potential starts " + starts.size());
 
-            solver.solve(start, end, heights);
+            Day12 solver = new Day12();
+            int steps = solver.solve(starts, end, heights);
+
+            System.out.println("Shortest = " + steps);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void solve(Coord start, Coord end, int[][] cells) {
+    private int solve(List<Coord> starts, Coord end, int[][] cells) {
         Map<Coord, Long> dist = new HashMap<>();
-        dist.put(start, 0L);
+        dist.put(end, 0L);
 
         int rowCount = cells.length;
         int colCount = cells[0].length;
@@ -56,7 +66,7 @@ public class Day12 {
         for (int row = 0; row < rowCount; row++) {
             for (int col = 0; col < colCount; col++) {
                 Coord v = new Coord(col, row);
-                if (!v.equals(start)) {
+                if (!v.equals(end)) {
                     dist.put(v, Long.MAX_VALUE);
                     prev.put(v, null);
                 }
@@ -68,7 +78,7 @@ public class Day12 {
             Coord u = q.remove();
 
             Coord north = new Coord(u.x, u.y - 1);
-            if (isValid(north, rowCount, colCount) && q.contains(north) && canMove(u, north, cells)) {
+            if (isValid(north, rowCount, colCount) && q.contains(north) && canMoveDown(u, north, cells)) {
                 long alt = dist.get(u) + 1;
                 if (alt < dist.get(north)) {
                     dist.put(north, alt);
@@ -78,7 +88,7 @@ public class Day12 {
                 }
             }
             Coord south = new Coord(u.x, u.y + 1);
-            if (isValid(south, rowCount, colCount) && q.contains(south) && canMove(u, south, cells)) {
+            if (isValid(south, rowCount, colCount) && q.contains(south) && canMoveDown(u, south, cells)) {
                 long alt = dist.get(u) + 1;
                 if (alt < dist.get(south)) {
                     dist.put(south, alt);
@@ -88,7 +98,7 @@ public class Day12 {
                 }
             }
             Coord east = new Coord(u.x + 1, u.y);
-            if (isValid(east, rowCount, colCount) && q.contains(east) && canMove(u, east, cells)) {
+            if (isValid(east, rowCount, colCount) && q.contains(east) && canMoveDown(u, east, cells)) {
                 long alt = dist.get(u) + 1;
                 if (alt < dist.get(east)) {
                     dist.put(east, alt);
@@ -98,7 +108,7 @@ public class Day12 {
                 }
             }
             Coord west = new Coord(u.x - 1, u.y);
-            if (isValid(west, rowCount, colCount) && q.contains(west) && canMove(u, west, cells)) {
+            if (isValid(west, rowCount, colCount) && q.contains(west) && canMoveDown(u, west, cells)) {
                 long alt = dist.get(u) + 1;
                 if (alt < dist.get(west)) {
                     dist.put(west, alt);
@@ -108,22 +118,40 @@ public class Day12 {
                 }
             }
         }
-        List<Coord> s = new ArrayList<>();
-        Coord u = end;
-        if (prev.get(u) != null || u.equals(start)) {
-            while (u != null) {
-                s.add(0, u);
-                u = prev.get(u);
+
+        Map<Coord, List<Coord>> startPaths = new HashMap<>();
+
+        for (Coord start : starts) {
+            List<Coord> path = new ArrayList<>();
+            Coord u = start;
+            if (prev.get(u) != null || u.equals(end)) {
+                while (u != null) {
+                    path.add(0, u);
+                    u = prev.get(u);
+                }
+            }
+            if (path.size() > 0 && path.get(0).equals(end)) {
+                startPaths.put(start, path);
             }
         }
 
-        System.out.println("Number of steps: " + (s.size()-1));
+        List<List<Coord>> sortedPaths = startPaths.values().stream().sorted(Comparator.comparingInt(List::size)).collect(Collectors.toList());
+
+        return sortedPaths.get(0).size()-1;
     }
 
-    private boolean canMove(Coord from, Coord to, int[][] cells) {
+    private boolean canMoveUp(Coord from, Coord to, int[][] cells) {
         int fromHeight = cells[from.y][from.x];
         int toHeight = cells[to.y][to.x];
+        // we can go to a height either one higher, or equal or any lower
         return fromHeight >= toHeight-1;
+    }
+
+    private boolean canMoveDown(Coord from, Coord to, int[][] cells) {
+        int fromHeight = cells[from.y][from.x];
+        int toHeight = cells[to.y][to.x];
+        // we can go to a height either one lower, or equal or any higher
+        return fromHeight <= toHeight+1;
     }
 
     private boolean isValid(Coord coord, int rowCount, int colCount) {
