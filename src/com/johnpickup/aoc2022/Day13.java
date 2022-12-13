@@ -95,11 +95,6 @@ public class Day13 {
     }
 
     static private Packet parsePacket(String s) {
-        // Empty packet - shouldn't be necessary but there is a bug somewhere below!
-        if (s.equals("[]")) {
-            return PacketList.builder().subPackets(Collections.emptyList()).build();
-        }
-
         char ch = s.charAt(0);
         if (ch != '[') {
             throw new RuntimeException("Parse error: " + s);
@@ -131,6 +126,7 @@ public class Day13 {
         }
         return PacketList.builder()
                 .subPackets(parts.stream()
+                        .filter(part -> !part.isEmpty())
                         .map(part -> part.charAt(0) == '[' ? parsePacket(part) : PacketValue.parse(part))
                         .collect(Collectors.toList()))
                 .build();
