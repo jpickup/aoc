@@ -4,13 +4,17 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+// Original part 1:
+// 2000000 = 5607466
+// Time (ms) : 2320
+
 
 public class Day15 {
     public static void main(String[] args) {
@@ -51,19 +55,88 @@ public class Day15 {
             minY -= maxDist;
             maxY += maxDist;
 
+            long start = System.currentTimeMillis();
 
-            int y = 2000000;
+            // part1
+//            int y = 10;
+//            int result = calcKnown(y, closestBeaconBySensor, closestBeaconDistances, beacons, sensors, minX, maxX);
+//            System.out.println(y + " = " + result);
 
+            // part 2
+            minX = 0;
+            maxX = 4000000;
+            minY = 0;
+            maxY = 4000000;
+            Set<Coord> intersections = calcIntersections(closestBeaconDistances, beacons, sensors, minX, maxX, minY, maxY);
+            System.out.println(intersections.size());
 
-//            for (int y = minY; y <=maxY; y++) {
-                int result = calcKnown(y, closestBeaconBySensor, closestBeaconDistances, beacons, sensors, minX, maxX);
-                System.out.println(y + " = " + result);
-//            }
+            Set<Coord> validIntersections = intersections.stream().filter(c -> isValid(c, closestBeaconBySensor, closestBeaconDistances, beacons, sensors)).collect(Collectors.toSet());
 
+            System.out.println(validIntersections.size());
+            System.out.println(validIntersections);
+            Coord theOne = validIntersections.stream().findFirst().get();
 
+            BigInteger result = BigInteger.valueOf(theOne.x).multiply(BigInteger.valueOf(4000000)).add(BigInteger.valueOf(theOne.y));
+            System.out.println(result);
+
+            long end = System.currentTimeMillis();
+            System.out.println("Time (ms) : " + (end - start));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean isValid(Coord c, Map<Coord, Coord> closestBeaconBySensor, Map<Coord, Integer> closestDistances, List<Coord> beacons, List<Coord> sensors) {
+        if (!beacons.contains(c) && !sensors.contains(c)) {
+            for (Map.Entry<Coord, Coord> closestEntry : closestBeaconBySensor.entrySet()) {
+                Coord sensor = closestEntry.getKey();
+                Coord beacon = closestEntry.getValue();
+                int closestBeaconDistanceForSensor = closestDistances.get(sensor);
+                int currentDistanceFromSensor = distanceBetween(sensor, c);
+                if (currentDistanceFromSensor <= closestBeaconDistanceForSensor) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static Set<Coord> calcIntersections(Map<Coord, Integer> closestBeaconDistances, List<Coord> beacons, List<Coord> sensors, int minX, int maxX, int minY, int maxY) {
+        Set<Coord> result = new HashSet<>();
+
+        for (Coord sensor1 : sensors) {
+            for (Coord sensor2 : sensors) {
+                if (!sensor1.equals(sensor2)) {
+                    int d1 = closestBeaconDistances.get(sensor1) + 1;
+                    int d2 = closestBeaconDistances.get(sensor2) + 1;
+                    int x1 = sensor1.x;
+                    int y1 = sensor1.y;
+                    int x2 = sensor2.x;
+                    int y2 = sensor2.y;
+
+                    result.add(Coord.builder()
+                            .x((y2 + x2 + x1 - y1 - d2 + d1) / 2)
+                            .y((y2 + x2 + x1 - y1 - d2 + d1) / 2  + (y1 - x1) - d1)
+                            .build());
+
+                    result.add(Coord.builder()
+                            .x((y2 + x2 + x1 - y1 + d2 + d1) / 2)
+                            .y((y2 + x2 + x1 - y1 + d2 + d1) / 2  + (y1 - x1) - d1)
+                            .build());
+
+                    result.add(Coord.builder()
+                            .x((y2 + x2 + x1 - y1 - d2 - d1) / 2)
+                            .y((y2 + x2 + x1 - y1 - d2 - d1) / 2  + (y1 - x1) + d1)
+                            .build());
+
+                    result.add(Coord.builder()
+                            .x((y2 + x2 + x1 - y1 + d2 - d1) / 2)
+                            .y((y2 + x2 + x1 - y1 + d2 - d1) / 2  + (y1 - x1) + d1)
+                            .build());
+                }
+            }
+        }
+        return result.stream().filter(c -> c.x>=minX && c.x<=maxX && c.y>=minY && c.y<=maxY).collect(Collectors.toSet());
     }
 
     // for each coord on the line, see if closer or equal to any beacon than the mapped closest distance, if it is then it's known
