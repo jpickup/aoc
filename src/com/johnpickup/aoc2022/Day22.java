@@ -10,16 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 public class Day22 {
-    static final boolean test = true;
+    static final boolean test = false;
     static final List<State> states = new ArrayList<>();
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day22-test.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day22.txt"))) {
             long start = System.currentTimeMillis();
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
@@ -27,22 +26,29 @@ public class Day22 {
             Board board = Board.parse(boardLines);
             board.display();
 
+            //testBoard(board);
+
             Instructions instructions = Instructions.parse(lines.get(lines.size() - 1));
             System.out.println(instructions);
 
             State initial = State.builder().position(board.startPosition()).direction(Direction.RIGHT).build();
             System.out.println("Initial: " + initial);
             states.add(initial);
-            board.display();
+            //board.display();
 
             int step = 1;
             State current = initial;
             for (Instruction instruction : instructions.instructions) {
                 System.out.println("Step: " + step++ + " - " + instruction);
                 current = current.execute(instruction, board);
-                board.display();
                 System.out.println(current);
             }
+            board.display();
+
+            // Part 2
+            // 175006 too high
+            // 25365 too low
+            // 146011
 
             int result = current.position.row * 1000 + current.position.col * 4 + current.direction.facing;
             System.out.println("Result: " + result);
@@ -51,6 +57,121 @@ public class Day22 {
             System.out.println("Time: " + (end - start) + "(ms)");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Tests for a blank cube only
+    private static void testBoard(Board board) {
+        // simple
+        testMove(board,
+                State.builder().position(Coord.builder().col(75).row(75).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(75).row(74).build()).direction(Direction.UP).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(75).row(75).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(75).row(76).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(75).row(75).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(74).row(75).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(75).row(75).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(76).row(75).build()).direction(Direction.RIGHT).build());
+        // edges
+        //face 1
+        testMove(board,
+                State.builder().position(Coord.builder().col(51).row(1).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(1).row(151).build()).direction(Direction.RIGHT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(100).row(1).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(1).row(200).build()).direction(Direction.RIGHT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(51).row(1).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(1).row(150).build()).direction(Direction.RIGHT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(51).row(50).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(1).row(101).build()).direction(Direction.RIGHT).build());
+        // face 2
+        testMove(board,
+                State.builder().position(Coord.builder().col(101).row(1).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(1).row(200).build()).direction(Direction.UP).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(150).row(1).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(50).row(200).build()).direction(Direction.UP).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(150).row(1).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(100).row(150).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(150).row(50).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(100).row(101).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(101).row(50).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(100).row(51).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(150).row(50).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(100).row(100).build()).direction(Direction.LEFT).build());
+        //face 3
+        testMove(board,
+                State.builder().position(Coord.builder().col(51).row(51).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(1).row(101).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(51).row(100).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(50).row(101).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(100).row(51).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(101).row(50).build()).direction(Direction.UP).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(100).row(100).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(150).row(50).build()).direction(Direction.UP).build());
+        //face 4
+        testMove(board,
+                State.builder().position(Coord.builder().col(1).row(101).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(51).row(51).build()).direction(Direction.RIGHT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(50).row(101).build()).direction(Direction.UP).build(),
+                State.builder().position(Coord.builder().col(51).row(100).build()).direction(Direction.RIGHT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(1).row(101).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(51).row(50).build()).direction(Direction.RIGHT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(1).row(150).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(51).row(1).build()).direction(Direction.RIGHT).build());
+        //face 5
+        testMove(board,
+                State.builder().position(Coord.builder().col(100).row(101).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(150).row(50).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(100).row(150).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(150).row(1).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(51).row(150).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(50).row(151).build()).direction(Direction.LEFT).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(100).row(150).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(50).row(200).build()).direction(Direction.LEFT).build());
+        // face 6
+        testMove(board,
+                State.builder().position(Coord.builder().col(1).row(151).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(51).row(1).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(1).row(200).build()).direction(Direction.LEFT).build(),
+                State.builder().position(Coord.builder().col(100).row(1).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(1).row(200).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(101).row(1).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(50).row(200).build()).direction(Direction.DOWN).build(),
+                State.builder().position(Coord.builder().col(150).row(1).build()).direction(Direction.DOWN).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(50).row(151).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(51).row(150).build()).direction(Direction.UP).build());
+        testMove(board,
+                State.builder().position(Coord.builder().col(50).row(200).build()).direction(Direction.RIGHT).build(),
+                State.builder().position(Coord.builder().col(100).row(150).build()).direction(Direction.UP).build());
+    }
+
+    private static void testMove(Board board, State from, State expected) {
+        State actual = board.move(from);
+        if (!expected.equals(actual)) {
+            throw new RuntimeException("Test move failed " + actual + " is not " + expected);
         }
     }
 
@@ -158,6 +279,25 @@ public class Day22 {
                     row = 5 + (16 - col);
                     col = 12;
                 }
+            } else {
+                if ((row == 0) && (col >= 51) && (col <= 100)) {
+                    // 1 to 6
+                    direction = Direction.RIGHT;
+                    row = 151 + (col - 51);
+                    col = 1;
+                }
+                else if ((row == 0) && (col >= 101) && (col <= 150)) {
+                    // 2 to 6
+                    direction = Direction.UP;
+                    col = 1 + (col - 101);
+                    row = 200;
+                }
+                else if ((row == 100) && (col >= 1) && (col <= 50)) {
+                    // 4 to 3
+                    direction = Direction.RIGHT;
+                    row = 51 + (col - 1);
+                    col = 51;
+                }
             }
 
             if (tiles[col][row] == Tile.OPEN) {
@@ -206,7 +346,26 @@ public class Day22 {
                     col = 1;
                 }
             }
-
+            else {
+                if ((row == 51) && (col >= 101) && (col <= 150)) {
+                    // 2 to 3
+                    direction = Direction.LEFT;
+                    row = 51 + (col - 101);
+                    col = 100;
+                }
+                else if ((row == 151) && (col >= 51) && (col <= 100)) {
+                    // 5 to 6
+                    direction = Direction.LEFT;
+                    row = 151 + (col - 51);
+                    col = 50;
+                }
+                else if ((row == 201) && (col >= 1) && (col <= 50)) {
+                    // 6 to 2
+                    direction = Direction.DOWN;
+                    col = 101 + (col - 1);
+                    row = 1;
+                }
+            }
 
             if (tiles[col][row] == Tile.OPEN) {
                 return State.builder()
@@ -246,6 +405,32 @@ public class Day22 {
                     direction = Direction.UP;
                     col = 5 + (12 - row);
                     row = 8;
+                }
+            }
+            else {
+                if ((col == 50) && (row >= 1) && (row <= 50)) {
+                    // 1 to 4
+                    direction = Direction.RIGHT;
+                    row = 101 + (50 - row);
+                    col = 1;
+                }
+                else if ((col == 50) && (row >= 51) && (row <= 100)) {
+                    // 3 to 4
+                    direction = Direction.DOWN;
+                    col = 1 + (row - 51);
+                    row = 101;
+                }
+                else if ((col == 0) && (row >= 101) && (row <= 150)) {
+                    // 4 to 1
+                    direction = Direction.RIGHT;
+                    row = 1 + (150 - row);
+                    col = 51;
+                }
+                else if ((col == 0) && (row >= 151) && (row <= 200)) {
+                    // 6 to 1
+                    direction = Direction.DOWN;
+                    col = 51 + (row - 151);
+                    row = 1;
                 }
             }
 
@@ -289,6 +474,32 @@ public class Day22 {
                     col = 12;
                 }
             }
+            else {
+                if ((col == 151) && (row >= 1) && (row <= 50)) {
+                    // 2 to 5
+                    direction = Direction.LEFT;
+                    row = 101 + (50 - row);
+                    col = 100;
+                }
+                else if ((col == 101) && (row >= 51) && (row <= 100)) {
+                    // 3 to 2
+                    direction = Direction.UP;
+                    col = 101 + (row - 51);
+                    row = 50;
+                }
+                else if ((col == 101) && (row >= 101) && (row <= 150)) {
+                    // 5 to 2
+                    direction = Direction.LEFT;
+                    row = 1 + (150 - row);
+                    col = 150;
+                }
+                else if ((col == 51) && (row >= 151) && (row <= 200)) {
+                    // 6 to 5
+                    direction = Direction.UP;
+                    col = 51 + (row - 151);
+                    row = 150;
+                }
+            }
 
             if (tiles[col][row] == Tile.OPEN) {
                 return State.builder()
@@ -304,10 +515,15 @@ public class Day22 {
                 return state;
             }
         }
+
+        public Tile getTile(Coord position) {
+            return tiles[position.col][position.row];
+        }
     }
 
     @ToString
     @Builder
+    @EqualsAndHashCode
     static class State {
         final Coord position;
         final Direction direction;
@@ -465,6 +681,7 @@ public class Day22 {
             State result = state;
             for (int i = 0; i < this.distance; i++) {
                 result = board.move(result);
+                if (board.getTile(state.position) == Tile.NULL) throw new RuntimeException("Invalid location " + state);
                 states.add(result);
             }
             return result;
