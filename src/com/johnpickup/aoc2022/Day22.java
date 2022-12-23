@@ -10,14 +10,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-
 public class Day22 {
+    static final boolean test = true;
+    static final List<State> states = new ArrayList<>();
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day22.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day22-test.txt"))) {
             long start = System.currentTimeMillis();
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
@@ -28,15 +30,17 @@ public class Day22 {
             Instructions instructions = Instructions.parse(lines.get(lines.size() - 1));
             System.out.println(instructions);
 
-            // Part 1
-            System.out.println("PART 1 --------");
             State initial = State.builder().position(board.startPosition()).direction(Direction.RIGHT).build();
             System.out.println("Initial: " + initial);
+            states.add(initial);
+            board.display();
 
+            int step = 1;
             State current = initial;
             for (Instruction instruction : instructions.instructions) {
-                System.out.println(instruction);
+                System.out.println("Step: " + step++ + " - " + instruction);
                 current = current.execute(instruction, board);
+                board.display();
                 System.out.println(current);
             }
 
@@ -85,7 +89,19 @@ public class Day22 {
         void display() {
             for (int row = 1; row < height; row++) {
                 for (int col = 1; col < width; col++) {
-                    System.out.print(tiles[col][row].symbol);
+                    State foundState = null;
+                    for (State state : states) {
+                        if ((state.position.col == col) && (state.position.row == row)) {
+                            foundState = state;
+                        }
+                    }
+
+                    if (foundState != null) {
+                        System.out.print(foundState.direction.symbol);
+                    }
+                    else {
+                        System.out.print(tiles[col][row].symbol);
+                    }
                 }
                 System.out.println();
             }
@@ -98,102 +114,199 @@ public class Day22 {
             throw new RuntimeException("Can't find a start location");
         }
 
-        public Coord move(Coord position, Direction direction) {
-            switch (direction) {
+        public State move(State state) {
+            switch (state.direction) {
                 case UP:
-                    return moveUp(position);
+                    return moveUp(state);
                 case DOWN:
-                    return moveDown(position);
+                    return moveDown(state);
                 case LEFT:
-                    return moveLeft(position);
+                    return moveLeft(state);
                 case RIGHT:
-                    return moveRight(position);
+                    return moveRight(state);
                 default:
-                    throw new RuntimeException("Unknown direction " + direction);
+                    throw new RuntimeException("Unknown direction " + state.direction);
             }
         }
 
-        private Coord moveUp(Coord position) {
-            int row = (position.row - 1) % height;
-            if (row < 0) row = height - 1;
-            int col = position.col;
-
-            while (tiles[col][row] == Tile.NULL) {
-                row = (row - 1) % height;
-                if (row < 0) row = height - 1;
+        private State moveUp(State state) {
+            Direction direction = state.direction;
+            int row = (state.position.row - 1);
+            int col = state.position.col;
+            if (test) {
+                if (row == 0) {
+                    // 1 to 2
+                    direction = Direction.DOWN;
+                    col = 1 + (12 - col);
+                    row = 5;
+                }
+                else if ((row == 4) && (col >= 1) && (col <= 4)) {
+                    // 2 to 1
+                    direction = Direction.DOWN;
+                    col = 9 + (4 - col);
+                    row = 1;
+                }
+                else if ((row == 4) && (col >= 5) && (col <= 8)) {
+                    // 3 to 1
+                    direction = Direction.RIGHT;
+                    row = 1 + (col - 5);
+                    col = 9;
+                }
+                else if ((row == 8) && (col >= 13) && (col <= 16)) {
+                    // 6 to 4
+                    direction = Direction.LEFT;
+                    row = 5 + (16 - col);
+                    col = 12;
+                }
             }
 
             if (tiles[col][row] == Tile.OPEN) {
-                return Coord.builder()
-                        .col(col)
-                        .row(row)
+                return State.builder()
+                        .position(
+                                Coord.builder()
+                                        .col(col)
+                                        .row(row)
+                                        .build())
+                        .direction(direction)
                         .build();
             } else {
                 // can't move
-                return position;
+                return state;
             }
         }
 
-        private Coord moveDown(Coord position) {
-            int row = (position.row + 1) % height;
-            int col = position.col;
+        private State moveDown(State state) {
+            Direction direction = state.direction;
+            int row = (state.position.row + 1);
+            int col = state.position.col;
 
-            while (tiles[col][row] == Tile.NULL) {
-                row = (row + 1) % height;
+            if (test) {
+                if ((row == 9) && (col >= 1) && (col <= 4)) {
+                    // 2 to 5
+                    direction = Direction.UP;
+                    col = 9 + (4 - col);
+                    row = 12;
+                }
+                else if ((row == 9) && (col >= 5) && (col <= 8)) {
+                    // 3 to 5
+                    direction = Direction.RIGHT;
+                    row = 9 + (8 - col);
+                    col = 9;
+                }
+                else if ((row == 13) && (col >= 9) && (col <= 12)) {
+                    // 5 to 2
+                    direction = Direction.UP;
+                    col = 1 + (12 - col);
+                    row = 8;
+                }
+                else if ((row == 13) && (col >= 13) && (col <= 16)) {
+                    // 6 to 2
+                    direction = Direction.RIGHT;
+                    row = 5 + (16 - col);
+                    col = 1;
+                }
             }
 
+
             if (tiles[col][row] == Tile.OPEN) {
-                return Coord.builder()
-                        .col(col)
-                        .row(row)
+                return State.builder()
+                        .position(
+                                Coord.builder()
+                                        .col(col)
+                                        .row(row)
+                                        .build())
+                        .direction(direction)
                         .build();
             } else {
                 // can't move
-                return position;
+                return state;
             }
         }
 
-        private Coord moveLeft(Coord position) {
-            int row = position.row;
-            int col = position.col - 1;
-            if (col < 0) col = width - 1;
+        private State moveLeft(State state) {
+            Direction direction = state.direction;
+            int row = state.position.row;
+            int col = state.position.col - 1;
 
-            while (tiles[col][row] == Tile.NULL) {
-                col = col - 1;
-                if (col < 0) col = width - 1;
+            if (test) {
+                if ((col == 8) && (row >= 1) && (row <= 4)) {
+                    // 1 to 3
+                    direction = Direction.DOWN;
+                    col = 5 + (4 - row);
+                    row = 5;
+                }
+                else if ((col == 0) && (row >= 5) && (row <= 8)) {
+                    // 2 to 6
+                    direction = Direction.UP;
+                    col = 13 + (8 - row);
+                    row = 12;
+                }
+                else if ((col == 8) && (row >= 9) && (row <= 12)) {
+                    // 5 to 3
+                    direction = Direction.UP;
+                    col = 5 + (12 - row);
+                    row = 8;
+                }
             }
 
             if (tiles[col][row] == Tile.OPEN) {
-                return Coord.builder()
-                        .col(col)
-                        .row(row)
+                return State.builder()
+                        .position(
+                                Coord.builder()
+                                        .col(col)
+                                        .row(row)
+                                        .build())
+                        .direction(direction)
                         .build();
             } else {
                 // can't move
-                return position;
+                return state;
             }
         }
 
-        private Coord moveRight(Coord position) {
-            int row = position.row;
-            int col = (position.col + 1) % width;
+        private State moveRight(State state) {
+            Direction direction = state.direction;
+            int row = state.position.row;
+            int col = state.position.col + 1;
 
-            while (tiles[col][row] == Tile.NULL) {
-                col = (col + 1) % width;
+            if (test) {
+                if ((col == 13) && (row >= 1) && (row <= 4)) {
+                    // 1 to 6
+                    direction = Direction.LEFT;
+                    row = 9 + (4 - row);
+                    col = 16;
+                }
+                else if ((col == 13) && (row >= 5) && (row <= 8)) {
+                    // 4 to 6
+                    direction = Direction.DOWN;
+                    col = 13 + (8 - row);
+                    row = 9;
+                }
+                else if ((col == 17) && (row >= 9) && (row <= 12)) {
+                    // 6 to 1
+                    direction = Direction.LEFT;
+                    row = 1 + (12 - row);
+                    col = 12;
+                }
             }
 
             if (tiles[col][row] == Tile.OPEN) {
-                return Coord.builder()
-                        .col(col)
-                        .row(row)
+                return State.builder()
+                        .position(
+                                Coord.builder()
+                                        .col(col)
+                                        .row(row)
+                                        .build())
+                        .direction(direction)
                         .build();
             } else {
                 // can't move
-                return position;
+                return state;
             }
         }
     }
 
+    @ToString
     @Builder
     static class State {
         final Coord position;
@@ -351,10 +464,8 @@ public class Day22 {
         public State execute(State state, Board board) {
             State result = state;
             for (int i = 0; i < this.distance; i++) {
-                result = State.builder()
-                        .direction(result.direction)
-                        .position(board.move(result.position, result.direction))
-                        .build();
+                result = board.move(result);
+                states.add(result);
             }
             return result;
         }
