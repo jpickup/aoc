@@ -687,5 +687,4 @@ public class Day22 {
             return result;
         }
     }
-
 }
