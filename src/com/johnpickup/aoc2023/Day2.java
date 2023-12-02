@@ -1,6 +1,7 @@
 package com.johnpickup.aoc2023;
 
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,15 +13,15 @@ import java.util.stream.Stream;
 
 public class Day2 {
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
         try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day2.txt"))) {
-            long start = System.currentTimeMillis();
-            long maxRed = 12, maxGreen = 13, maxBlue = 14;
+            RGB max = new RGB(12, 13, 14);
             long part1 = 0, part2 = 0;
             List<Game> games = stream.filter(s -> !s.isEmpty()).map(Game::parse).collect(Collectors.toList());
 
             for (Game game : games) {
-                System.out.println(game.toString());
-                if (game.isPossible(maxRed, maxGreen, maxBlue)) {
+                //System.out.println(game.toString());
+                if (game.isPossible(max)) {
                     part1 += game.number;
                 }
                 part2 += game.fewest().power();
@@ -28,26 +29,27 @@ public class Day2 {
             System.out.println("Part 1 = " + part1);
             System.out.println("Part 2 = " + part2);
 
-            long end = System.currentTimeMillis();
-            System.out.println("Time: " + (end - start) + "(ms)");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        long end = System.currentTimeMillis();
+        System.out.println("Time: " + (end - start) + "(ms)");
     }
 
     @RequiredArgsConstructor
+    @ToString
     static class Game {
+        final int number;
+        final List<RGB> turns;
         static Game parse(String input) {
             String[] parts = input.split(":");
             int num = Integer.parseInt(parts[0].replace("Game ", ""));
             String[] turns = parts[1].split(";");
             return new Game(num, Arrays.stream(turns).map(RGB::parse).collect(Collectors.toList()));
         }
-        private final int number;
-        private final List<RGB> turns;
 
-        public boolean isPossible(long red, long green, long blue) {
-            return turns.stream().allMatch(turn -> turn.isPossible(red, green, blue));
+        public boolean isPossible(RGB max) {
+            return turns.stream().allMatch(turn -> turn.isPossible(max));
         }
 
         public RGB fewest() {
@@ -60,7 +62,11 @@ public class Day2 {
     }
 
     @RequiredArgsConstructor
+    @ToString
     static class RGB {
+        final long red;
+        final long green;
+        final long blue;
         static RGB parse(String input) {
             String[] colours = input.split(",");
             long red = 0;
@@ -76,12 +82,11 @@ public class Day2 {
             }
             return new RGB(red, green, blue);
         }
-        final long red;
-        final long green;
-        final long blue;
 
-        public boolean isPossible(long red, long green, long blue) {
-            return this.red <= red && this.green <= green && this.blue <= blue ;
+        public boolean isPossible(RGB max) {
+            return this.red <= max.red
+                    && this.green <= max.green
+                    && this.blue <= max.blue;
         }
 
         public long power() {
