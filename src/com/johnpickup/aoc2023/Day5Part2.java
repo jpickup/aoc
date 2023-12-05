@@ -2,6 +2,8 @@ package com.johnpickup.aoc2023;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,108 +16,134 @@ public class Day5Part2 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day5.txt"))) {
-            List<String> lines = stream.collect(Collectors.toList());
+      List<String> lines = stream.collect(Collectors.toList());
 
-            List<Long> seeds = parseSeeds(lines.get(0));
-            System.out.println(seeds);
+      List<Range> seeds = parseSeeds(lines.get(0));
+      System.out.println(seeds);
 
-            Map<Key, List<Range>> maps = new HashMap<>();
+      Map<Key, List<RangeMap>> maps = new HashMap<>();
 
-            List<String> mapLines = new ArrayList<>();
-            for (int i = 2; i <= lines.size(); i++) {
-                if (i==lines.size() || lines.get(i).trim().isEmpty()) {
-                    // add map
-                    Key key = Key.parse(mapLines.get(0));
-                    mapLines.remove(0);
-                    List<Range> ranges = mapLines.stream().map(Range::parse).collect(Collectors.toList());
-                    maps.put(key, ranges);
-                    mapLines.clear();
-                } else {
-                    mapLines.add(lines.get(i).trim());
-                }
-            }
-            System.out.println(maps);
-
-            List<String> stages = Arrays.asList("seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location");
-
-            List<Long> locations = new ArrayList<>();
-
-            for (Long seed : seeds) {
-                long value = seed;
-                System.out.println(String.format("Seed %d", value));
-                for (int i = 0; i < stages.size()-1; i++) {
-                    value = applyMap(maps, stages.get(i), stages.get(i+1), value);
-                    //System.out.println(String.format("%s -> %s = %d", stages.get(i), stages.get(i+1), value));
-                }
-                locations.add(value);
-            }
-
-            Long minLocation = locations.stream().min(Long::compare).orElse(0L);
-            System.out.println("Part 1 : " + minLocation);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+      List<String> mapLines = new ArrayList<>();
+      for (int i = 2; i <= lines.size(); i++) {
+        if (i==lines.size() || lines.get(i).trim().isEmpty()) {
+          // add map
+          Key key = Key.parse(mapLines.get(0));
+          mapLines.remove(0);
+          List<RangeMap> rangeMaps = mapLines.stream().map(RangeMap::parse).collect(Collectors.toList());
+          maps.put(key, rangeMaps);
+          mapLines.clear();
+        } else {
+          mapLines.add(lines.get(i).trim());
         }
-        long end = System.currentTimeMillis();
-        System.out.println("Time: " + (end - start) + "(ms)");
+      }
+      System.out.println(maps);
+
+      List<String> stages = Arrays.asList("seed", "soil", "fertilizer", "water", "light", "temperature", "humidity", "location");
+
+      List<Range> ranges = seeds;
+      for (int i = 0; i < stages.size()-1; i++) {
+        ranges = applyMap(maps, stages.get(i), stages.get(i + 1), ranges);
+      }
+
+      Long minLocation = ranges.stream().map(r -> r.start).min(Long::compare).orElse(0L);
+      System.out.println("Part 2 : " + minLocation);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("Time: " + (end - start) + "(ms)");
+  }
+
+  private static List<Range> applyMap(Map<Key, List<RangeMap>> maps, String from, String to, List<Range> ranges) {
+    List<RangeMap> mapRangeMaps = maps.get(new Key(from, to));
+    // map each input range into one or more output ranges
+    return ranges.stream().sorted().flatMap(r -> applyMapsToRange(r, mapRangeMaps).stream()).collect(Collectors.toList());
+  }
+
+  private static List<Range> applyMapsToRange(Range range, List<RangeMap> rangeMaps) {
+    List<Range> result = new ArrayList<>();
+    long current = range.start;
+
+    while (current < range.end()) {
+      boolean madeProgress = false;
+      for (RangeMap rangeMap : rangeMaps) {
+        if (rangeMap.covers(current)) {
+          madeProgress = true;
+          long next = Long.min(range.end(), rangeMap.end());
+          long length = next - current;
+          result.add(new Range(rangeMap.map(current), length));
+          current = next;
+        }
+      }
+      if (!madeProgress) {
+        result.add(new Range(current, range.end()-current));
+        current = range.end();
+      }
     }
 
-    private static long applyMap(Map<Key, List<Range>> maps, String from, String to, long value) {
-        List<Range> ranges = maps.get(new Key(from, to));
-        for (Range range : ranges) {
-            if (range.maps(value)) {
-                return range.map(value);
-            }
-        }
-        return value;
+    return result;
+  }
+
+  private static List<Range> parseSeeds(String s) {
+    List<Long> parts = Arrays.stream(s.replace("seeds: ", "").split(" ")).map(Long::parseLong).collect(Collectors.toList());
+    List<Range> result = new ArrayList<>();
+    for (int i = 0; i < parts.size()/2; i++) {
+      result.add(new Range(parts.get(i*2), parts.get(i*2+1)));
+    }
+    return result;
+  }
+
+  @RequiredArgsConstructor
+  @Data
+  static class Key {
+    final String from;
+    final String to;
+
+    public static Key parse(String s) {
+      String[] parts = s.replace(" map:", "").split("-");
+      return new Key(parts[0], parts[2]);
+    }
+  }
+
+  @RequiredArgsConstructor
+  @Data
+  static class Range implements Comparable<Range>{
+    final long start;
+    final long range;
+
+    @Override
+    public int compareTo(@NotNull Range o) {
+      int compare = Long.compare(this.start, o.start);
+      return compare==0 ? Long.compare(this.range, o.range) : compare;
     }
 
-    private static List<Long> parseSeeds(String s) {
-        // naive - too much data - there are over a billion in the real data
-        // TODO: return the ranges, for each range step through the maps a chunk at a time and return the lowest
-        // for each chuck - each step will result in more chunks
-        List<Long> parts = Arrays.stream(s.replace("seeds: ", "").split(" ")).map(Long::parseLong).collect(Collectors.toList());
-        List<Long> result = new ArrayList<>();
-        for (int i = 0; i < parts.size()/2; i++) {
-            for (int j = 0; j < parts.get(i*2+1); j++) {
-                result.add(parts.get(i*2) + j);
-            }
-        }
-        return result;
+    public boolean covers(long value) {
+      return (value >= start) && (value < end());
     }
 
-    @RequiredArgsConstructor
-    @Data
-    static class Key {
-        final String from;
-        final String to;
+    public long end() {
+      return start + range;
+    }
+  }
 
-        public static Key parse(String s) {
-            String[] parts = s.replace(" map:", "").split("-");
-            return new Key(parts[0], parts[2]);
-        }
+  @ToString
+  static class RangeMap extends Range {
+    final long destination;
+
+    public RangeMap(long destination, long start, long range) {
+      super(start, range);
+      this.destination = destination;
     }
 
-    @RequiredArgsConstructor
-    @Data
-    static class Range {
-        final long destination;
-        final long start;
-        final long range;
-
-        public static Range parse(String s) {
-            String[] parts = s.split(" ");
-            return new Range(Long.parseLong(parts[0]), Long.parseLong(parts[1]), Long.parseLong(parts[2]));
-        }
-
-        public boolean maps(long value) {
-            return (value >= start) && (value < start + range);
-        }
-
-        public long map(long value) {
-            return (value - start) + destination;
-        }
+    public static RangeMap parse(String s) {
+      String[] parts = s.split(" ");
+      return new RangeMap(Long.parseLong(parts[0]), Long.parseLong(parts[1]), Long.parseLong(parts[2]));
     }
 
+    public long map(long value) {
+      return covers(value)?(value - start + destination) : value;
+    }
+
+  }
 }
