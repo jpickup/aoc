@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day5Part2 {
-    public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day5.txt"))) {
+  public static void main(String[] args) {
+    long start = System.currentTimeMillis();
+    try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day5.txt"))) {
       List<String> lines = stream.collect(Collectors.toList());
 
       List<Range> seeds = parseSeeds(lines.get(0));
