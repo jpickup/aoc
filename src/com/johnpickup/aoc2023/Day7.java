@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day7 {
+    static final boolean USE_JOKERS = true;     // true for part 2
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day7.txt"))) {
@@ -55,10 +56,14 @@ public class Day7 {
             Map<Character, Long> counts = Arrays.stream(cards)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-            Long jokers = counts.getOrDefault('J', 0L);
-            Map<Character, Long> countsNoJokers = counts.entrySet().stream()
-                    .filter(e -> e.getKey() != 'J')
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Long jokers = 0L;
+            Map<Character, Long> countsNoJokers = counts;
+            if (USE_JOKERS) {
+                jokers = counts.getOrDefault('J', 0L);
+                countsNoJokers = counts.entrySet().stream()
+                        .filter(e -> e.getKey() != 'J')
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            }
 
             if (counts.containsValue(5L)
                     || (jokers == 4 && countsNoJokers.containsValue(1L))
@@ -125,7 +130,7 @@ public class Day7 {
         cardValues.put('8', 8);
         cardValues.put('9', 9);
         cardValues.put('T', 10);
-        cardValues.put('J', 1);     // part 2, now joker
+        cardValues.put('J', USE_JOKERS?1:11);     // part 2, now joker
         cardValues.put('Q', 12);
         cardValues.put('K', 13);
         cardValues.put('A', 14);
