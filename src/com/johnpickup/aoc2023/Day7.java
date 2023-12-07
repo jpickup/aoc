@@ -26,8 +26,8 @@ public class Day7 {
 
             long result = 0;
             int i = 1;
-            for (Map.Entry<Hand, Integer> handEntry : hands.entrySet()) {
-                result += (long) handEntry.getValue() * i;
+            for (Integer bid : hands.values()) {
+                result += (long)bid * i;
                 i++;
             }
             System.out.println(result);
