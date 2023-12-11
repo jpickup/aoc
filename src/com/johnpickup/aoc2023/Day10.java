@@ -19,8 +19,8 @@ public class Day10 {
 
             board.calcDistances();
 
-            System.out.println(board.part1());
-            System.out.println(board.part2());
+            System.out.println("Part 1: " + board.part1());
+            System.out.println("Part 2: " + board.part2());
         } catch (IOException e) {
             e.printStackTrace();
         }
