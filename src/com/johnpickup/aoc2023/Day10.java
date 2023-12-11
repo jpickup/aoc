@@ -135,7 +135,6 @@ public class Day10 {
                     }
                 }
             }
-
             // fix-up start so we know if we need to count it
             Coord start = findStart();
             setCell(start, determinePipe(distances.containsKey(start.north()),
@@ -143,11 +142,9 @@ public class Day10 {
                     distances.containsKey(start.east()),
                     distances.containsKey(start.west())));
 
-            System.out.println(isInside(new Coord(9, 4)));
-
             Set<Coord> enclosed = coords.stream().filter(this::isInside).collect(Collectors.toSet());
 
-            // visualise
+            // visualise the board
             for (int y=0; y < height(); y++) {
                 for (int x = 0; x < width(); x++) {
                     Coord coord = new Coord(x, y);
