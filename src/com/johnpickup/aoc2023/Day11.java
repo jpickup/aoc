@@ -59,12 +59,13 @@ public class Day11 {
         long result = 0L;
         for (Coord galaxy1 : galaxies) {
             for (Coord galaxy2 : galaxies) {
-                int dist = galaxy1.distanceTo(galaxy2);
-                result += dist;
+                if (galaxy1.compareTo(galaxy2) < 0) {
+                    int dist = galaxy1.distanceTo(galaxy2);
+                    result += dist;
+                }
             }
         }
-        // we counted everything twice so just divide by 2
-        return result / 2L;
+        return result;
     }
 
     static void print(Set<Coord> coords, int width, int height) {
