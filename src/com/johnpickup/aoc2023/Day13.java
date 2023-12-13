@@ -84,8 +84,9 @@ public class Day13 {
                 boolean allMatch = true;
                 // do all cols to reflect either side?
                 System.out.println("Checking " +col);
-                for (int x1=col; x1>0; x1--) {
-                    int x2 = reflectIndex(x1, col, width);
+                for (int i=0; i < width; i++) {
+                    int x1 = col - (i-1);
+                    int x2 = col + i;
                     System.out.println(x1 + " vs " +x2);
 
                     /*
@@ -105,14 +106,6 @@ public class Day13 {
             return 0;
         }
 
-        private int reflectIndex(int index, int reflectionIndex, int range) {
-            // in a range of 0..range find the reflection of index if the reflection is at reflectionIndex
-            // e.g. range 0..8, reflecting at 5
-            // 5 reflect 6 (and vice versa)
-            // 4 reflects 7 (")
-            // 3 reflects 8 (")
-            return (reflectionIndex - index) + reflectionIndex   errrr;
-        }
     }
 
     enum Cell {
