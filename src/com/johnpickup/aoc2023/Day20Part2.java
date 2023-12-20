@@ -17,12 +17,7 @@ public class Day20Part2 {
   static boolean debug = false;
   static long tick = 0;
 
-  public static BigInteger lcm(BigInteger x, BigInteger y) {
-    return x.multiply(y).divide(x.gcd(y));
-  }
-
   public static void main(String[] args) {
-
     long start = System.currentTimeMillis();
     try (Stream<String> stream = Files.lines(Paths.get("c:/dev/aoc/resources/2023/Day20.txt"))) {
       List<Module> modules = stream.filter(s -> !s.isEmpty()).map(Module::parse).collect(Collectors.toList());
@@ -127,7 +122,6 @@ public class Day20Part2 {
           }
         }
       }
-
       return targets.stream().map(t -> new Pulse(this.id, t, value)).collect(Collectors.toList());
     }
 
