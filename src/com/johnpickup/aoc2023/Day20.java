@@ -50,9 +50,6 @@ public class Day20 {
         System.out.printf("Low: %d, High: %d%n", lowCount, highCount);
       }
       System.out.printf("Part 1: %d%n", highCount*lowCount);
-
-      // 899579128 = too high
-
     } catch (IOException e) {
       e.printStackTrace();
     }
