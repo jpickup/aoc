@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day21 {
-
     static final int MAX_STEPS = 65;
     static Garden garden;
     static Map<Integer, List<SearchState>> stateByCost = new HashMap<>();
@@ -30,14 +29,7 @@ public class Day21 {
             int part1 = countDiscoverableCells(start);
 
             System.out.println(garden);
-
-            System.out.println("Part 1: " + part1);
-
-            // not 6852
-            // 3633 too low
-            // 3737
-
-
+            System.out.println("Part 1: " + part1);  // 3737
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,9 +39,12 @@ public class Day21 {
 
     private static int countDiscoverableCells(Coord start) {
         addState(new SearchState(start, 0), 0);
-
         while (!stateByCost.isEmpty()) {
             int currentCost = stateByCost.keySet().stream().min(Integer::compareTo).orElseThrow(() -> new RuntimeException("Failed to find current cost"));
+
+            // prune older visited - not interesting
+            visited = visited.entrySet().stream().filter(e -> e.getValue() == currentCost).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
             List<SearchState> nextStates = stateByCost.remove(currentCost);
             System.out.println(currentCost + " has " + nextStates.size());
             for (SearchState nextState : nextStates) {
@@ -64,15 +59,17 @@ public class Day21 {
         return visited.entrySet().stream().filter(e -> e.getValue() == MAX_STEPS).map(e -> e.getKey().coord).collect(Collectors.toSet()).size();
     }
 
-    private static void addState(SearchState state, int cost) {
+    private static boolean addState(SearchState state, int cost) {
         int newCost = cost + 1;
         if (garden.inBounds(state.coord) && garden.getCell(state.coord) != Cell.ROCK && newCost <= MAX_STEPS) {
             if (!visited.containsKey(state)) {
                 visited.put(state, newCost);
                 if (!stateByCost.containsKey(newCost)) stateByCost.put(newCost, new ArrayList<>());
                 stateByCost.get(newCost).add(state);
+                return true;
             }
         }
+        return false;
     }
 
     @RequiredArgsConstructor
