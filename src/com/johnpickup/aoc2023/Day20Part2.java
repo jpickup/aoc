@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -19,7 +18,7 @@ public class Day20Part2 {
 
   public static void main(String[] args) {
     long start = System.currentTimeMillis();
-    try (Stream<String> stream = Files.lines(Paths.get("c:/dev/aoc/resources/2023/Day20.txt"))) {
+    try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day20.txt"))) {
       List<Module> modules = stream.filter(s -> !s.isEmpty()).map(Module::parse).collect(Collectors.toList());
 
       System.out.println(modules);
@@ -71,7 +70,6 @@ public class Day20Part2 {
   }
 
   @RequiredArgsConstructor
-  @ToString
   static class Pulse {
     private final String source;
     private final String destination;
@@ -189,7 +187,7 @@ public class Day20Part2 {
    */
   @ToString(callSuper = true)
   static class Conjunction extends Module {
-    private Map<String, Boolean> state = new HashMap<>();
+    private final Map<String, Boolean> state = new HashMap<>();
     public Conjunction(String id, List<String> targets) {
       super(id, targets);
     }
