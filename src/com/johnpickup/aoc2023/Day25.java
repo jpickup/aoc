@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 public class Day25 {
 
     static Map<Integer, Integer> vertexWeights = new TreeMap<>();
+    static Map<Edge, Integer> edgeImportance = new HashMap<>();
 
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
@@ -38,7 +39,7 @@ public class Day25 {
             System.out.println("Graph size: " + adjacency.length);
             calcVertexWeights(adjacency);
 
-            //Set<Set<Integer>> subGraphs = generateConnectedGraphs(adjacency);
+            Set<Set<Integer>> subGraphs = generateConnectedGraphs(adjacency);
             //System.out.println(subGraphs);
 
             // create each graphs with 3 missing connections and see if size is 2
@@ -52,15 +53,27 @@ public class Day25 {
 
             edges.forEach(e -> System.out.printf("%s -> %d\t", e, edgeVertexWeight(e)));
 
+            List<Edge> edgesByImportance = edgeImportance.entrySet().stream().sorted((a, b) -> -Integer.compare(a.getValue(), b.getValue())).map(Map.Entry::getKey).collect(Collectors.toList());
+
+            System.out.printf("%nTarget: %s%n%s%n%s%n", new Edge(vertices.indexOf("mfs"), vertices.indexOf("ffv")),
+                    new Edge(vertices.indexOf("mnh"), vertices.indexOf("qnv")),
+                    new Edge(vertices.indexOf("ljh"), vertices.indexOf("tbg")));
+
+            System.out.println(edgesByImportance.indexOf(new Edge(vertices.indexOf("mfs"), vertices.indexOf("ffv"))));
+            System.out.println(edgesByImportance.indexOf(new Edge(vertices.indexOf("mnh"), vertices.indexOf("qnv"))));
+            System.out.println(edgesByImportance.indexOf(new Edge(vertices.indexOf("ljh"), vertices.indexOf("tbg"))));
+
+            System.out.println();
+
             // from visual inspection of a graphviz generated image
             int[][] newAdjacency = removeEdges(adjacency,
                     new Edge(vertices.indexOf("mfs"), vertices.indexOf("ffv")),
                     new Edge(vertices.indexOf("mnh"), vertices.indexOf("qnv")),
                     new Edge(vertices.indexOf("ljh"), vertices.indexOf("tbg"))
             );
-            Set<Set<Integer>> subGraphs = generateConnectedGraphs(newAdjacency);
-            System.out.printf("Set of %d disconnected graphs%n", subGraphs.size());
-            List<Integer> sizes = subGraphs.stream().map(Set::size).collect(Collectors.toList());
+            Set<Set<Integer>> subGraphs2 = generateConnectedGraphs(newAdjacency);
+            System.out.printf("Set of %d disconnected graphs%n", subGraphs2.size());
+            List<Integer> sizes = subGraphs2.stream().map(Set::size).collect(Collectors.toList());
             System.out.println(sizes);
             Long part1 = sizes.stream().map(s -> (long) s).reduce(1L, (a, b) -> a * b);
             System.out.println("Part1: " + part1);
@@ -180,6 +193,8 @@ public class Day25 {
         Set<Integer> result = new TreeSet<>();
         for (int i = 0; i < adjacency.length; i++) {
             if (adjacency[node][i] == 1) {
+                Edge edge = new Edge(node, i);
+                edgeImportance.put(edge, edgeImportance.getOrDefault(edge, 0)+1);
                 result.add(node);
                 visited.add(node);
                 result.addAll(allConnectedNodes(adjacency, visited, i));

@@ -45,8 +45,12 @@ public class Day12 {
             System.out.println("No of potential starts " + starts.size());
 
             Day12 solver = new Day12();
-            int steps = solver.solve(starts, end, heights);
+            System.out.println("Part1");
+            int steps = solver.solve(Collections.singletonList(start), end, heights);
+            System.out.println("Length = " + steps);
 
+            System.out.println("Part2");
+            steps = solver.solve(starts, end, heights);
             System.out.println("Shortest = " + steps);
 
         } catch (IOException e) {

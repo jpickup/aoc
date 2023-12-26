@@ -12,10 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day9 {
+    static int part = 2;
     public static void main(String[] args) {
         try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day9.txt"))) {
             List<Instruction> instructions = stream.map(Instruction::parse).collect(Collectors.toList());
-            int ropeLength = 10;
+            int ropeLength = part==1?2:10;
             Set<Coord> visited = new HashSet<>();
             Coord[] knots = new Coord[ropeLength];
             for (int i=0; i<ropeLength; i++) knots[i]=Coord.builder().x(0).y(0).build();

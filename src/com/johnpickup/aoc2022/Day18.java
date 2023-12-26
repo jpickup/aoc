@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 public class Day18 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day18-test2.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day18.txt"))) {
             long start = System.currentTimeMillis();
             Set<Cube> cubes = stream.filter(s -> !s.isEmpty()).map(Cube::parse).collect(Collectors.toSet());
 

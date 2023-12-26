@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class Day7 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day7-test.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day7.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
 
             Directory rootNode = new Directory();
@@ -75,7 +75,7 @@ public class Day7 {
             }
 
             display(rootNode, 0);
-            System.out.println(ans);
+            System.out.println("Part 1: " + ans);
             long totalSize = rootNode.size();
             System.out.println("Total size: "+totalSize);
 
@@ -85,8 +85,7 @@ public class Day7 {
 
             List<Long> candidates = sizes.values().stream().filter(s -> s >= target).sorted().collect(Collectors.toList());
             System.out.println(candidates);
-
-
+            System.out.println("Part 2: " + candidates.get(0));
         } catch (IOException e) {
             e.printStackTrace();
         }

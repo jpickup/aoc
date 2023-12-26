@@ -17,6 +17,7 @@ public class Day2 {
 
             for (String line : lines) {
                 RPS op = decode(line.charAt(0));
+                // part1 : RPS me = decode(line.charAt(2));
                 RPS me = chose(line.charAt(2), op);
                 System.out.println(op.toString()+me.toString());
                 long score = compare(op,  me);

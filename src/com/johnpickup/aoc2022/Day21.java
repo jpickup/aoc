@@ -18,13 +18,13 @@ public class Day21 {
     static Map<String, Monkey> monkeyMap;
 
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day21.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day21-test.txt"))) {
             long start = System.currentTimeMillis();
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
             Day21 day21 = new Day21(lines);
 
-//            System.out.println(day21.solvePart1());
+            //System.out.println(day21.solvePart1());
             System.out.println(day21.solvePart2());
             long end = System.currentTimeMillis();
             System.out.println("Time: " + (end - start) + "(ms)");

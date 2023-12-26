@@ -21,6 +21,7 @@ public class Day3 {
             int index = 0;
 
             for (String line : lines) {
+// Part2
                 group[index%3] = line;
                 if (index%3 == 2) {
                     char common = findCommon3(group);

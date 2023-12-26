@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day5 {
+    static int part = 2;
     public static void main(String[] args) {
         try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day5.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
@@ -52,12 +53,19 @@ public class Day5 {
     }
 
     private static void executeInstruction(Instruction instruction, List<Stack<Character>> stacks) {
-        Stack<Character> temp = new Stack<>();
-        for (int i = 0; i < instruction.count; i++) {
-            temp.push(stacks.get(instruction.from-1).pop());
+        if (part == 1) {
+            for (int i = 0; i < instruction.count; i++) {
+                stacks.get(instruction.to - 1).push(stacks.get(instruction.from - 1).pop());
+            }
         }
-        while (!temp.isEmpty()) {
-            stacks.get(instruction.to - 1).push(temp.pop());
+        else {
+            Stack<Character> temp = new Stack<>();
+            for (int i = 0; i < instruction.count; i++) {
+                temp.push(stacks.get(instruction.from - 1).pop());
+            }
+            while (!temp.isEmpty()) {
+                stacks.get(instruction.to - 1).push(temp.pop());
+            }
         }
     }
 

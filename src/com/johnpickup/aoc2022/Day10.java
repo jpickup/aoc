@@ -32,8 +32,10 @@ public class Day10 {
                 }
             //    System.out.println("State:     " + state);
             }
-            System.out.println("--- FINAL ---");
+            //System.out.println("--- FINAL ---");
             //System.out.println(state);
+            System.out.println("Part 1: " + state.accu);
+            System.out.println("Part 2: ");
             for (int j = 0; j < 6; j++) {
                 for (int i=0; i<40; i++) {
                     System.out.print(state.image[i][j]);

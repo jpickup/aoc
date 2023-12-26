@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 
 public class Day15 {
+    static int part = 2;
     public static void main(String[] args) {
         try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day15.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
@@ -57,27 +58,30 @@ public class Day15 {
 
             long start = System.currentTimeMillis();
 
-            // part1
-//            int y = 10;
-//            int result = calcKnown(y, closestBeaconBySensor, closestBeaconDistances, beacons, sensors, minX, maxX);
-//            System.out.println(y + " = " + result);
+            if (part == 1) {
+                // part1
+                int y = 2000000;
+                int result = calcKnown(y, closestBeaconBySensor, closestBeaconDistances, beacons, sensors, minX, maxX);
+                System.out.println(y + " = " + result);
+            }
+            else {
+                // part 2
+                minX = 0;
+                maxX = 4000000;
+                minY = 0;
+                maxY = 4000000;
+                Set<Coord> intersections = calcIntersections(closestBeaconDistances, beacons, sensors, minX, maxX, minY, maxY);
+                System.out.println(intersections.size());
 
-            // part 2
-            minX = 0;
-            maxX = 4000000;
-            minY = 0;
-            maxY = 4000000;
-            Set<Coord> intersections = calcIntersections(closestBeaconDistances, beacons, sensors, minX, maxX, minY, maxY);
-            System.out.println(intersections.size());
+                Set<Coord> validIntersections = intersections.stream().filter(c -> isValid(c, closestBeaconBySensor, closestBeaconDistances, beacons, sensors)).collect(Collectors.toSet());
 
-            Set<Coord> validIntersections = intersections.stream().filter(c -> isValid(c, closestBeaconBySensor, closestBeaconDistances, beacons, sensors)).collect(Collectors.toSet());
+                System.out.println(validIntersections.size());
+                System.out.println(validIntersections);
+                Coord theOne = validIntersections.stream().findFirst().get();
 
-            System.out.println(validIntersections.size());
-            System.out.println(validIntersections);
-            Coord theOne = validIntersections.stream().findFirst().get();
-
-            BigInteger result = BigInteger.valueOf(theOne.x).multiply(BigInteger.valueOf(4000000)).add(BigInteger.valueOf(theOne.y));
-            System.out.println(result);
+                BigInteger result = BigInteger.valueOf(theOne.x).multiply(BigInteger.valueOf(4000000)).add(BigInteger.valueOf(theOne.y));
+                System.out.println(result);
+            }
 
             long end = System.currentTimeMillis();
             System.out.println("Time (ms) : " + (end - start));

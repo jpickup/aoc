@@ -20,11 +20,11 @@ public class Day20 {
     static final BigInteger KEY = new BigInteger("811589153");
 
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day20.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day20-test.txt"))) {
             long start = System.currentTimeMillis();
             List<Integer> inputs = stream.filter(s -> !s.isEmpty()).map(Integer::parseInt).collect(Collectors.toList());
 
-            //firstAttempt(inputs);
+            firstAttempt(inputs);
 
             BigInteger result = solve(inputs);
 
