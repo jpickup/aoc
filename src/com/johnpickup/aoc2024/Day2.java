@@ -1,5 +1,7 @@
 package com.johnpickup.aoc2024;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,17 +25,12 @@ public class Day2 {
         System.out.println("Time: " + (end - start) + "ms");
     }
 
+    @RequiredArgsConstructor
     static class Levels {
         final List<Integer> levels;
-        Levels(String input) {
-            String[] parts = input.split(" ");
-            levels = Arrays.stream(parts).map(Integer::parseInt).collect(Collectors.toList());
-        }
 
-        // A level list with the specified item missing
-        Levels(List<Integer> input, int skip) {
-            levels = new ArrayList<>(input);
-            levels.remove(skip);
+        Levels(String input) {
+            this(Arrays.stream(input.split(" ")).map(Integer::parseInt).collect(Collectors.toList()));
         }
 
         boolean isSafe() {
@@ -55,15 +52,21 @@ public class Day2 {
             return result;
         }
 
-        // levels are mainly safe if they are safe or are safe with one level ignored
+        // levels are mainly-safe if they are safe or are safe with one level ignored
         boolean isMainlySafe() {
             if (isSafe()) return true;
 
             for (int i = 0; i < levels.size(); i++) {
-                Levels newLevels = new Levels(this.levels, i);
+                Levels newLevels = new Levels(copyListWithoutItem(this.levels, i));
                 if (newLevels.isSafe()) return true;
             }
             return false;
+        }
+
+        private List<Integer> copyListWithoutItem(List<Integer> list, int skipIndex) {
+            List<Integer> result = new ArrayList<>(list);
+            result.remove(skipIndex);
+            return result;
         }
     }
 }
