@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,19 +100,14 @@ public class Day6 {
         }
 
         public boolean hasCycle() {
-            List<GuardState> locations = new ArrayList<>();
+            Set<GuardState> locations = new HashSet<>();
 
             while (guard.inBounds(width, height)) {
-                locations.add(guard.state());
                 guard.move(this);
-                if (guardStatesHasCycle(locations)) return true;
+                if (locations.contains(guard.state())) return true;
+                locations.add(guard.state());
             }
             return false;
-        }
-
-        boolean guardStatesHasCycle(List<GuardState> guardStates) {
-            Set<GuardState> distinct = new HashSet<>(guardStates);
-            return guardStates.size() > distinct.size();
         }
 
         @Override
