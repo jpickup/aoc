@@ -29,11 +29,6 @@ public class Day6 {
         System.out.println("Time: " + (end - start) + "ms");
     }
 
-// Brute force is slow!
-//    Part1: 4696
-//    Part2: 1443
-//    Time: 3600185ms ~ 1 hour
-
     @Data
     static class Grid {
         final int width;
@@ -76,24 +71,27 @@ public class Day6 {
 
         // Solve part 1 --------------------------
         public int part1() {
+            return path().size();
+        }
+
+        public Set<Coord> path() {
             Set<Coord> result = new HashSet<>();
             while (guard.inBounds(width, height)) {
                 result.add(guard.location());
                 guard.move(this);
             }
-            return result.size();
+            return result;
         }
 
         static int part2(Grid original) {
             int result = 0;
-            for (int y = 0; y < original.height; y++) {
-                for (int x = 0; x < original.width; x++) {
-                    Grid newGrid = new Grid(original);
-                    if (newGrid.cells[x][y] == Cell.SPACE && !newGrid.guard.isAt(new Coord(x,y))) {
-                        newGrid.cells[x][y] = Cell.OBSTACLE;
-                        if (newGrid.hasCycle())
-                            result += 1;
-                    }
+            Set<Coord> initialPath = new Grid(original).path();
+            for (Coord coord : initialPath) {
+                Grid newGrid = new Grid(original);
+                if (!newGrid.guard.isAt(coord)) {
+                    newGrid.cells[coord.x][coord.y] = Cell.OBSTACLE;
+                    if (newGrid.hasCycle())
+                        result += 1;
                 }
             }
             return result;
