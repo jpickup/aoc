@@ -70,7 +70,7 @@ public class Day7 {
         }
 
         public boolean canBeTrueMethod2() {
-            List<Long> possibleValues = possibleValuesPart2(numbers);
+            List<Long> possibleValues = possibleValuesMethod2(numbers);
             return possibleValues.stream().anyMatch(l -> l.equals(total));
         }
 
@@ -79,7 +79,7 @@ public class Day7 {
             return Long.parseLong(String.format("%d%d", l1, l2));
         }
 
-        List<Long> possibleValuesPart2(List<Long> inputs) {
+        List<Long> possibleValuesMethod2(List<Long> inputs) {
             List<Long> result = new ArrayList<>();
             List<Operator> availableOperators = part == 1 ? Arrays.asList(Operator.ADD, Operator.MUL) : Arrays.asList(Operator.ADD, Operator.MUL, Operator.CONC);
             List<List<Operator>> operatorOptions = allPossible(inputs.size() - 1, availableOperators);
