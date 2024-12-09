@@ -31,8 +31,6 @@ public class Day6 {
             System.out.println("Part 1: " + part1);
             int part2 = forms.stream().map(DeclarationForm::part2).reduce(0, Integer::sum);
             System.out.println("Part 2: " + part2);
-            // 3132 too low
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,7 +56,6 @@ public class Day6 {
                         commonAnswers.remove(c);
                     }
                 }
-
             }
         }
 
