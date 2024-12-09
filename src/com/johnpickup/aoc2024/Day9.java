@@ -3,6 +3,7 @@ package com.johnpickup.aoc2024;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class Day9 {
     static class Disk {
         final int[] blocks;
         final Map<Integer, Integer> fileSizes = new HashMap<>();
+        final Map<Integer, Integer> initialFileLocations = new HashMap<>();
         final int size;
         Disk(String input) {
             size = calcSize(input);
@@ -41,7 +43,10 @@ public class Day9 {
                 boolean isFreeSpace = i % 2 == 1;
                 int fileNo = i / 2;
                 int fileSize = input.charAt(i) - '0';
-                if (!isFreeSpace) fileSizes.put(fileNo, fileSize);
+                if (!isFreeSpace) {
+                    fileSizes.put(fileNo, fileSize);
+                    initialFileLocations.put(fileNo, location);
+                }
                 for (int j=0; j < fileSize; j++) {
                     blocks[location] = isFreeSpace ? -1 : fileNo;
                     location++;
@@ -75,11 +80,7 @@ public class Day9 {
         }
 
         int findFile(int fileNum) {
-            for (int i = 0; i < size; i++) {
-                if (blocks[i] == fileNum)
-                    return i;
-            }
-            throw new RuntimeException("File not found: " + fileNum);
+            return initialFileLocations.get(fileNum);
         }
 
         int findSpace(int spaceRequired) {
@@ -103,11 +104,10 @@ public class Day9 {
         }
 
         void compactWholeFiles() {
-            List<Integer> fileNumbers = fileSizes.keySet().stream().sorted().collect(Collectors.toList());
-            for (int i = fileNumbers.size()-1; i >= 0; i--) {
-                int fileNum = fileNumbers.get(i);
-                int requiredSize = fileSizes.get(fileNum);
-                int fileLocation = findFile(fileNum);
+            List<Integer> fileNumbers = fileSizes.keySet().stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
+            for (Integer fileNumber : fileNumbers) {
+                int requiredSize = fileSizes.get(fileNumber);
+                int fileLocation = findFile(fileNumber);
                 int spaceLocation = findSpace(requiredSize);
 
                 if (spaceLocation >= 0 && spaceLocation < fileLocation) {
