@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Data
-class Coord {
+public class Coord {
     final int x;
     final int y;
 

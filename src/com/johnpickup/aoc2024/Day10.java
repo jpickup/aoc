@@ -1,7 +1,7 @@
 package com.johnpickup.aoc2024;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.johnpickup.aoc2024.util.Coord;
+import com.johnpickup.aoc2024.util.IntGrid;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,12 +23,12 @@ public class Day10 {
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {
                 List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
-                Grid grid = new Grid(lines);
-                System.out.println(grid);
+                ElevationGrid elevationGrid = new ElevationGrid(lines);
+                System.out.println(elevationGrid);
 
-                long part1 = grid.part1();
+                long part1 = elevationGrid.part1();
                 System.out.println("Part 1: " + part1);
-                long part2 = grid.part2();
+                long part2 = elevationGrid.part2();
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -39,45 +39,9 @@ public class Day10 {
         }
     }
 
-    static class Grid {
-        final int width;
-        final int height;
-        final int[][] cells;
-
-        Grid(List<String> lines) {
-            width = lines.get(0).length();
-            height = lines.size();
-            cells = new int[lines.get(0).length()][lines.size()];
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int elev = lines.get(y).charAt(x) - '0';
-                    cells[x][y] = elev;
-                }
-            }
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    sb.appendCodePoint('0' + getCell(new Coord(x, y)));
-                }
-                sb.append("\n");
-            }
-            return sb.toString();
-        }
-
-        int getCell(Coord coord) {
-            if (inBounds(coord)) {
-                return cells[coord.x][coord.y];
-            } else {
-                return -1;
-            }
-        }
-
-        private boolean inBounds(Coord coord) {
-            return coord.inBounds(width, height);
+    static class ElevationGrid extends IntGrid {
+        ElevationGrid(List<String> lines) {
+            super(lines);
         }
 
         public long part1() {
@@ -161,40 +125,6 @@ public class Day10 {
                 }
             }
             return result;
-        }
-    }
-
-    @RequiredArgsConstructor
-    @Data
-    static class Coord {
-        final int x;
-        final int y;
-
-        public boolean inBounds(int width, int height) {
-            return x >= 0 && x < width && y >= 0 && y < height;
-        }
-
-        public Coord north() {
-            return new Coord(x, y - 1);
-        }
-
-        public Coord east() {
-            return new Coord(x + 1, y);
-        }
-
-        public Coord south() {
-            return new Coord(x, y + 1);
-        }
-
-        public Coord west() {
-            return new Coord(x - 1, y);
-        }
-
-        @Override
-        public String toString() {
-            return "(" + x +
-                    "," + y +
-                    ')';
         }
     }
 }
