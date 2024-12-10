@@ -46,7 +46,6 @@ public class Day10 {
 
         public long part1() {
             Set<Coord> trailHeads = findWithElevation(0);
-            System.out.println(trailHeads);
             Map<Coord, List<List<Coord>>> allPaths = new HashMap<>();
             for (Coord trailHead : trailHeads) {
                 List<List<Coord>> paths = findPaths(trailHead);
@@ -61,10 +60,8 @@ public class Day10 {
             return ninesCounts.values().stream().reduce(0, Integer::sum);
         }
 
-
         public long part2() {
             Set<Coord> trailHeads = findWithElevation(0);
-            System.out.println(trailHeads);
             Map<Coord, List<List<Coord>>> allPaths = new HashMap<>();
             for (Coord trailHead : trailHeads) {
                 List<List<Coord>> paths = findPaths(trailHead);
