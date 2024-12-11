@@ -30,13 +30,10 @@ public class Day11 {
                         .collect(Collectors.toList());
 
                 Stones stones = new Stones(lines.get(0));
-
                 long part1 = stones.part1();
                 System.out.println("Part 1: " + part1);
                 long part2 = stones.part2();
                 System.out.println("Part 2: " + part2);
-
-                // target p1: 55312 & 193269
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -69,27 +66,19 @@ public class Day11 {
 
         private long solveSingle(long stone, int iterations) {
             if (iterations == 0) return 1;
-
-            long result;
-
             State state = new State(stone, iterations);
             if (cache.containsKey(state)) return cache.get(state);
+            long result;
             if (stone == 0)  {
-                result = solveSingle(1L, iterations-1);
+                result = solveSingle(1L, iterations - 1);
             } else if (evenDigits(stone)) {
-                result = solveSingle(leftDigits(stone), iterations-1)
-                    + solveSingle(rightDigits(stone), iterations-1);
+                result = solveSingle(leftDigits(stone), iterations - 1)
+                    + solveSingle(rightDigits(stone), iterations - 1);
             } else {
                 result = solveSingle(stone * 2024, iterations - 1);
             }
-
-            cacheResult(result, state);
+            cache.putIfAbsent(state, result);
             return result;
-        }
-
-        private long cacheResult(long solution, State state) {
-            cache.putIfAbsent(state, solution);
-            return solution;
         }
 
         private long leftDigits(long stoneValue) {
