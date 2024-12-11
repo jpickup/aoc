@@ -44,6 +44,7 @@ public class Day11 {
             System.out.println("Time: " + (end - start) + "ms");
         }
     }
+
     @ToString
     @RequiredArgsConstructor
     static class Stones {
@@ -54,11 +55,11 @@ public class Day11 {
             stones = Arrays.stream(line.split(" ")).map(Long::parseLong).collect(Collectors.toList());
         }
 
-        public long part0() {
+        public long part1() {
             return solve(25);
         }
 
-        public long part1() {
+        public long part2() {
             return solve(75);
         }
 
@@ -68,19 +69,26 @@ public class Day11 {
 
         private long solveSingle(long stone, int iterations) {
             if (iterations == 0) return 1;
+
+            long result;
+
             State state = new State(stone, iterations);
-            //if (cache.containsKey(state)) return cache.get(state);
-            State returnState = new State(stone, iterations-1);
-            if (stone == 0) return cacheResult(solveSingle(1L, iterations-1), returnState);
-            if (evenDigits(stone)) {
-                return cacheResult(solveSingle(leftDigits(stone), iterations-1), returnState)
-                + cacheResult(solveSingle(rightDigits(stone), iterations-1), returnState);
+            if (cache.containsKey(state)) return cache.get(state);
+            if (stone == 0)  {
+                result = solveSingle(1L, iterations-1);
+            } else if (evenDigits(stone)) {
+                result = solveSingle(leftDigits(stone), iterations-1)
+                    + solveSingle(rightDigits(stone), iterations-1);
+            } else {
+                result = solveSingle(stone * 2024, iterations - 1);
             }
-            return cacheResult(solveSingle(stone * 2024, iterations-1), returnState);
+
+            cacheResult(result, stone, iterations);
+            return result;
         }
 
-        private long cacheResult(long solution, State state) {
-            cache.put(state, solution);
+        private long cacheResult(long solution, long stone, int iterations) {
+            cache.putIfAbsent(new State(stone, iterations), solution);
             return solution;
         }
 
