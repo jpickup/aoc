@@ -31,10 +31,10 @@ public class Day11 {
 
                 Stones stones = new Stones(lines.get(0));
 
-                long part1 = stones.part0();
+                long part1 = stones.part1();
                 System.out.println("Part 1: " + part1);
-                //long part2 = stones.part1();
-                //System.out.println("Part 2: " + part2);
+                long part2 = stones.part2();
+                System.out.println("Part 2: " + part2);
 
                 // target p1: 55312 & 193269
             } catch (IOException e) {
@@ -83,12 +83,12 @@ public class Day11 {
                 result = solveSingle(stone * 2024, iterations - 1);
             }
 
-            cacheResult(result, stone, iterations);
+            cacheResult(result, state);
             return result;
         }
 
-        private long cacheResult(long solution, long stone, int iterations) {
-            cache.putIfAbsent(new State(stone, iterations), solution);
+        private long cacheResult(long solution, State state) {
+            cache.putIfAbsent(state, solution);
             return solution;
         }
 
