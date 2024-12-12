@@ -1,5 +1,6 @@
 package com.johnpickup.aoc2024.util;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,10 +8,22 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class CharGrid {
     final int width;
     final int height;
     final char[][] cells;
+
+    public CharGrid(CharGrid source) {
+        width = source.getWidth();
+        height = source.getHeight();
+        cells = new char[width][height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                cells[x][y] = source.cells[x][y];
+            }
+        }
+    }
 
     public CharGrid(List<String> lines) {
         width = lines.get(0).length();
@@ -35,11 +48,18 @@ public class CharGrid {
         }
         return sb.toString();
     }
+
     public char getCell(Coord coord) {
         if (inBounds(coord)) {
             return cells[coord.x][coord.y];
         } else {
             return ' ';
+        }
+    }
+
+    public void setCell(Coord coord, char ch) {
+        if (inBounds(coord)) {
+            cells[coord.x][coord.y] = ch;
         }
     }
 

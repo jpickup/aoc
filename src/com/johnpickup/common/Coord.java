@@ -1,11 +1,11 @@
-package com.johnpickup.aoc2024.util;
+package com.johnpickup.common;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Data
-public class Coord implements Comparable<Coord> {
+class Coord {
     final int x;
     final int y;
 
@@ -42,29 +42,10 @@ public class Coord implements Comparable<Coord> {
         return new Coord(x-1, y-1);
     }
 
-    public boolean isAdjacentTo4(Coord other) {
-        int dx = Math.abs(x - other.x);
-        int dy = Math.abs(y - other.y);
-        return (!this.equals(other)) && (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
-    }
-
-    public boolean isAdjacentTo8(Coord other) {
-        int dx = Math.abs(x - other.x);
-        int dy = Math.abs(y - other.y);
-        return (!this.equals(other)) &&(dx <= 1 && dy <= 0);
-    }
-
     @Override
     public String toString() {
         return "(" + x +
                 "," + y +
                 ')';
-    }
-
-    @Override
-    public int compareTo(Coord o) {
-        if (this.equals(o)) return 0;
-        else if (this.y == o.y) return this.x - o.x;
-        return this.y - o.y;
     }
 }
