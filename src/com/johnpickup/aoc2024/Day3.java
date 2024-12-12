@@ -7,18 +7,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.List;
 
 public class Day3 {
     static boolean part1 = false;
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         List<Instruction> instructions;
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day3.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day3/Day3.txt"))) {
             String input = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList()).stream().reduce("", (a,b) -> a + " " + b);
             instructions = extractInstructions(input);
             Long result = instructions.stream().map(Instruction::value).reduce(0L, Long::sum);

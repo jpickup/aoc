@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Day8 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day8.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day8/Day8.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
             Grid grid = new Grid(lines);
             System.out.println("Part 1 : " + grid.part1());
