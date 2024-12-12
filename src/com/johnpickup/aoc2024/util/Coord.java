@@ -45,13 +45,19 @@ public class Coord implements Comparable<Coord> {
     public boolean isAdjacentTo4(Coord other) {
         int dx = Math.abs(x - other.x);
         int dy = Math.abs(y - other.y);
-        return (!this.equals(other)) && (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
+        return (!this.equals(other)) && ((dx == 1 && dy == 0) || (dx == 0 && dy == 1));
+    }
+
+    public boolean isDiagonallyAdjacentTo(Coord other) {
+        int dx = Math.abs(x - other.x);
+        int dy = Math.abs(y - other.y);
+        return (!this.equals(other)) && (dx == 1 && dy == 1);
     }
 
     public boolean isAdjacentTo8(Coord other) {
         int dx = Math.abs(x - other.x);
         int dy = Math.abs(y - other.y);
-        return (!this.equals(other)) &&(dx <= 1 && dy <= 0);
+        return (!this.equals(other)) && (dx <= 1 && dy <= 1);
     }
 
     @Override
