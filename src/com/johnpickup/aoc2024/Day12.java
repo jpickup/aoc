@@ -56,11 +56,10 @@ public class Day12 {
             return regions.stream().map(Region::price).reduce(0L, Long::sum);
         }
 
-        private long part2() {
+        long part2() {
             List<Region> regions = extractRegions();
             return regions.stream().map(Region::price2).reduce(0L, Long::sum);
         }
-
 
         private List<Region> extractRegions() {
             List<Region> result = new ArrayList<>();
@@ -68,7 +67,7 @@ public class Day12 {
                 for (int x = 0; x < getWidth(); x++) {
                     Coord coord = new Coord(x, y);
                     char type = getCell(coord);
-                    if (!findPlotContaining(result, type, coord).isPresent()) {
+                    if (!findRegionContaining(result, type, coord).isPresent()) {
                         Set<Coord> connected = findConnected(coord, type, new HashSet<>());
                         Region region = new Region(type);
                         region.addAll(connected);
@@ -91,7 +90,7 @@ public class Day12 {
             return result;
         }
 
-        private Optional<Region>findPlotContaining(List<Region> regions, char type, Coord coord) {
+        private Optional<Region> findRegionContaining(List<Region> regions, char type, Coord coord) {
             return regions.stream()
                     .filter(r -> r.contains(type, coord)).findFirst();
         }
@@ -112,22 +111,35 @@ public class Day12 {
                     + " / " + price2();
         }
 
-        long area() {
+        public long area() {
             return plots.size();
         }
 
-        long perimeter() {
+        public long perimeter() {
             return plots.stream().map(this::emptySides).reduce(0L, Long::sum);
         }
 
-        long price() {
+        public long price() {
             return area() * perimeter();
         }
 
-        long sides() {
+        public long price2() {
+            return area() * sides();
+        }
+
+        public long sides() {
             return findSides().size();
         }
 
+        long emptySides(Coord c) {
+            long result = 0;
+            if (!plots.contains(c.north())) result++;
+            if (!plots.contains(c.south())) result++;
+            if (!plots.contains(c.east())) result++;
+            if (!plots.contains(c.west())) result++;
+
+            return result;
+        }
         private List<Side> findSides() {
             List<Side> result = new ArrayList<>();
             Set<Coord> northFaces = plots.stream().filter(p -> !plots.contains(p.north())).collect(Collectors.toSet());
@@ -140,7 +152,6 @@ public class Day12 {
             result.addAll(partitionFaces(westFaces));
             return result;
         }
-
 
         private Set<Side> partitionFaces(Set<Coord> faces) {
             Set<Side> result = new HashSet<>();
@@ -160,24 +171,9 @@ public class Day12 {
             return result;
         }
 
-        long price2() {
-            return area() * sides();
-        }
-
-        long emptySides(Coord c) {
-            long result = 0;
-            if (!plots.contains(c.north())) result++;
-            if (!plots.contains(c.south())) result++;
-            if (!plots.contains(c.east())) result++;
-            if (!plots.contains(c.west())) result++;
-
-            return result;
-        }
-
         boolean contains(char type, Coord c) {
             return this.type == type && plots.contains(c);
         }
-
 
         public void addPlot(Coord coord) {
             plots.add(coord);
