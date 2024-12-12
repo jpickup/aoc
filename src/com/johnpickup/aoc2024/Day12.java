@@ -116,7 +116,7 @@ public class Day12 {
         }
 
         public long perimeter() {
-            return plots.stream().map(this::emptySides).reduce(0L, Long::sum);
+            return plots.stream().map(this::emptySidesCount).reduce(0L, Long::sum);
         }
 
         public long price() {
@@ -131,7 +131,7 @@ public class Day12 {
             return findSides().size();
         }
 
-        long emptySides(Coord c) {
+        long emptySidesCount(Coord c) {
             long result = 0;
             if (!plots.contains(c.north())) result++;
             if (!plots.contains(c.south())) result++;
