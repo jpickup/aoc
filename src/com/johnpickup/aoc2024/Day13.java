@@ -124,14 +124,6 @@ public class Day13 {
 
         @RequiredArgsConstructor
         @ToString
-        static class Possibility {
-            final long aPresses;
-            final long bPresses;
-            final Coord offset;
-        }
-
-        @RequiredArgsConstructor
-        @ToString
         static class Presses {
             final long aPresses;
             final long bPresses;
