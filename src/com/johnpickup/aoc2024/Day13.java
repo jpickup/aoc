@@ -7,7 +7,6 @@ import lombok.ToString;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day13 {
-    static final BigDecimal EPSILON_BD = new BigDecimal("1E-50");
-    static int BD_SCALE = 100;
     static final long PART_2_OFFSET = 10000000000000L;
     public static void main(String[] args) {
         String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day13/Day13";
@@ -93,52 +90,36 @@ public class Day13 {
             //      xTarget = aCount * ax + bCount * bx
             //      yTarget = aCount * ay + bCount * by
             // null if there are none
-            BigDecimal xTargetBD = BigDecimal.valueOf(location.getX() + offset);
-            BigDecimal yTargetBD = BigDecimal.valueOf(location.getY() + offset);
-            BigDecimal axBD = BigDecimal.valueOf(buttonA.delta.getX());
-            BigDecimal ayBD = BigDecimal.valueOf(buttonA.delta.getY());
-            BigDecimal bxBD = BigDecimal.valueOf(buttonB.delta.getX());
-            BigDecimal byBD = BigDecimal.valueOf(buttonB.delta.getY());
+            BigDecimal xTarget = BigDecimal.valueOf(location.getX() + offset);
+            BigDecimal yTarget = BigDecimal.valueOf(location.getY() + offset);
+            BigDecimal ax = BigDecimal.valueOf(buttonA.delta.getX());
+            BigDecimal ay = BigDecimal.valueOf(buttonA.delta.getY());
+            BigDecimal bx = BigDecimal.valueOf(buttonB.delta.getX());
+            BigDecimal by = BigDecimal.valueOf(buttonB.delta.getY());
 
-            // (xTarget - yTarget * bx / by) / (ax - ay * bx / by) is an integer
-            BigDecimal aCountNumerator = xTargetBD.subtract( yTargetBD.multiply(bxBD).divide(byBD, BD_SCALE, RoundingMode.HALF_UP) );
-            BigDecimal aCountDenominator = axBD.subtract( ayBD.multiply(bxBD).divide(byBD, BD_SCALE, RoundingMode.HALF_UP));
+            // a presses = (xTarget - yTarget * bx / by) / (ax - ay * bx / by) is an integer
+            // simplifies to (xTarget * by - yTarget * bx) / (ax * by - ay * bx)
+            BigDecimal aCountNumerator = xTarget.multiply(by).subtract(yTarget.multiply(bx));
+            BigDecimal aCountDenominator = ax.multiply(by).subtract(ay.multiply(bx));
             BigDecimal[] aCountDivideAndRemainder = aCountNumerator.divideAndRemainder(aCountDenominator);
-            BigDecimal aCountBD = aCountDivideAndRemainder[0];
+            BigDecimal aCount = aCountDivideAndRemainder[0];
             BigDecimal remainder = aCountDivideAndRemainder[1];
-            if (remainder.abs().compareTo(EPSILON_BD) <= 0) {
-                remainder = BigDecimal.ZERO;
-            }
-
-            if (remainder.subtract(aCountDenominator).abs().compareTo(EPSILON_BD) <= 0) {
-                aCountBD = aCountBD.add(BigDecimal.ONE);
-                remainder = BigDecimal.ZERO;
-            }
 
             boolean isAInteger = remainder.equals(BigDecimal.ZERO);
             if (!isAInteger) return null;
 
-            long aCount = aCountBD.longValue();
-
-            // (yTarget - aCount * ay) / by
-            BigDecimal bCountNumerator = yTargetBD.subtract(aCountBD.multiply(ayBD));
-            BigDecimal[] bCountDivideAndRemainder = bCountNumerator.divideAndRemainder(byBD);
+            // b presses = (yTarget - aCount * ay) / by
+            BigDecimal bCountNumerator = yTarget.subtract(aCount.multiply(ay));
+            BigDecimal[] bCountDivideAndRemainder = bCountNumerator.divideAndRemainder(by);
 
             BigDecimal bCountBD = bCountDivideAndRemainder[0];
             BigDecimal bRemainder = bCountDivideAndRemainder[1];
-            if (bRemainder.abs().compareTo(EPSILON_BD) <= 0) {
-                bRemainder = BigDecimal.ZERO;
-            }
-            if (bRemainder.subtract(byBD).abs().compareTo(EPSILON_BD) <= 0) {
-                bCountBD = bCountBD.add(BigDecimal.ONE);
-                bRemainder = BigDecimal.ZERO;
-            }
 
             boolean isBInteger = bRemainder.equals(BigDecimal.ZERO);
             if (!isBInteger) return null;
 
             long bCount = bCountBD.longValue();
-            return new Presses(aCount, bCount);
+            return new Presses(aCount.longValue(), bCount);
         }
 
         @RequiredArgsConstructor
