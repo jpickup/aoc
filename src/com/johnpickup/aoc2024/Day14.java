@@ -116,9 +116,7 @@ public class Day14 {
     }
 
     private static Coord reflect(Coord c) {
-        int x = MID_X + (MID_X - c.getX());
-        int y = c.getY();
-        return new Coord(x, y);
+        return new Coord(MID_X * 2 - c.getX(), c.getY());
     }
 
     private static void displayRobots(List<Robot> robots, boolean middleGap) {
@@ -143,7 +141,6 @@ public class Day14 {
         static final Pattern pattern = Pattern.compile("p=(\\-?[0-9]+),(\\-?[0-9]+) v=(\\-?[0-9]+),(\\-?[0-9]+)");
 
         Robot(String line) {
-            // p=0,4 v=3,-3
             Matcher matcher = pattern.matcher(line);
             if (!matcher.matches()) throw new RuntimeException("Invalid robot input: " + line);
             int px = Integer.parseInt(matcher.group(1));
