@@ -26,8 +26,8 @@ public class Day14 {
     public static void main(String[] args) {
         String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/day14/Day14";
         List<String> inputFilenames = Arrays.asList(
-                //prefix + "-test.txt"
-                 prefix + ".txt"
+                prefix + "-test.txt"
+                ,prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
             long start = System.currentTimeMillis();
@@ -48,25 +48,16 @@ public class Day14 {
                 MID_X = WIDTH / 2;
                 MID_Y = HEIGHT / 2;
 
-                System.out.println(robots);
-
                 for (int i = 0; i < 100; i++) {
                     robots.forEach(Robot::move);
                 }
-                System.out.println(robots);
-
                 Map<Integer, Long> quadrantCounts = robots.stream().map(Robot::quadrant)
                         .filter(q -> !q.equals(0))
                         .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-                System.out.println(quadrantCounts);
-
-                displayRobots(robots);
-
                 long part1 = quadrantCounts.values().stream()
                         .reduce(1L, (a, b) -> a * b);
                 long total = quadrantCounts.values().stream().reduce(0L, Long::sum);
-                System.out.println("total: " + total + " robots: " + robots.size());
                 System.out.println("Part 1: " + part1);
 
                 // reload to initial state
@@ -76,15 +67,16 @@ public class Day14 {
                         .collect(Collectors.toList());
                 long part2 = 0L;
 
-                do {
+                while (!isTree(robots)) {
                     part2++;
                     robots.forEach(Robot::move);
-                    if (potentialTree(robots)) {
-                        System.out.println(part2 + " -------------------------------------------------------------------------");
-                        displayRobots(robots);
-                        System.out.println();
-                    }
-                } while (!potentialTree(robots));
+//                    if (potentialTree(robots)) {
+//                        System.out.println(part2 + " -------------------------------------------------------------------------");
+//                        displayRobots(robots);
+//                        System.out.println();
+//                    }
+                }
+                displayRobots(robots, false);
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -96,7 +88,7 @@ public class Day14 {
     }
 
     // are at least half the robots horizontally adjacent?
-    private static boolean potentialTree(List<Robot> robots) {
+    private static boolean isTree(List<Robot> robots) {
         int horizontalAdjacent = 0;
         Set<Coord> locations = robots.stream().map(Robot::getPosition).collect(Collectors.toSet());
         for (Coord location1 : locations) {
@@ -125,17 +117,16 @@ public class Day14 {
 
     private static Coord reflect(Coord c) {
         int x = MID_X + (MID_X - c.getX());
-        //int y = MID_Y + (MID_Y - c.getY());
         int y = c.getY();
         return new Coord(x, y);
     }
 
-    private static void displayRobots(List<Robot> robots) {
+    private static void displayRobots(List<Robot> robots, boolean middleGap) {
         Map<Coord, Long> locations = robots.stream().map(Robot::getPosition).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
                 Coord coord = new Coord(x, y);
-                if (coord.getX() == MID_X || coord.getY() == MID_Y) System.out.print(' ');
+                if (middleGap && ((coord.getX() == MID_X || coord.getY() == MID_Y))) System.out.print(' ');
                 else if (locations.containsKey(coord)) System.out.print(locations.get(coord));
                 else System.out.print(".");
             }
