@@ -2,6 +2,7 @@ package com.johnpickup.aoc2024;
 
 import com.johnpickup.aoc2024.util.CharGrid;
 import com.johnpickup.aoc2024.util.Coord;
+import com.johnpickup.aoc2024.util.Direction;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -120,9 +121,7 @@ public class Day16 {
             }
 
             Map.Entry<State, Long> finish = findFinish(visited);
-            Set<List<Step>> possibleSteps = paths.get(finish.getKey());
-
-            return possibleSteps;
+            return paths.get(finish.getKey());
         }
 
         private long calcCost(State state1, State state2) {
@@ -204,44 +203,6 @@ public class Day16 {
     static class Step {
         final Coord newLocation;
         final Movement movement;
-    }
-
-    @RequiredArgsConstructor
-    enum Direction {
-        NORTH('^'),
-        SOUTH('v'),
-        EAST('<'),
-        WEST('>');
-        final char ch;
-
-        Direction left() {
-            switch (this) {
-                case NORTH: return WEST;
-                case WEST: return SOUTH;
-                case SOUTH: return EAST;
-                case EAST: return NORTH;
-                default: throw new RuntimeException("Unknown dir " +  this);
-            }
-        }
-        Direction right() {
-            switch (this) {
-                case NORTH: return EAST;
-                case EAST: return SOUTH;
-                case SOUTH: return WEST;
-                case WEST: return NORTH;
-                default: throw new RuntimeException("Unknown dir " +  this);
-            }
-        }
-        Coord apply(Coord c) {
-            switch (this) {
-                case NORTH: return c.north();
-                case EAST: return c.east();
-                case SOUTH: return c.south();
-                case WEST: return c.west();
-                default:
-                    throw new RuntimeException("Unknown dir " + this);
-            }
-        }
     }
 
     @RequiredArgsConstructor
