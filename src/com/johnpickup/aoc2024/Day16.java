@@ -3,7 +3,6 @@ package com.johnpickup.aoc2024;
 import com.johnpickup.aoc2024.util.CharGrid;
 import com.johnpickup.aoc2024.util.Coord;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -34,12 +33,11 @@ public class Day16 {
                         .collect(Collectors.toList());
 
                 Grid grid = new Grid(lines);
-
-                long part1 = grid.part1();
+                Set<List<Step>> routes = grid.findRoutes();
+                long part1 = Grid.part1(routes);
                 System.out.println("Part 1: " + part1);
-                long part2 = grid.part2();
+                long part2 = grid.part2(routes);
                 System.out.println("Part 2: " + part2);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -66,13 +64,12 @@ public class Day16 {
             end = findCharAndCleanup(END, SPACE);
         }
 
-        long part1() {
-            List<Step> route = findRoute();
-            return route.stream().map(s -> s.movement.cost).reduce(0L, Long::sum);
+        public static long part1(Set<List<Step>> routes) {
+            List<Step> firstRoute = routes.stream().findFirst().orElseThrow(() -> new RuntimeException("No route found"));
+            return firstRoute.stream().map(s -> s.movement.cost).reduce(0L, Long::sum);
         }
 
-        long part2() {
-            Set<List<Step>> routes = findRoutes();
+        public long part2(Set<List<Step>> routes) {
             Set<Coord> pointsOnRoutes = new HashSet<>();
             pointsOnRoutes.add(start);
             pointsOnRoutes.add(end);
@@ -84,14 +81,7 @@ public class Day16 {
             return pointsOnRoutes.size();
         }
 
-        Set<List<Step>> cachedRoutes = null;    // part 1 & part 2 use the same data - just cache it
-
-        List<Step> findRoute() {
-            return findRoutes().stream().findFirst().orElseThrow(() -> new RuntimeException("No route found"));
-        }
-
         Set<List<Step>> findRoutes() {
-            if (cachedRoutes != null) return cachedRoutes;
             Map<State, Long> unvisited = new HashMap<>();
             Map<State, Long> visited = new HashMap<>();
             Map<State, Set<List<Step>>> paths = new HashMap<>();
@@ -132,7 +122,6 @@ public class Day16 {
             Map.Entry<State, Long> finish = findFinish(visited);
             Set<List<Step>> possibleSteps = paths.get(finish.getKey());
 
-            cachedRoutes = possibleSteps;
             return possibleSteps;
         }
 
@@ -257,7 +246,6 @@ public class Day16 {
 
     @RequiredArgsConstructor
     @Data
-    @EqualsAndHashCode
     static class State {
         final Coord coord;
         final Direction direction;
