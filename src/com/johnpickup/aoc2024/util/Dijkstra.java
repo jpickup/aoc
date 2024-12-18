@@ -17,6 +17,7 @@ public abstract class Dijkstra<State> {
   protected abstract State targetState();
   protected abstract long calculateCost(State fromState, State toState);
   protected abstract boolean statesAreConnected(State state1, State state2);
+  protected abstract boolean findAllRoutes();
 
   public Set<List<State>> findRoutes() {
     Map<State, Long> unvisited = new HashMap<>();
@@ -35,7 +36,7 @@ public abstract class Dijkstra<State> {
       Map<State, Long> neighbours = findNeighbours(unvisited, lowestCostEntry.getKey());
       for (Map.Entry<State, Long> entry : neighbours.entrySet()) {
         long cost = lowestCostEntry.getValue() + calculateCost(lowestCostEntry.getKey(), entry.getKey());
-        if (cost < entry.getValue()) {
+        if (cost < entry.getValue() || (findAllRoutes() && cost == entry.getValue()) ) {
           Set<List<State>> possiblePathsToState = paths.get(lowestCostEntry.getKey());
           Set<List<State>> existingPathsToState = Optional.ofNullable(paths.get(entry.getKey())).orElse(new HashSet<>());
           for (List<State> possiblePathToState : possiblePathsToState) {
