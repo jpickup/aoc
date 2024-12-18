@@ -115,5 +115,10 @@ public class Day18 {
     protected boolean statesAreConnected(Coord state1, Coord state2) {
       return state1.isAdjacentTo4(state2);
     }
+
+    @Override
+    protected boolean findAllRoutes() {
+      return false;
+    }
   }
 }
