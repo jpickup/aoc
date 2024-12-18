@@ -31,20 +31,19 @@ public abstract class Dijkstra<State> {
 
     Map.Entry<State, Long> lowestCostEntry = findSmallest(unvisited);
 
-    while (lowestCostEntry != null) {
+    while (lowestCostEntry != null && lowestCostEntry.getValue() < Long.MAX_VALUE) {
       Map<State, Long> neighbours = findNeighbours(unvisited, lowestCostEntry.getKey());
       for (Map.Entry<State, Long> entry : neighbours.entrySet()) {
         long cost = lowestCostEntry.getValue() + calculateCost(lowestCostEntry.getKey(), entry.getKey());
         if (cost < entry.getValue()) {
           Set<List<State>> possiblePathsToState = paths.get(lowestCostEntry.getKey());
-
-          Set<List<State>> possibleTsToEntry = Optional.ofNullable(paths.get(entry.getKey())).orElse(new HashSet<>());
-          for (List<State> StatesToStrate : possiblePathsToState) {
-            List<State> TsToEntry = appendToPath(StatesToStrate, entry.getKey());
-            possibleTsToEntry.add(TsToEntry);
+          Set<List<State>> existingPathsToState = Optional.ofNullable(paths.get(entry.getKey())).orElse(new HashSet<>());
+          for (List<State> possiblePathToState : possiblePathsToState) {
+            List<State> newPathToState = appendToPath(possiblePathToState, entry.getKey());
+            existingPathsToState.add(newPathToState);
           }
           unvisited.put(entry.getKey(), cost);
-          paths.put(entry.getKey(), possibleTsToEntry);
+          paths.put(entry.getKey(), existingPathsToState);
         }
         visited.put(lowestCostEntry.getKey(), lowestCostEntry.getValue());
       }
