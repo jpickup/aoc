@@ -13,6 +13,12 @@ public class Coord implements Comparable<Coord> {
         this(c.x, c.y);
     }
 
+    public Coord(String s) {
+        String[] parts = s.split(",");
+        x = Integer.parseInt(parts[0]);
+        y = Integer.parseInt(parts[1]);
+    }
+
     public boolean inBounds(int width, int height) {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
