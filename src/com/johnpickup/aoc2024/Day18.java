@@ -3,6 +3,7 @@ package com.johnpickup.aoc2024;
 import com.johnpickup.aoc2024.util.CharGrid;
 import com.johnpickup.aoc2024.util.Coord;
 
+import com.johnpickup.aoc2024.util.Dijkstra;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -50,9 +51,8 @@ public class Day18 {
     }
   }
 
-  static class Memory {
+  static class Memory extends Dijkstra<Coord> {
     final CharGrid grid;
-
     final Coord entrance = new Coord(0,0);
     final Coord exit;
 
@@ -91,61 +91,29 @@ public class Day18 {
       return "";
     }
 
-    Set<List<Coord>> findRoutes() {
-      Map<Coord, Long> unvisited = new HashMap<>();
-      Map<Coord, Long> visited = new HashMap<>();
-      Map<Coord, Set<List<Coord>>> paths = new HashMap<>();
-      Set<Coord> spaces = grid.findAll(SPACE);
-      for (Coord space : spaces) {
-        unvisited.put(new Coord(space), Long.MAX_VALUE);
-      }
-      unvisited.put(entrance, 0L);
-      paths.put(entrance, Collections.singleton(Collections.emptyList()));
-
-      Map.Entry<Coord, Long> lowestCostCoord = findSmallest(unvisited);
-
-      while (lowestCostCoord != null) {
-        Map<Coord, Long> neighbours = findNeighbours(unvisited, lowestCostCoord.getKey());
-        for (Map.Entry<Coord, Long> entry : neighbours.entrySet()) {
-          long cost = lowestCostCoord.getValue() + 1;
-          if (cost < entry.getValue()) {
-            Set<List<Coord>> possibleCoordsToCoord = paths.get(lowestCostCoord.getKey());
-
-            Set<List<Coord>> possibleCoordsToEntry = Optional.ofNullable(paths.get(entry.getKey())).orElse(new HashSet<>());
-            for (List<Coord> CoordsToCoord : possibleCoordsToCoord) {
-              List<Coord> CoordsToEntry = calcPath(CoordsToCoord, entry.getKey());
-              possibleCoordsToEntry.add(CoordsToEntry);
-            }
-            unvisited.put(entry.getKey(), cost);
-            paths.put(entry.getKey(), possibleCoordsToEntry);
-          }
-          visited.put(lowestCostCoord.getKey(), lowestCostCoord.getValue());
-        }
-        unvisited.remove(lowestCostCoord.getKey());
-        lowestCostCoord = findSmallest(unvisited);
-      }
-
-      return Optional.ofNullable(paths.get(exit)).orElse(Collections.emptySet());
+    @Override
+    protected Set<Coord> allStates() {
+      return grid.findAll(SPACE);
     }
 
-    private Map<Coord, Long> findNeighbours(Map<Coord, Long> unvisited, Coord key) {
-      return unvisited.entrySet().stream().filter(e -> e.getKey().isAdjacentTo4(key)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    @Override
+    protected Coord initialState() {
+      return entrance;
     }
 
-    private Map.Entry<Coord, Long> findSmallest(Map<Coord, Long> coords) {
-      Map.Entry<Coord, Long> smallest = null;
-      for (Map.Entry<Coord, Long> entry : coords.entrySet()) {
-        if (entry.getValue() < Optional.ofNullable(smallest).map(Map.Entry::getValue).orElse(Long.MAX_VALUE)) {
-          smallest = entry;
-        }
-      }
-      return smallest;
+    @Override
+    protected Coord targetState() {
+      return exit;
     }
 
-    private List<Coord> calcPath(List<Coord> from, Coord coord2) {
-      List<Coord> result = new ArrayList<>(from);
-      result.add(coord2);
-      return result;
+    @Override
+    protected long calculateCost(Coord fromState, Coord toState) {
+      return 1L;
+    }
+
+    @Override
+    protected boolean statesAreConnected(Coord state1, Coord state2) {
+      return state1.isAdjacentTo4(state2);
     }
   }
 }
