@@ -2,12 +2,14 @@ package com.johnpickup.aoc2024;
 
 import com.johnpickup.aoc2024.util.CharGrid;
 import com.johnpickup.aoc2024.util.Coord;
-
 import com.johnpickup.aoc2024.util.Dijkstra;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,8 +22,8 @@ public class Day18 {
   static char OCCUPIED = '#';
   public static void main(String[] args) {
     String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-    //String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/" + day + "/" + day;
-    String prefix = "c:/dev/aoc/resources/2024/" + day + "/" + day;
+    String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/" + day + "/" + day;
+    //String prefix = "c:/dev/aoc/resources/2024/" + day + "/" + day;
     List<String> inputFilenames = Arrays.asList(
         //prefix + "-test.txt"
         prefix + ".txt"
