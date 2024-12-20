@@ -105,17 +105,10 @@ public class Day20 {
         }
 
         private boolean isUsefulJump(Coord c1, Coord c2, int distance, List<Coord> removed, int targetSaving) {
-            int basicDist = distanceApart(c1, c2);
+            int basicDist = c1.distanceFrom(c2);
             if (basicDist > distance) return false;
-
-            int saving = removed.size() - distanceApart(c1, c2) + 1;
+            int saving = removed.size() - c1.distanceFrom(c2) + 1;
             return saving >= targetSaving;
-        }
-
-        private int distanceApart(Coord c1, Coord c2) {
-            int dX = Math.abs(c1.getX() - c2.getX());
-            int dY = Math.abs(c1.getY() - c2.getY());
-            return dX + dY;
         }
 
         @Override
