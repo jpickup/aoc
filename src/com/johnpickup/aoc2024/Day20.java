@@ -55,7 +55,6 @@ public class Day20 {
     static final char START = 'S';
     static final char END = 'E';
     static final char SPACE = '.';
-    static final char WALL = '#';
     static class Racetrack {
         final CharGrid grid;
         final Coord start;
