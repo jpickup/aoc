@@ -1,4 +1,4 @@
-package com.johnpickup.aoc2024.util;
+package com.johnpickup.aoc2020.util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class Template {
     public static void main(String[] args) {
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/dayNN/DayNN";
+        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day";
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"

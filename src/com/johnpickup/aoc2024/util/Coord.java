@@ -65,6 +65,11 @@ public class Coord implements Comparable<Coord> {
         int dy = Math.abs(y - other.y);
         return (!this.equals(other)) && (dx <= 1 && dy <= 1);
     }
+    public int distanceFrom(Coord other) {
+        int dX = Math.abs(x - other.x);
+        int dY = Math.abs(y - other.y);
+        return dX + dY;
+    }
 
     @Override
     public String toString() {
