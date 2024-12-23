@@ -84,8 +84,8 @@ public class CharGrid {
 
     public Set<Coord> findAll(char find) {
         Set<Coord> result = new HashSet<>();
-        for (int y = 0; y < getWidth(); y++) {
-            for (int x = 0; x < getHeight(); x++) {
+        for (int y = 0; y < getHeight(); y++) {
+            for (int x = 0; x < getWidth(); x++) {
                 Coord c = new Coord(x, y);
                 if (getCell(c) == find) {
                     result.add(c);
