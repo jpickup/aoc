@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,15 +19,19 @@ public class Day24 {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
         String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
-                prefix + "-test.txt"
-                , prefix + "-test2.txt"
-                , prefix + ".txt"
+//                prefix + "-part2-test.txt"
+//                , prefix + "-test2.txt"
+                 prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
             createEmptyTestFileIfMissing(inputFilename);
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
+            BiFunction<Long, Long, Long> correctOperation =
+                    isTest ? (a,b) -> a & b
+                    : Long::sum;
+
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {
                 List<String> lines = stream
                         .filter(s -> !s.isEmpty())
@@ -43,9 +48,6 @@ public class Day24 {
                     }
                 }
 
-                System.out.println(states);
-                System.out.println(gates);
-
                 boolean doneWork;
                 do {
                     doneWork = false;
@@ -59,7 +61,32 @@ public class Day24 {
 
                 long part1 = states.part1();
                 System.out.println("Part 1: " + part1);
-                long part2 = 0L;
+
+//                System.out.println(" ----- Graphviz -----");
+//                System.out.println(gates.graphviz(states));
+//                System.out.println(" --------------------");
+
+
+                for (int i = 0; i < 44; i++) {
+                    gates.extractAdder(i);
+                }
+                // manual inspection of graphviz output
+                // Failed to find pps XOR ? -> z12
+                // z12 & vdc
+                //
+                // Failed to find bbn XOR ? -> z21
+                // rsc XOR bbn should go to z21 not nhn
+                // z21 & nhn
+                //
+                // Failed to find khg XOR ? -> z25
+                // tvb & khg
+                //
+                // Failed to find jbr XOR ? -> z33
+                // gst & z33
+                //
+                //gst,khg,nhn,tvb,vdc,z12,z21,z33
+
+                String part2 = "";
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -69,7 +96,6 @@ public class Day24 {
             System.out.println("Time: " + (end - start) + "ms");
         }
     }
-
     @ToString
     static class Gates {
         final List<Gate> gates = new ArrayList<>();
@@ -79,6 +105,54 @@ public class Day24 {
 
         public List<Gate> getAllIncomplete() {
             return gates.stream().filter(g -> !g.complete).collect(Collectors.toList());
+        }
+
+        public String graphviz(States states) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("digraph day24 { \n");
+            sb.append("  rankdir=LR;\n");
+            states.states.keySet().forEach(s -> sb.append(String.format("  node [shape=circle] %s; %n", s)));
+            gates.forEach(g -> sb.append(String.format("  node [shape=%s] \"%s\"; %n", g.shape(), g.name())));
+            gates.forEach(g -> sb.append(String.format("  \"%s\" -> \"%s\"; %n", g.input1, g.name())));
+            gates.forEach(g -> sb.append(String.format("  \"%s\" -> \"%s\"; %n", g.input2, g.name())));
+            gates.forEach(g -> sb.append(String.format("  \"%s\" -> \"%s\"; %n", g.name(), g.output)));
+            sb.append("}");
+            return sb.toString();
+        }
+
+        public void extractAdder(int bitNo) {
+            String x = String.format("x%02d",bitNo);
+            String y = String.format("y%02d",bitNo);
+            String z = String.format("z%02d",bitNo);
+            Gate xor1 = findGateXY(Operation.XOR, x, y);
+            if (xor1 == null) {
+                System.out.println("Failed to find " + x + " XOR " + y);
+            }
+            Gate and1 = findGateXY(Operation.AND, x, y);
+            if (and1 == null) {
+                System.out.println("Failed to find " + x + " AND " + y);
+            }
+            String xor1out = xor1.output;
+            String and1out = and1.output;
+            Gate xor2 = findGateXZ(Operation.XOR, xor1out, z);
+            if (xor2 == null) {
+                System.out.println("Failed to find " + xor1out + " XOR ? -> " + z);
+            }
+        }
+
+        private Gate findGateXY(Operation operation, String x, String y) {
+            return gates.stream()
+                    .filter(g -> g.operation == operation)
+                    .filter(g -> (g.input1.equals(x) && g.input2.equals(y)) || (g.input1.equals(y) && g.input2.equals(x)))
+                    .findFirst()
+                    .orElse(null);
+        }
+        private Gate findGateXZ(Operation operation, String x, String z) {
+            return gates.stream()
+                    .filter(g -> g.operation == operation)
+                    .filter(g -> (g.input1.equals(x) && g.output.equals(z)) || (g.input2.equals(x) && g.output.equals(z)))
+                    .findFirst()
+                    .orElse(null);
         }
     }
 
@@ -105,6 +179,14 @@ public class Day24 {
             }
             return canActOn;
         }
+
+        public String name() {
+            return String.format("%s %s %s", input1, operation, input2);
+        }
+
+        public String shape() {
+            return operation.shape();
+        }
     }
 
     enum Operation {
@@ -129,6 +211,15 @@ public class Day24 {
                 default: throw new RuntimeException("Unknown operation " + this);
             }
         }
+
+        public String shape() {
+            switch (this) {
+                case AND: return "square";
+                case OR: return "diamond";
+                case XOR: return "octagon";
+                default: throw new RuntimeException("Unknown operation " + this);
+            }
+        }
     }
 
     @ToString
@@ -136,15 +227,31 @@ public class Day24 {
         final Map<String, Boolean> states = new HashMap<>();
 
         public long part1() {
-            List<Map.Entry<String, Boolean>> outputs = states.entrySet().stream()
-                    .filter(e -> e.getKey().startsWith("z"))
+            return getValue("z");
+        }
+
+        public long getValue(String prefix) {
+            List<Map.Entry<String, Boolean>> nodes = states.entrySet().stream()
+                    .filter(e -> e.getKey().startsWith(prefix))
                     .collect(Collectors.toList());
 
             long result = 0;
-            for (Map.Entry<String, Boolean> output : outputs) {
-                result += decimalValueOf(output);
+            for (Map.Entry<String, Boolean> node : nodes) {
+                result += decimalValueOf(node);
             }
             return result;
+        }
+
+        public void setValue(String prefix, long value) {
+            List<Map.Entry<String, Boolean>> nodes = states.entrySet().stream()
+                    .filter(e -> e.getKey().startsWith(prefix))
+                    .collect(Collectors.toList());
+
+            for (Map.Entry<String, Boolean> node : nodes) {
+                int significance = Integer.parseInt(node.getKey().substring(1));
+                long bitValue = (long)Math.pow(2, significance);
+                states.put(node.getKey(), (value & bitValue) != 0);
+            }
         }
 
         private long decimalValueOf(Map.Entry<String, Boolean> output) {
