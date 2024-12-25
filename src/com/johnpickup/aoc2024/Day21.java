@@ -107,8 +107,6 @@ public class Day21 {
                     .orElseThrow(() -> new RuntimeException("Space key not found"));
         }
 
-        static int iter = 1;
-
         Map<KeyPair, Long> calcPairLengths(Map<KeyPair, Long> pairLengths) {
             Map<KeyPair, Long> newPairLengths = new HashMap<>();
             for (Map.Entry<Character, Coord> keyCoordEntry1 : keyCoords.entrySet()) {
