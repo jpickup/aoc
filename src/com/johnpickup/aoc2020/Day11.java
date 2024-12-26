@@ -1,13 +1,15 @@
 package com.johnpickup.aoc2020;
 
-import com.johnpickup.aoc2020.util.CharGrid;
-import com.johnpickup.aoc2020.util.Coord;
+import com.johnpickup.util.CharGrid;
+import com.johnpickup.util.Coord;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +33,9 @@ public class Day11 {
 
                 long part1 = Seats.part1(seats);
                 System.out.println("Part 1: " + part1);
-                long part2 = 0L;
+
+                seats = new Seats(lines);       // reset
+                long part2 = Seats.part2(seats);
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -57,16 +61,27 @@ public class Day11 {
         }
 
         public static long part1(Seats seats) {
-            Seats prevSeats = seats;
+            Seats prevSeats;
             Seats newSeats = seats;
             do {
                 prevSeats = newSeats;
-                newSeats = newSeats.iterate();
+                newSeats = newSeats.iteratePart1();
             } while (!newSeats.equals(prevSeats));
             return newSeats.occupiedCount();
         }
 
-        private Seats iterate() {
+        public static long part2(Seats seats) {
+            Set<Coord> seatCoords = seats.findAll('L');
+            Seats prevSeats;
+            Seats newSeats = seats;
+            do {
+                prevSeats = newSeats;
+                newSeats = newSeats.iteratePart2(seatCoords);
+            } while (!newSeats.equals(prevSeats));
+            return newSeats.occupiedCount();
+        }
+
+        private Seats iteratePart1() {
             Seats result = new Seats(this);
             for (int x = 0; x < getWidth(); x++) {
                 for (int y = 0; y < getHeight(); y++) {
@@ -82,6 +97,40 @@ public class Day11 {
 //            System.out.println(result);
 
             return result;
+        }
+
+        private Seats iteratePart2(Set<Coord> seatCoords) {
+            Seats result = new Seats(this);
+
+            for (Coord seatCoord : seatCoords) {
+                int occupied = 0;
+                occupied += countOccupiedInDirection(seatCoord, 1, 0);
+                occupied += countOccupiedInDirection(seatCoord, -1, 0);
+                occupied += countOccupiedInDirection(seatCoord, 0, 1);
+                occupied += countOccupiedInDirection(seatCoord, 0, -1);
+                occupied += countOccupiedInDirection(seatCoord, 1, 1);
+                occupied += countOccupiedInDirection(seatCoord, 1, -1);
+                occupied += countOccupiedInDirection(seatCoord, -1, 1);
+                occupied += countOccupiedInDirection(seatCoord, -1, -1);
+                if (occupied == 0) result.setCell(seatCoord, '#');
+                else if (occupied >= 5) result.setCell(seatCoord, 'L');
+            }
+//            System.out.println("--------------------------");
+//            System.out.println(result);
+
+            return result;
+        }
+
+        private int countOccupiedInDirection(Coord seatCoord, int dx, int dy) {
+            Integer result = null;
+            Coord coord  = new Coord(seatCoord).moveBy(dx, dy);
+
+            while (result == null && inBounds(coord)) {
+                if (getCell(coord) == '#') result = 1;
+                if (getCell(coord) == 'L') result = 0;
+                coord = coord.moveBy(dx, dy);
+            }
+            return Optional.ofNullable(result).orElse(0);
         }
 
         private long occupiedCount() {

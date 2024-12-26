@@ -1,10 +1,12 @@
-package com.johnpickup.aoc2020.util;
+package com.johnpickup.util;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Getter
@@ -48,6 +50,7 @@ public class CharGrid {
         }
         return sb.toString();
     }
+
     public char getCell(Coord coord) {
         if (inBounds(coord)) {
             return cells[coord.x][coord.y];
@@ -56,7 +59,40 @@ public class CharGrid {
         }
     }
 
+    public void setCell(Coord coord, char ch) {
+        if (inBounds(coord)) {
+            cells[coord.x][coord.y] = ch;
+        }
+    }
+
     public boolean inBounds(Coord coord) {
         return coord.x >= 0 && coord.x < width && coord.y >= 0 && coord.y < height;
     }
+
+    public Coord findCharAndCleanup(char find, char replace) {
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                Coord c = new Coord(x, y);
+                if (getCell(c) == find) {
+                    setCell(c, replace);
+                    return c;
+                }
+            }
+        }
+        throw new RuntimeException(find + " not found");
+    }
+
+    public Set<Coord> findAll(char find) {
+        Set<Coord> result = new HashSet<>();
+        for (int y = 0; y < getHeight(); y++) {
+            for (int x = 0; x < getWidth(); x++) {
+                Coord c = new Coord(x, y);
+                if (getCell(c) == find) {
+                    result.add(c);
+                }
+            }
+        }
+        return result;
+    }
+
 }

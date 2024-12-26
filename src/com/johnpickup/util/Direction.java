@@ -1,4 +1,4 @@
-package com.johnpickup.aoc2025.util;
+package com.johnpickup.util;
 
 import lombok.RequiredArgsConstructor;
 

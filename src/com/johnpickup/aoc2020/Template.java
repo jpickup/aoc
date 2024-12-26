@@ -1,4 +1,4 @@
-package com.johnpickup.aoc2020.util;
+package com.johnpickup.aoc2020;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,16 +8,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
+
 public class Template {
+    static boolean isTest;
     public static void main(String[] args) {
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day";
+        String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
+        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2022/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
+            createEmptyTestFileIfMissing(inputFilename);
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
+            isTest = inputFilename.contains("test");
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {
                 List<String> lines = stream
                         .filter(s -> !s.isEmpty())

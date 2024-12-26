@@ -1,4 +1,4 @@
-package com.johnpickup.aoc2025.util;
+package com.johnpickup.util;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Data
 public class Coord implements Comparable<Coord> {
+    public static final Coord ORIGIN = new Coord(0, 0);
     final int x;
     final int y;
 
@@ -83,5 +84,30 @@ public class Coord implements Comparable<Coord> {
         if (this.equals(o)) return 0;
         else if (this.y == o.y) return this.x - o.x;
         return this.y - o.y;
+    }
+
+    public Coord moveBy(int dx, int dy) {
+        return new Coord(x + dx, y + dy);
+    }
+
+    /**
+     * Rotate by the given number of right angles around the centre point
+     * Right angles is +ve for clockwise, -ve for anticlockwise
+     * Assumes regular cartesian plane, i.e. E is +ve X, N is +ve Y (Y is opposite to that often used in grids),
+     * @param centre    centre around which to rotate
+     * @param rightAngles number of right-angle turns, where clockwise is +ve
+     * @return new, rotated location
+     */
+    public Coord rotateAround(Coord centre, int rightAngles) {
+        Coord offset = new Coord(x - centre.x, y - centre.y);
+        while (rightAngles > 0) {
+            offset = new Coord(offset.y, -offset.x);
+            rightAngles--;
+        }
+        while (rightAngles < 0) {
+            offset = new Coord(-offset.y, offset.x);
+            rightAngles++;
+        }
+        return new Coord(centre.x + offset.x, centre.y + offset.y);
     }
 }
