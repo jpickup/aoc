@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class Day1 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day1.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day1/Day1.txt"))) {
             List<Integer> numbers = stream.filter(s -> !s.isEmpty()).map(Integer::parseInt).collect(Collectors.toList());
             System.out.println(numbers);
             for (Integer number1 : numbers) {

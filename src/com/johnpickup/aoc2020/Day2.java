@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class Day2 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day2.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day2/Day2.txt"))) {
             List<Password> passwords = stream.filter(s -> !s.isEmpty()).map(Password::new).collect(Collectors.toList());
             System.out.println("Part 1: " + passwords.stream().filter(Password::isValid).count());
             System.out.println("Part 2: " + passwords.stream().filter(Password::isValidPart2).count());

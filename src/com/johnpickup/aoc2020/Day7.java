@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public class Day7 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day7.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day7/Day7.txt"))) {
             List<BagRule> bagRules = stream.filter(s -> !s.isEmpty()).map(BagRule::new).collect(Collectors.toList());
 
             System.out.println(bagRules);
