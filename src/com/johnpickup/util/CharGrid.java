@@ -95,4 +95,82 @@ public class CharGrid {
         return result;
     }
 
+    /**
+     * Create a new grid with the cells reflected horizontally (left-to-right) across a vertical centre line
+     */
+    public CharGrid flipHorizontal() {
+        CharGrid result = new CharGrid(this);
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                Coord from = new Coord(x, y);
+                Coord to = new Coord(width - x - 1, y);
+                result.setCell(to, this.getCell(from));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Create a new grid with the cells reflected vertically (top-to-bottom) across a horizontal centre line
+     */
+    public CharGrid flipVertical() {
+        CharGrid result = new CharGrid(this);
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                Coord from = new Coord(x, y);
+                Coord to = new Coord(x, height - y - 1);
+                result.setCell(to, this.getCell(from));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Create a new grid with the cells rotated 90 degrees clockwise
+     */
+    @SuppressWarnings("SuspiciousNameCombination")
+    public CharGrid rotateClockwise() {
+        CharGrid result = new CharGrid(height, width, new char[height][width]);
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                Coord from = new Coord(x, y);
+                Coord to = new Coord(height - 1 - y, x);
+                result.setCell(to, this.getCell(from));
+            }
+        }
+        return result;
+    }
+
+    public char[] getRow(int row) {
+        char[] result = new char[width];
+        for (int x = 0; x < width; x++) {
+            result[x] = getCell(new Coord(x, row));
+        }
+        return result;
+    }
+    public char[] getCol(int col) {
+        char[] result = new char[height];
+        for (int y = 0; y < height; y++) {
+            result[y] = getCell(new Coord(col, y));
+        }
+        return result;
+    }
+
+    public Set<CharGrid> generateVariants() {
+        return generateGridVariants(this);
+    }
+    public static Set<CharGrid> generateGridVariants(CharGrid grid) {
+        Set<CharGrid> result = new HashSet<>();
+        result.add(grid);
+        result.add(grid.flipHorizontal());
+        result.add(grid.flipVertical());
+        CharGrid rotated = new CharGrid(grid);
+        for (int i = 0; i < 3; i++) {
+            rotated = rotated.rotateClockwise();
+            result.add(rotated);
+            result.add(rotated.flipVertical());
+            result.add(rotated.flipHorizontal());
+        }
+        return result;
+    }
 }
