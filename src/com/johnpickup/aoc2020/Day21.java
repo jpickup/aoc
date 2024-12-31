@@ -68,16 +68,14 @@ public class Day21 {
 
                 Map<String, String> knownAllergenToIngredient = new HashMap<>();
                 boolean madeProgress = true;
-                int prevKnown = knownAllergenToIngredient.size();
+                int prevKnown = 0;
                 while (madeProgress) {
                     Map<String, String> single = allergenToIngredients.entrySet().stream()
                             .filter(e -> e.getValue().size() == 1)
                             .collect(Collectors.toMap(Map.Entry::getKey,
                                     e->e.getValue().stream().findFirst().orElseThrow(() -> new RuntimeException("No single ingredient"))));
                     knownAllergenToIngredient.putAll(single);
-                    for (Map.Entry<String, Set<String>> allergenToIngredient : allergenToIngredients.entrySet()) {
-                        allergenToIngredients.values().forEach(is -> is.removeAll(knownAllergenToIngredient.values()));
-                    }
+                    allergenToIngredients.values().forEach(is -> is.removeAll(knownAllergenToIngredient.values()));
                     madeProgress = knownAllergenToIngredient.size() > prevKnown;
                     prevKnown = knownAllergenToIngredient.size();
                 }
