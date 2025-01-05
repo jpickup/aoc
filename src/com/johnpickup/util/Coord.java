@@ -98,6 +98,7 @@ public class Coord implements Comparable<Coord> {
      * @param rightAngles number of right-angle turns, where clockwise is +ve
      * @return new, rotated location
      */
+    @SuppressWarnings("SuspiciousNameCombination")
     public Coord rotateAround(Coord centre, int rightAngles) {
         Coord offset = new Coord(x - centre.x, y - centre.y);
         while (rightAngles > 0) {
@@ -109,5 +110,13 @@ public class Coord implements Comparable<Coord> {
             rightAngles++;
         }
         return new Coord(centre.x + offset.x, centre.y + offset.y);
+    }
+
+    public Coord move(Direction direction, int distance) {
+        Coord result = new Coord(this);
+        for (int i = 0; i < distance; i++) {
+            result = direction.apply(result);
+        }
+        return result;
     }
 }
