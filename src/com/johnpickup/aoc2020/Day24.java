@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.aoc2020.Day24.TileState.BLACK;
 import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
 
 public class Day24 {
@@ -36,12 +35,16 @@ public class Day24 {
                         .collect(Collectors.toList());
 
                 Floor floor = new Floor(directionLists);
-
                 floor.applyDirectionLists();
-
-                long part1 = floor.part1();
+                long part1 = floor.blackTileCount();
                 System.out.println("Part 1: " + part1);
-                long part2 = 0L;
+
+                Floor part2Floor = new Floor(floor);
+                for (int d=1; d <= 100; d++) {
+                    part2Floor = part2Floor.flipTiles();
+                    //System.out.printf("Day %d: %d%n", d, part2Floor.blackTileCount());
+                }
+                long part2 = part2Floor.blackTileCount();
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -52,19 +55,97 @@ public class Day24 {
         }
     }
 
-    @ToString
-    @RequiredArgsConstructor
     static class Floor {
         final List<DirectionList> directionLists;
-        final Map<Coord, TileState> tiles = new HashMap<>();
+        final Map<Coord, TileState> tiles;
 
-        long part1() {
-            return tiles.values().stream().filter(t -> t.equals(BLACK)).count();
+        Floor(List<DirectionList> directionLists) {
+            this.directionLists = directionLists;
+            tiles = new HashMap<>();
+        }
+        Floor(Floor source) {
+            directionLists = Collections.emptyList();
+            tiles = new HashMap<>(source.tiles);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            int minX = tiles.keySet().stream().map(Coord::getX).min(Integer::compareTo).orElse(0);
+            int minY = tiles.keySet().stream().map(Coord::getY).min(Integer::compareTo).orElse(0);
+            int maxX = tiles.keySet().stream().map(Coord::getX).max(Integer::compareTo).orElse(0);
+            int maxY = tiles.keySet().stream().map(Coord::getY).max(Integer::compareTo).orElse(0);
+            sb.append("Top left: ").append(new Coord(minX, minY)).append('\n');
+            for (int y = minY; y <= maxY; y++) {
+                for (int x = minX; x <= maxX; x++) {
+                    sb.append(get(new Coord(x,y)));
+                }
+                sb.append('\n');
+            }
+            sb.append("Bottom Right: ").append(new Coord(maxX, maxY)).append('\n');
+            return sb.toString();
+        }
+
+        long blackTileCount() {
+            return tiles.values().stream().filter(t -> t.equals(TileState.BLACK)).count();
         }
 
         public void applyDirectionLists() {
             directionLists.forEach(dl -> dl.apply(this));
+        }
 
+        public Floor flipTiles() {
+            Floor result = new Floor(this);
+            Set<Coord> coordsToConsider = new HashSet<>();
+            for (Coord c : tiles.keySet()) {
+                coordsToConsider.add(c);
+                coordsToConsider.add(c.east());
+                coordsToConsider.add(c.west());
+                coordsToConsider.add(c.southEast());
+                coordsToConsider.add(c.south());
+                coordsToConsider.add(c.north());
+                coordsToConsider.add(c.northWest());
+            }
+            for (Coord coord : coordsToConsider) {
+                int adjacentBlackCount = countAdjacentBlack(coord);
+                TileState tileState = get(coord);
+                switch (tileState) {
+                    case BLACK:
+                        if (adjacentBlackCount == 0 || adjacentBlackCount>2) {
+                            result.flipTile(coord);
+                        }
+                        break;
+                    case WHITE:
+                        if (adjacentBlackCount == 2) {
+                            result.flipTile(coord);
+                        }
+                        break;
+                }
+            }
+            return result;
+        }
+
+        private int countAdjacentBlack(Coord coord) {
+            int result = 0;
+            if (isBlack(coord.east())) result++;
+            if (isBlack(coord.west())) result++;
+            if (isBlack(coord.southEast())) result++;
+            if (isBlack(coord.south())) result++;
+            if (isBlack(coord.north())) result++;
+            if (isBlack(coord.northWest())) result++;
+            return result;
+        }
+
+        private boolean isBlack(Coord coord) {
+            return get(coord).equals(TileState.BLACK);
+        }
+
+        TileState get(Coord coord) {
+            return tiles.getOrDefault(coord, TileState.WHITE);
+        }
+
+        private void flipTile(Coord coord) {
+            tiles.put(coord, get(coord).flip());
         }
     }
 
@@ -77,6 +158,11 @@ public class Day24 {
                 case WHITE: return BLACK;
                 default: throw new RuntimeException("Unknown tile state " + this);
             }
+        }
+
+        @Override
+        public String toString() {
+            return this==BLACK ? "#":".";
         }
     }
 
@@ -96,12 +182,11 @@ public class Day24 {
         }
 
         public void apply(Floor floor) {
-            Coord tile = Coord.ORIGIN;
+            Coord coord = Coord.ORIGIN;
             for (Direction direction : directions) {
-                tile  = direction.applyTo(tile);
+                coord  = direction.applyTo(coord);
             }
-            TileState priorState = floor.tiles.getOrDefault(tile, TileState.WHITE);
-            floor.tiles.put(tile, priorState.flip());
+            floor.tiles.put(coord, floor.get(coord).flip());
         }
     }
 
@@ -116,7 +201,7 @@ public class Day24 {
         NORTHEAST("ne");
         @Getter
         final String label;
-        static List<Direction> allDirections = Arrays.asList(EAST, WEST, SOUTHEAST, SOUTHWEST, NORTHEAST, NORTHWEST);
+        static final List<Direction> allDirections = Arrays.asList(EAST, WEST, SOUTHEAST, SOUTHWEST, NORTHEAST, NORTHWEST);
 
         public Coord applyTo(Coord coord) {
             switch (this) {
