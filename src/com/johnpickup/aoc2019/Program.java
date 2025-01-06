@@ -14,6 +14,7 @@ class Program {
     int instructionPointer;
     List<Integer> inputs = new ArrayList<>();
     List<Integer> outputs = new ArrayList<>();
+    boolean terminated;
 
     Program(String line) {
         initialMemory = Arrays.stream(line.split(",")).map(Integer::parseInt).collect(Collectors.toList());
@@ -24,6 +25,7 @@ class Program {
     public void reset() {
         memory = new ArrayList<>(initialMemory);
         instructionPointer = 0;
+        terminated = false;
         inputs.clear();
         outputs.clear();
     }
@@ -31,24 +33,27 @@ class Program {
     public void execute() {
         while (true) {
             Instruction instruction = new Instruction(memory.subList(instructionPointer, memory.size()));
-            if (instruction.isTerminate()) break;
+            if (instruction.isTerminate()) {
+                terminated = true;
+                break;
+            }
             instruction.execute(this);
         }
     }
 
     public int getMemory(int location) {
-        if (location < 0 || location >= memory.size()) throw new RuntimeException("Memory address out of bounds : " + location);
+        if (location < 0 || location >= memory.size()) throw new MemoryException("Memory address out of bounds : " + location);
         return memory.get(location);
     }
 
     public void setMemory(int location, int value) {
-        if (location < 0 || location >= memory.size()) throw new RuntimeException("Memory address out of bounds : " + location);
+        if (location < 0 || location >= memory.size()) throw new MemoryException("Memory address out of bounds : " + location);
         memory.remove(location);
         memory.add(location, value);
     }
 
     public int read() {
-        if (inputs.isEmpty()) throw new RuntimeException("No inputs available");
+        if (inputs.isEmpty()) throw new MissingInputException();
         int result = inputs.get(0);
         inputs.remove(0);
         return result;
@@ -78,4 +83,28 @@ class Program {
     public void setInstructionPointer(int value) {
         instructionPointer = value;
     }
+
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    public List<Integer> consumeOutputs() {
+        ArrayList<Integer> currentOutputs = new ArrayList<>(outputs);
+        outputs.clear();
+        return currentOutputs;
+    }
+
+    static class MissingInputException extends RuntimeException {
+        public MissingInputException() {
+            super("No inputs available");
+        }
+    }
+
+    static class MemoryException extends RuntimeException {
+        public MemoryException(String error) {
+            super(error);
+        }
+    }
+
 }
+

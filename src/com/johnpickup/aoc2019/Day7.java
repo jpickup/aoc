@@ -15,20 +15,28 @@ import static com.johnpickup.aoc2024.util.FileUtils.createEmptyTestFileIfMissing
 
 public class Day7 {
     static boolean isTest;
+
     public static void main(String[] args) {
-        String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
+        String day = new Object() {
+        }.getClass().getEnclosingClass().getSimpleName();
         String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2019/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
-                prefix + "-test.txt"
-                , prefix + "-test2.txt"
-                , prefix + "-test3.txt"
-                , prefix + ".txt"
+                // part 1
+                //prefix + "-test.txt"
+                //, prefix + "-test2.txt"
+                //, prefix + "-test3.txt"
+                // part 2
+                //prefix + "-test4.txt"
+                //, prefix + "-test5.txt"
+                prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
             createEmptyTestFileIfMissing(inputFilename);
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
+            List<List<Integer>> possible04Phases = Combinations.allPossiblePermutations(5, Arrays.asList(0, 1, 2, 3, 4));
+            List<List<Integer>> possible59Phases = Combinations.allPossiblePermutations(5, Arrays.asList(5, 6, 7, 8, 9));
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {
                 List<String> lines = stream
                         .filter(s -> !s.isEmpty())
@@ -36,22 +44,30 @@ public class Day7 {
 
                 Amplifiers amplifiers = new Amplifiers(lines.get(0));
 
-                List<List<Integer>> possiblePhases = Combinations.allPossiblePermutations(5, Arrays.asList(0, 1, 2, 3, 4));
-
                 int maxOutput = 0;
                 List<Integer> maxSequence = null;
-                for (List<Integer> possiblePhase : possiblePhases) {
+                // Part 1 --------------------------
+                for (List<Integer> possiblePhase : possible04Phases) {
                     int output = amplifiers.testPhases(possiblePhase);
                     if (output > maxOutput) {
                         maxOutput = output;
                         maxSequence = possiblePhase;
                     }
                 }
-
-
                 System.out.println("Part 1: " + maxSequence.toString() + " -> " + maxOutput);
-                long part2 = 0L;
-                System.out.println("Part 2: " + part2);
+
+                // Part 2 --------------------------
+                maxOutput = 0;
+                maxSequence = null;
+                for (List<Integer> possiblePhase : possible59Phases) {
+                    List<Integer> outputs = amplifiers.testPhases2(possiblePhase);
+                    if (outputs.get(outputs.size()-1) > maxOutput) {
+                        maxOutput = outputs.get(outputs.size()-1);
+                        maxSequence = possiblePhase;
+                    }
+                }
+
+                System.out.println("Part 2: " + maxSequence.toString() + " -> " + maxOutput);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,32 +79,67 @@ public class Day7 {
 
     static class Amplifiers {
         final List<Amplifier> amplifiers;
+
         Amplifiers(String line) {
             amplifiers = new ArrayList<>();
-            for (int i = 0 ; i < 5; i++) {
+            for (int i = 0; i < 5; i++) {
                 amplifiers.add(new Amplifier(line));
             }
         }
 
         public int testPhases(List<Integer> possiblePhase) {
             if (possiblePhase.size() != amplifiers.size()) throw new RuntimeException("Incorrect number of phases");
-            for (int i = 0 ; i < 5; i++) {
+            for (int i = 0; i < 5; i++) {
                 amplifiers.get(i).program.reset();
                 amplifiers.get(i).setPhase(possiblePhase.get(i));
             }
 
             int lastOutput = 0;
-            for (int i = 0 ; i < 5; i++) {
+            for (int i = 0; i < 5; i++) {
                 amplifiers.get(i).setInputSignal(lastOutput);
                 amplifiers.get(i).program.execute();
                 lastOutput = amplifiers.get(i).program.outputs.get(0);
             }
             return lastOutput;
         }
+
+        public List<Integer> testPhases2(List<Integer> possiblePhase) {
+            if (possiblePhase.size() != amplifiers.size()) throw new RuntimeException("Incorrect number of phases");
+            for (int i = 0; i < 5; i++) {
+                amplifiers.get(i).program.reset();
+                amplifiers.get(i).setPhase(possiblePhase.get(i));
+            }
+
+            List<Integer> outputs = new ArrayList<>();
+            outputs.add(0);
+            int ampIdx = 0;
+            while (!allTerminated()) {
+                amplifiers.get(ampIdx).setInputSignals(outputs);
+                try {
+                    amplifiers.get(ampIdx).program.execute();
+                } catch (Program.MissingInputException ex) {
+                    // NOOP
+                }
+                outputs = amplifiers.get(ampIdx).program.consumeOutputs();
+                ampIdx = (ampIdx + 1) % amplifiers.size();
+            }
+            return outputs;
+        }
+
+        private boolean allTerminated() {
+            return amplifiers.stream().map(Amplifier::isTerminated).reduce(true, (a, b) -> a & b);
+        }
+
+        public void reset() {
+            for (int i = 0; i < 5; i++) {
+                amplifiers.get(i).reset();
+            }
+        }
     }
 
     static class Amplifier {
         final Program program;
+
         Amplifier(String line) {
             program = new Program(line);
         }
@@ -99,6 +150,18 @@ public class Day7 {
 
         public void setInputSignal(int input) {
             program.addInput(input);
+        }
+
+        public void reset() {
+            program.reset();
+        }
+
+        public boolean isTerminated() {
+            return program.isTerminated();
+        }
+
+        public void setInputSignals(List<Integer> outputs) {
+            outputs.forEach(program::addInput);
         }
     }
 }
