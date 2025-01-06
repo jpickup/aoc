@@ -40,15 +40,43 @@ class Instruction {
         switch (opCode) {
             case ADD:
                 program.setMemory(parameters.get(2).value, parameters.get(0).evaluate(program) + parameters.get(1).evaluate(program));
+                program.moveInstructionPointer(inputSize());
                 break;
             case MULTIPLY:
                 program.setMemory(parameters.get(2).value, parameters.get(0).evaluate(program) * parameters.get(1).evaluate(program));
+                program.moveInstructionPointer(inputSize());
                 break;
             case READ:
                 program.setMemory(parameters.get(0).value, program.read());
+                program.moveInstructionPointer(inputSize());
                 break;
             case WRITE:
                 program.write(parameters.get(0).evaluate(program));
+                program.moveInstructionPointer(inputSize());
+                break;
+            case JIT:
+                if (parameters.get(0).evaluate(program) != 0) {
+                    program.setInstructionPointer(parameters.get(1).evaluate(program));
+                } else {
+                    program.moveInstructionPointer(inputSize());
+                }
+                break;
+            case JIF:
+                if (parameters.get(0).evaluate(program) == 0) {
+                    program.setInstructionPointer(parameters.get(1).evaluate(program));
+                } else {
+                    program.moveInstructionPointer(inputSize());
+                }
+                break;
+            case LT:
+                boolean isLessThan = parameters.get(0).evaluate(program) < parameters.get(1).evaluate(program);
+                program.setMemory(parameters.get(2).value, isLessThan ? 1 : 0);
+                program.moveInstructionPointer(inputSize());
+                break;
+            case EQ:
+                boolean isEqual = parameters.get(0).evaluate(program) == parameters.get(1).evaluate(program);
+                program.setMemory(parameters.get(2).value, isEqual ? 1 : 0);
+                program.moveInstructionPointer(inputSize());
                 break;
             default:
                 throw new RuntimeException("Unknown instruction " + opCode);

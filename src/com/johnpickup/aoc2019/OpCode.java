@@ -8,6 +8,10 @@ enum OpCode {
     MULTIPLY(1, 3),
     READ(3, 1),
     WRITE(4,1),
+    JIT(5, 2),
+    JIF(6, 2),
+    LT(7, 3),
+    EQ(8, 3),
     END(99, 0);
 
     final int id;
@@ -23,6 +27,14 @@ enum OpCode {
                 return READ;
             case 4:
                 return WRITE;
+            case 5:
+                return JIT;
+            case 6:
+                return JIF;
+            case 7:
+                return LT;
+            case 8:
+                return EQ;
             case 99:
                 return END;
             default:

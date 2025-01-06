@@ -9,21 +9,30 @@ import java.util.stream.Collectors;
 
 @ToString
 class Program {
-    final List<Integer> memory;
+    final List<Integer> initialMemory;
+    List<Integer> memory;
+    int instructionPointer;
     List<Integer> inputs = new ArrayList<>();
     List<Integer> outputs = new ArrayList<>();
 
     Program(String line) {
-        memory = new ArrayList<>(Arrays.stream(line.split(",")).map(Integer::parseInt).collect(Collectors.toList()));
+        initialMemory = Arrays.stream(line.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+        reset();
     }
 
-    void execute() {
-        int instructionPointer = 0;
+
+    public void reset() {
+        memory = new ArrayList<>(initialMemory);
+        instructionPointer = 0;
+        inputs.clear();
+        outputs.clear();
+    }
+
+    public void execute() {
         while (true) {
             Instruction instruction = new Instruction(memory.subList(instructionPointer, memory.size()));
             if (instruction.isTerminate()) break;
             instruction.execute(this);
-            instructionPointer += instruction.inputSize();
         }
     }
 
@@ -60,5 +69,13 @@ class Program {
     public int getOutput(int index) {
         if (index < 0 || index >= outputs.size()) throw new RuntimeException("No output with index " + index);
         return outputs.get(index);
+    }
+
+    public void moveInstructionPointer(int moveBy) {
+        instructionPointer += moveBy;
+    }
+
+    public void setInstructionPointer(int value) {
+        instructionPointer = value;
     }
 }

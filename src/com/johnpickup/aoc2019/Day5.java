@@ -33,11 +33,12 @@ public class Day5 {
                 System.out.println(program);
                 program.addInput(1);
                 program.execute();
-                System.out.println("Output: " + program.showOutput());
+                System.out.println("Part 1: " + program.showOutput());
 
-                System.out.println("Part 1: " + program.getOutput(0));
-                long part2 = 0L;
-                System.out.println("Part 2: " + part2);
+                program.reset();
+                program.addInput(5);
+                program.execute();
+                System.out.println("Part 2: " + program.showOutput());
 
             } catch (IOException e) {
                 e.printStackTrace();
