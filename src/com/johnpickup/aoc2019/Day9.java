@@ -38,9 +38,13 @@ public class Day9 {
 
                 System.out.println(program.showOutput());
                 System.out.println("Part 1: " + program.getOutput(0));
-                // 203 - too low
-                long part2 = 0L;
-                System.out.println("Part 2: " + part2);
+
+                program.reset();
+                if (!isTest) program.addInput(2L);
+                program.execute();
+
+                System.out.println(program.showOutput());
+                System.out.println("Part 2: " + program.getOutput(0));
 
             } catch (IOException e) {
                 e.printStackTrace();
