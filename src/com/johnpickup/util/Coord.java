@@ -119,4 +119,8 @@ public class Coord implements Comparable<Coord> {
         }
         return result;
     }
+
+    public Coord calcDelta(Coord coord) {
+        return new Coord(coord.x - this.x, coord.y - this.y);
+    }
 }
