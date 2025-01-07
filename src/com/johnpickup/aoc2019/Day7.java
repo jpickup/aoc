@@ -1,6 +1,6 @@
 package com.johnpickup.aoc2019;
 
-import com.johnpickup.common.Combinations;
+import com.johnpickup.util.Combinations;
 
 import java.io.IOException;
 import java.nio.file.Files;

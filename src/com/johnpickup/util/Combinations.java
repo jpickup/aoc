@@ -1,4 +1,4 @@
-package com.johnpickup.common;
+package com.johnpickup.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

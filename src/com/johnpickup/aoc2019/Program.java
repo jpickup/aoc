@@ -1,10 +1,14 @@
 package com.johnpickup.aoc2019;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @ToString
@@ -19,9 +23,17 @@ class Program {
 
     Program(String line) {
         initialMemory = Arrays.stream(line.split(",")).map(Long::parseLong).collect(Collectors.toList());
+        inputSupplier = defaultInputSupplier;
+        outputConsumer = defaultOutputConsumer;
         reset();
     }
 
+    @Getter
+    @Setter
+    Supplier<Long> inputSupplier;
+    @Getter
+    @Setter
+    Consumer<Long> outputConsumer;
 
     public void reset() {
         memory = new Memory(initialMemory);
@@ -64,14 +76,11 @@ class Program {
     }
 
     public long read() {
-        if (inputs.isEmpty()) throw new MissingInputException();
-        long result = inputs.get(0);
-        inputs.remove(0);
-        return result;
+        return inputSupplier.get();
     }
 
     public void write(long value) {
-        outputs.add(value);
+        outputConsumer.accept(value);
     }
 
     public String showOutput() {
@@ -108,6 +117,12 @@ class Program {
     public void adjustRelativeBase(int value) {
         relativeBase += value;
     }
+
+    private Supplier<Long> defaultInputSupplier = () -> {
+        if (inputs.isEmpty()) throw new MissingInputException();
+        return inputs.remove(0);
+    };
+    private Consumer<Long> defaultOutputConsumer = (v) -> outputs.add(v);
 
     static class MissingInputException extends RuntimeException {
         public MissingInputException() {
