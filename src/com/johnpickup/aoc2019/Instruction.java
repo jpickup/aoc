@@ -45,15 +45,15 @@ class Instruction {
     public void execute(Program program) {
         switch (opCode) {
             case ADD:
-                program.setMemory(parameters.get(2).value, parameters.get(0).evaluate(program) + parameters.get(1).evaluate(program));
+                program.setMemory(parameters.get(2).literal(program), parameters.get(0).evaluate(program) + parameters.get(1).evaluate(program));
                 program.moveInstructionPointer(inputSize());
                 break;
             case MULTIPLY:
-                program.setMemory(parameters.get(2).value, parameters.get(0).evaluate(program) * parameters.get(1).evaluate(program));
+                program.setMemory(parameters.get(2).literal(program), parameters.get(0).evaluate(program) * parameters.get(1).evaluate(program));
                 program.moveInstructionPointer(inputSize());
                 break;
             case READ:
-                program.setMemory(parameters.get(0).value, program.read());
+                program.setMemory(parameters.get(0).literal(program), program.read());
                 program.moveInstructionPointer(inputSize());
                 break;
             case WRITE:
@@ -76,12 +76,12 @@ class Instruction {
                 break;
             case LT:
                 boolean isLessThan = parameters.get(0).evaluate(program) < parameters.get(1).evaluate(program);
-                program.setMemory((int)parameters.get(2).value, isLessThan ? 1 : 0);
+                program.setMemory(parameters.get(2).literal(program), isLessThan ? 1 : 0);
                 program.moveInstructionPointer(inputSize());
                 break;
             case EQ:
                 boolean isEqual = parameters.get(0).evaluate(program) == parameters.get(1).evaluate(program);
-                program.setMemory((int)parameters.get(2).value, isEqual ? 1 : 0);
+                program.setMemory(parameters.get(2).literal(program), isEqual ? 1 : 0);
                 program.moveInstructionPointer(inputSize());
                 break;
             case RBO:
@@ -106,6 +106,18 @@ class Instruction {
                 case POSITION: return program.getMemory((int)value);
                 case RELATIVE: return program.getMemory((int)value + program.relativeBase);
                 default: throw new RuntimeException("Unknown mode " + mode);
+            }
+        }
+
+        public long literal(Program program) {
+            switch(mode) {
+                case IMMEDIATE:
+                case POSITION:
+                    return value;
+                case RELATIVE:
+                    return value + program.relativeBase;
+                default:
+                    throw new RuntimeException("Unknown mode " + mode);
             }
         }
     }
