@@ -12,16 +12,22 @@ class Instruction {
     final OpCode opCode;
     final List<Parameter> parameters;
 
-    Instruction(List<Integer> inputs) {
-        opCode = OpCode.parse(inputs.get(0) % 100);
-        int modes = inputs.get(0) / 100;
-        parameters = generateParameters(new ArrayList<>(inputs.subList(1, opCode.paramCount + 1)), modes);
+    Instruction(Memory memory, long offset) {
+        int op = (int)(memory.get(offset));
+        opCode = OpCode.parse(op % 100);
+        int modes = (op / 100);
+
+        List<Long> paramList = new ArrayList<>(opCode.paramCount);
+        for (int i = 0; i < opCode.paramCount; i++) {
+            paramList.add(memory.get(offset + i + 1));
+        }
+        parameters = generateParameters(paramList, modes);
     }
 
-    private List<Parameter> generateParameters(List<Integer> params, int modes) {
+    private List<Parameter> generateParameters(List<Long> params, int modes) {
         List<Parameter> result = new ArrayList<>();
         while (!params.isEmpty()) {
-            result.add(new Parameter(params.get(0), modes%10==0?Mode.POSITION:Mode.IMMEDIATE));
+            result.add(new Parameter(params.get(0), Mode.of(modes%10)));
             params.remove(0);
             modes = modes / 10;
         }
@@ -63,19 +69,23 @@ class Instruction {
                 break;
             case JIF:
                 if (parameters.get(0).evaluate(program) == 0) {
-                    program.setInstructionPointer(parameters.get(1).evaluate(program));
+                    program.setInstructionPointer((int)parameters.get(1).evaluate(program));
                 } else {
                     program.moveInstructionPointer(inputSize());
                 }
                 break;
             case LT:
                 boolean isLessThan = parameters.get(0).evaluate(program) < parameters.get(1).evaluate(program);
-                program.setMemory(parameters.get(2).value, isLessThan ? 1 : 0);
+                program.setMemory((int)parameters.get(2).value, isLessThan ? 1 : 0);
                 program.moveInstructionPointer(inputSize());
                 break;
             case EQ:
                 boolean isEqual = parameters.get(0).evaluate(program) == parameters.get(1).evaluate(program);
-                program.setMemory(parameters.get(2).value, isEqual ? 1 : 0);
+                program.setMemory((int)parameters.get(2).value, isEqual ? 1 : 0);
+                program.moveInstructionPointer(inputSize());
+                break;
+            case RBO:
+                program.adjustRelativeBase((int)parameters.get(0).evaluate(program));
                 program.moveInstructionPointer(inputSize());
                 break;
             default:
@@ -87,13 +97,14 @@ class Instruction {
     @RequiredArgsConstructor
     @Data
     static class Parameter {
-        final int value;
+        final long value;
         final Mode mode;
 
-        public int evaluate(Program program) {
+        public long evaluate(Program program) {
             switch(mode) {
                 case IMMEDIATE: return value;
-                case POSITION: return program.getMemory(value);
+                case POSITION: return program.getMemory((int)value);
+                case RELATIVE: return program.getMemory((int)value + program.relativeBase);
                 default: throw new RuntimeException("Unknown mode " + mode);
             }
         }
@@ -101,6 +112,16 @@ class Instruction {
 
     enum Mode {
         POSITION,
-        IMMEDIATE
+        IMMEDIATE,
+        RELATIVE;
+
+        public static Mode of(int value) {
+            switch (value) {
+                case 0: return POSITION;
+                case 1: return IMMEDIATE;
+                case 2: return RELATIVE;
+                default: throw new RuntimeException("Unknown mode " + value);
+            }
+        }
     }
 }

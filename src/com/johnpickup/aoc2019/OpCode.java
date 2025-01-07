@@ -12,6 +12,7 @@ enum OpCode {
     JIF(6, 2),
     LT(7, 3),
     EQ(8, 3),
+    RBO(9, 1),
     END(99, 0);
 
     final int id;
@@ -35,6 +36,8 @@ enum OpCode {
                 return LT;
             case 8:
                 return EQ;
+            case 9:
+                return RBO;
             case 99:
                 return END;
             default:

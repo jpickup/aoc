@@ -9,30 +9,44 @@ import java.util.stream.Collectors;
 
 @ToString
 class Program {
-    final List<Integer> initialMemory;
-    List<Integer> memory;
-    int instructionPointer;
-    List<Integer> inputs = new ArrayList<>();
-    List<Integer> outputs = new ArrayList<>();
+    final List<Long> initialMemory;
+    Memory memory;
+    long instructionPointer;
+    long relativeBase;
+    List<Long> inputs = new ArrayList<>();
+    List<Long> outputs = new ArrayList<>();
     boolean terminated;
 
     Program(String line) {
-        initialMemory = Arrays.stream(line.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+        initialMemory = Arrays.stream(line.split(",")).map(Long::parseLong).collect(Collectors.toList());
         reset();
     }
 
 
     public void reset() {
-        memory = new ArrayList<>(initialMemory);
+        memory = new Memory(initialMemory);
         instructionPointer = 0;
+        relativeBase = 0;
         terminated = false;
         inputs.clear();
         outputs.clear();
     }
 
+    public List<Long> processInputs(List<Long> inputs) {
+        this.inputs.addAll(inputs);
+        try {
+            execute();
+        } catch (MissingInputException e) {
+            // NOOP
+        }
+        List<Long> result = new ArrayList<>(outputs);
+        outputs.clear();
+        return result;
+    }
+
     public void execute() {
         while (true) {
-            Instruction instruction = new Instruction(memory.subList(instructionPointer, memory.size()));
+            Instruction instruction = new Instruction(memory, instructionPointer);
             if (instruction.isTerminate()) {
                 terminated = true;
                 break;
@@ -41,37 +55,34 @@ class Program {
         }
     }
 
-    public int getMemory(int location) {
-        if (location < 0 || location >= memory.size()) throw new MemoryException("Memory address out of bounds : " + location);
+    public long getMemory(long location) {
         return memory.get(location);
     }
 
-    public void setMemory(int location, int value) {
-        if (location < 0 || location >= memory.size()) throw new MemoryException("Memory address out of bounds : " + location);
-        memory.remove(location);
-        memory.add(location, value);
+    public void setMemory(long location, long value) {
+        memory.set(location, value);
     }
 
-    public int read() {
+    public long read() {
         if (inputs.isEmpty()) throw new MissingInputException();
-        int result = inputs.get(0);
+        long result = inputs.get(0);
         inputs.remove(0);
         return result;
     }
 
-    public void write(int value) {
+    public void write(long value) {
         outputs.add(value);
     }
 
     public String showOutput() {
-        return outputs.stream().map(i -> Integer.toString(i)).collect(Collectors.joining(","));
+        return outputs.stream().map(i -> Long.toString(i)).collect(Collectors.joining(","));
     }
 
-    public void addInput(int value) {
+    public void addInput(long value) {
         inputs.add(value);
     }
 
-    public int getOutput(int index) {
+    public long getOutput(int index) {
         if (index < 0 || index >= outputs.size()) throw new RuntimeException("No output with index " + index);
         return outputs.get(index);
     }
@@ -80,7 +91,7 @@ class Program {
         instructionPointer += moveBy;
     }
 
-    public void setInstructionPointer(int value) {
+    public void setInstructionPointer(long value) {
         instructionPointer = value;
     }
 
@@ -88,21 +99,19 @@ class Program {
         return terminated;
     }
 
-    public List<Integer> consumeOutputs() {
-        ArrayList<Integer> currentOutputs = new ArrayList<>(outputs);
+    public List<Long> consumeOutputs() {
+        ArrayList<Long> currentOutputs = new ArrayList<>(outputs);
         outputs.clear();
         return currentOutputs;
+    }
+
+    public void adjustRelativeBase(int value) {
+        relativeBase += value;
     }
 
     static class MissingInputException extends RuntimeException {
         public MissingInputException() {
             super("No inputs available");
-        }
-    }
-
-    static class MemoryException extends RuntimeException {
-        public MemoryException(String error) {
-            super(error);
         }
     }
 

@@ -44,11 +44,11 @@ public class Day7 {
 
                 Amplifiers amplifiers = new Amplifiers(lines.get(0));
 
-                int maxOutput = 0;
+                long maxOutput = 0;
                 List<Integer> maxSequence = null;
                 // Part 1 --------------------------
                 for (List<Integer> possiblePhase : possible04Phases) {
-                    int output = amplifiers.testPhases(possiblePhase);
+                    long output = amplifiers.testPhases(possiblePhase);
                     if (output > maxOutput) {
                         maxOutput = output;
                         maxSequence = possiblePhase;
@@ -60,7 +60,7 @@ public class Day7 {
                 maxOutput = 0;
                 maxSequence = null;
                 for (List<Integer> possiblePhase : possible59Phases) {
-                    List<Integer> outputs = amplifiers.testPhases2(possiblePhase);
+                    List<Long> outputs = amplifiers.testPhases2(possiblePhase);
                     if (outputs.get(outputs.size()-1) > maxOutput) {
                         maxOutput = outputs.get(outputs.size()-1);
                         maxSequence = possiblePhase;
@@ -87,14 +87,14 @@ public class Day7 {
             }
         }
 
-        public int testPhases(List<Integer> possiblePhase) {
+        public long testPhases(List<Integer> possiblePhase) {
             if (possiblePhase.size() != amplifiers.size()) throw new RuntimeException("Incorrect number of phases");
             for (int i = 0; i < 5; i++) {
                 amplifiers.get(i).program.reset();
                 amplifiers.get(i).setPhase(possiblePhase.get(i));
             }
 
-            int lastOutput = 0;
+            long lastOutput = 0;
             for (int i = 0; i < 5; i++) {
                 amplifiers.get(i).setInputSignal(lastOutput);
                 amplifiers.get(i).program.execute();
@@ -103,15 +103,15 @@ public class Day7 {
             return lastOutput;
         }
 
-        public List<Integer> testPhases2(List<Integer> possiblePhase) {
+        public List<Long> testPhases2(List<Integer> possiblePhase) {
             if (possiblePhase.size() != amplifiers.size()) throw new RuntimeException("Incorrect number of phases");
             for (int i = 0; i < 5; i++) {
                 amplifiers.get(i).program.reset();
                 amplifiers.get(i).setPhase(possiblePhase.get(i));
             }
 
-            List<Integer> outputs = new ArrayList<>();
-            outputs.add(0);
+            List<Long> outputs = new ArrayList<>();
+            outputs.add(0L);
             int ampIdx = 0;
             while (!allTerminated()) {
                 amplifiers.get(ampIdx).setInputSignals(outputs);
@@ -148,7 +148,7 @@ public class Day7 {
             program.addInput(phase);
         }
 
-        public void setInputSignal(int input) {
+        public void setInputSignal(long input) {
             program.addInput(input);
         }
 
@@ -160,7 +160,7 @@ public class Day7 {
             return program.isTerminated();
         }
 
-        public void setInputSignals(List<Integer> outputs) {
+        public void setInputSignals(List<Long> outputs) {
             outputs.forEach(program::addInput);
         }
     }
