@@ -51,7 +51,7 @@ public class Coord3D implements Comparable<Coord3D> {
     public int distanceFrom(Coord3D other) {
         int dX = Math.abs(x - other.x);
         int dY = Math.abs(y - other.y);
-        int dZ = Math.abs(y - other.y);
+        int dZ = Math.abs(z - other.z);
         return dX + dY + dZ;
     }
 
