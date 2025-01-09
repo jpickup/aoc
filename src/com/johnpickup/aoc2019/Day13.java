@@ -58,13 +58,10 @@ public class Day13 {
     static class ArcadeCabinet {
         final Program program;
         final SparseGrid<Integer> screen;
-
         private Joystick joystick;
-
         @Getter
         private long score = 0;
         private final Coord scoreCoord = new Coord(-1,0);
-
         private Coord ballPosition = Coord.ORIGIN;
         private Coord paddlePosition = Coord.ORIGIN;
 
