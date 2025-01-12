@@ -11,6 +11,10 @@ public class Memory {
         initialise(initialMemory);
     }
 
+    public Memory(Memory source) {
+        values.putAll(source.values);
+    }
+
     public void initialise(List<Long> initialMemory) {
         for (int i = 0; i < initialMemory.size(); i++) values.put((long)i, initialMemory.get(i));
     }

@@ -28,6 +28,21 @@ class Program {
         reset();
     }
 
+    /**
+     * Create a copy of the source program in exactly the same execution state
+     */
+    Program(Program source) {
+        initialMemory = source.initialMemory;
+        memory = new Memory(source.memory);
+        instructionPointer = source.instructionPointer;
+        relativeBase = source.relativeBase;
+        inputs = new ArrayList<>(source.inputs);
+        outputs = new ArrayList<>(source.outputs);
+        terminated = source.terminated;
+        inputSupplier = defaultInputSupplier;
+        outputConsumer = defaultOutputConsumer;
+    }
+
     @Getter
     @Setter
     Supplier<Long> inputSupplier;
@@ -118,11 +133,11 @@ class Program {
         relativeBase += value;
     }
 
-    private Supplier<Long> defaultInputSupplier = () -> {
+    private final Supplier<Long> defaultInputSupplier = () -> {
         if (inputs.isEmpty()) throw new MissingInputException();
         return inputs.remove(0);
     };
-    private Consumer<Long> defaultOutputConsumer = (v) -> outputs.add(v);
+    private final Consumer<Long> defaultOutputConsumer = (v) -> outputs.add(v);
 
     static class MissingInputException extends RuntimeException {
         public MissingInputException() {
