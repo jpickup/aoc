@@ -2,13 +2,19 @@ package com.johnpickup.util;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode
-public class SparseGrid<T> {
+public class SparseGrid<T> implements Grid<T>{
+    private static final char ORIGIN_CHAR = '@';
+    @Setter
+    boolean showOrigin = false;
     @Getter
     final Map<Coord, T> cells = new TreeMap<>();
 
@@ -30,19 +36,30 @@ public class SparseGrid<T> {
     }
 
     @Override
+    public int size() {
+        return cells.size();
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         Range<Coord> bounds = bounds();
         for (int y = bounds.getLower().getY(); y <= bounds.getUpper().getY(); y++) {
             for (int x = bounds.getLower().getX(); x <= bounds.getUpper().getX(); x++) {
-                sb.append(Optional.ofNullable(getCell(new Coord(x,y))).map(Object::toString).orElse(" "));
+                Coord coord = new Coord(x, y);
+                if (showOrigin && coord.equals(Coord.ORIGIN)) sb.append(ORIGIN_CHAR);
+                else sb.append(Optional.ofNullable(getCell(coord)).map(Object::toString).orElse(" "));
             }
             sb.append('\n');
         }
         return sb.toString();
     }
 
-    public int cellCount() {
-        return cells.size();
+    public boolean hasCell(Coord coord) {
+        return cells.containsKey(coord);
+    }
+
+    public Set<Coord> findCells(T target) {
+        return cells.entrySet().stream().filter(e -> e.getValue().equals(target)).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 }

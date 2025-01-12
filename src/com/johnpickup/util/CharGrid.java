@@ -11,7 +11,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class CharGrid {
+public class CharGrid implements Grid<Character> {
     final int width;
     final int height;
     final char[][] cells;
@@ -51,7 +51,8 @@ public class CharGrid {
         return sb.toString();
     }
 
-    public char getCell(Coord coord) {
+    @Override
+    public Character getCell(Coord coord) {
         if (inBounds(coord)) {
             return cells[coord.x][coord.y];
         } else {
@@ -59,10 +60,26 @@ public class CharGrid {
         }
     }
 
-    public void setCell(Coord coord, char ch) {
+    @Override
+    public void setCell(Coord coord, Character ch) {
         if (inBounds(coord)) {
             cells[coord.x][coord.y] = ch;
         }
+    }
+
+    @Override
+    public Range<Coord> bounds() {
+        return new Range<>(Coord.ORIGIN, new Coord(width-1, height - 1));
+    }
+
+    @Override
+    public int size() {
+        return width * height;
+    }
+
+    @Override
+    public boolean hasCell(Coord coord) {
+        return inBounds(coord);
     }
 
     public boolean inBounds(Coord coord) {
@@ -82,7 +99,8 @@ public class CharGrid {
         throw new RuntimeException(find + " not found");
     }
 
-    public Set<Coord> findAll(char find) {
+    @Override
+    public Set<Coord> findCells(Character find) {
         Set<Coord> result = new HashSet<>();
         for (int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {

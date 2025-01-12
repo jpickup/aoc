@@ -3,11 +3,13 @@ package com.johnpickup.util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Getter
-public class IntGrid {
+public class IntGrid implements Grid<Integer> {
     protected final int width;
     protected final int height;
     protected final int[][] cells;
@@ -52,7 +54,8 @@ public class IntGrid {
         return sb.toString();
     }
 
-    public int getCell(Coord coord) {
+    @Override
+    public Integer getCell(Coord coord) {
         if (inBounds(coord)) {
             return cells[coord.x][coord.y];
         } else {
@@ -60,10 +63,40 @@ public class IntGrid {
         }
     }
 
-    private void setCell(Coord coord, int value) {
-        if (inBounds(coord)) {
-            cells[coord.x][coord.y] = value;
+    @Override
+    public void setCell(Coord c, Integer value) {
+        if (inBounds(c)) {
+            cells[c.x][c.y] = value;
         }
+    }
+
+    @Override
+    public Range<Coord> bounds() {
+        return new Range<>(Coord.ORIGIN, new Coord(width-1, height - 1));
+    }
+
+    @Override
+    public int size() {
+        return width * height;
+    }
+
+    @Override
+    public boolean hasCell(Coord coord) {
+        return inBounds(coord);
+    }
+
+    @Override
+    public Set<Coord> findCells(Integer target) {
+        Set<Coord> result = new HashSet<>();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Coord coord = new Coord(x, y);
+                if (getCell(coord).equals(target)) {
+                    result.add(coord);
+                }
+            }
+        }
+        return result;
     }
 
 
