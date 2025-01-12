@@ -62,7 +62,7 @@ public class Day17 {
 
         ConwayGrid(List<String> lines) {
             CharGrid gridZ0 = new CharGrid(lines);
-            occupied = gridZ0.findAll('#').stream().map(c2 -> new Coord3D(c2.getX(), c2.getY(), 0)).collect(Collectors.toSet());
+            occupied = gridZ0.findCells('#').stream().map(c2 -> new Coord3D(c2.getX(), c2.getY(), 0)).collect(Collectors.toSet());
         }
 
         ConwayGrid iterate() {

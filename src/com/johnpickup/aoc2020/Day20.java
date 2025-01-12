@@ -129,7 +129,7 @@ public class Day20 {
             Set<CharGrid> fullGridVariants = fullGrid.generateVariants();
             for (CharGrid fullGridVariant : fullGridVariants) {
                 Set<Coord> seaMonsterCoords = findSeaMonsters(fullGridVariant, seaMonster);
-                Set<Coord> allChoppy = fullGridVariant.findAll('#');
+                Set<Coord> allChoppy = fullGridVariant.findCells('#');
                 allChoppy.removeAll(seaMonsterCoords);
                 if (allChoppy.size() < best) best = allChoppy.size();
             }

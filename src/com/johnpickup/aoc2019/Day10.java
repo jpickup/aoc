@@ -64,7 +64,7 @@ public class Day10 {
         Coord best = null;
         public long largestDetectable() {
             long result = 0L;
-            Set<Coord> asteroids = grid.findAll('#');
+            Set<Coord> asteroids = grid.findCells('#');
             for (Coord asteroid : asteroids) {
                 long detectable = detectableFrom(asteroid, asteroids);
                 if (detectable > result) {
@@ -104,7 +104,7 @@ public class Day10 {
         }
 
         public List<Coord> vaporized() {
-            Set<Coord> asteroids = grid.findAll('#');
+            Set<Coord> asteroids = grid.findCells('#');
 
             Map<Coord, Double> angles = asteroids.stream()
                     .filter(a -> !a.equals(best))

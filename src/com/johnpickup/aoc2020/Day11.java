@@ -71,7 +71,7 @@ public class Day11 {
         }
 
         public static long part2(Seats seats) {
-            Set<Coord> seatCoords = seats.findAll('L');
+            Set<Coord> seatCoords = seats.findCells('L');
             Seats prevSeats;
             Seats newSeats = seats;
             do {

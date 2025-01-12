@@ -39,7 +39,7 @@ public class Day8 {
 
                 CharGrid layerWithFewestZeros = image.layerWithFewestZeros();
 
-                long part1 = (long)layerWithFewestZeros.findAll('1').size() * (long)layerWithFewestZeros.findAll('2').size();
+                long part1 = (long)layerWithFewestZeros.findCells('1').size() * (long)layerWithFewestZeros.findCells('2').size();
                 System.out.println("Part 1: " + part1);
 
                 String part2 = image.render();
@@ -84,7 +84,7 @@ public class Day8 {
             int fewestZeros = Integer.MAX_VALUE;
 
             for (CharGrid layer : layers) {
-                int zeros = layer.findAll('0').size();
+                int zeros = layer.findCells('0').size();
                 if (zeros < fewestZeros) {
                     fewestZeros = zeros;
                     result = layer;
