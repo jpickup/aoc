@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.aoc2024.util.FileUtils.createEmptyTestFileIfMissing;
+import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
 
 public class Day15 {
     static boolean isTest;

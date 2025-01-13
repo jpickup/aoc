@@ -4,16 +4,14 @@ import com.johnpickup.util.Coord3D;
 import lombok.Data;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.aoc2024.util.FileUtils.createEmptyTestFileIfMissing;
+import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
 
 public class Day12 {
     static boolean isTest;
@@ -21,8 +19,8 @@ public class Day12 {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
         String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2019/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
-                //prefix + "-test.txt"
-                 prefix + "-test2.txt"
+                prefix + "-test.txt"
+                , prefix + "-test2.txt"
                 , prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
@@ -45,7 +43,29 @@ public class Day12 {
 
                 long part1 = moons.stream().map(Moon::calcEnergy).reduce(0L, Long::sum);
                 System.out.println("Part 1: " + part1);
-                long part2 = 0L;
+
+                Map<Coord3D, Set<Moon>> moonStates = new HashMap<>();
+                Map<Coord3D, Long> moonCycleLengths = new HashMap<>();
+                moons.forEach(m -> {moonStates.put(m.initialPosition, new HashSet<>()); moonStates.get(m.initialPosition).add(m);});
+                long step = 0;
+                while (moonCycleLengths.size() < moons.size()) {
+                    step++;
+                    Map<Moon, Coord3D> deltaVelocities = calculateDeltas(moons);
+                    applyVelocities(moons, deltaVelocities);
+                    for (Moon moon : moons) {
+                        if (!moonCycleLengths.containsKey(moon.initialPosition) && moonStates.get(moon.initialPosition).contains(moon)) {
+                            moonCycleLengths.put(moon.initialPosition, step);
+                        } else {
+                            moonStates.get(moon.initialPosition).add(moon);
+                        }
+                    }
+                }
+                System.out.println(moonCycleLengths);
+
+                BigInteger part2 = moonCycleLengths.values().stream()
+                                .map(BigInteger::valueOf)
+                                .reduce(BigInteger.ONE, Day12::lcm);
+
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -54,6 +74,10 @@ public class Day12 {
             long end = System.currentTimeMillis();
             System.out.println("Time: " + (end - start) + "ms");
         }
+
+    }
+    static BigInteger lcm(BigInteger x, BigInteger y) {
+        return x.multiply(y).divide(x.gcd(y));
     }
 
     private static void applyVelocities(List<Moon> moons, Map<Moon, Coord3D> deltaVelocities) {
@@ -99,6 +123,10 @@ public class Day12 {
                     .replace("z","");
 
             initialPosition = new Coord3D(line);
+            reset();
+        }
+
+        void reset() {
             position = new Coord3D(initialPosition);
             velocity = Coord3D.ORIGIN;
         }
