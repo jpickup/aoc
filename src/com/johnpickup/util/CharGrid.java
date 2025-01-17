@@ -28,12 +28,12 @@ public class CharGrid implements Grid<Character> {
     }
 
     public CharGrid(List<String> lines) {
-        width = lines.get(0).length();
+        width = lines.stream().map(String::length).max(Integer::compareTo).orElseThrow(() -> new RuntimeException("No lines"));
         height = lines.size();
-        cells = new char[lines.get(0).length()][lines.size()];
+        cells = new char[width][height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                char c = lines.get(y).charAt(x);
+                char c = x < lines.get(y).length() ? lines.get(y).charAt(x) : ' ';
                 cells[x][y] = c;
             }
         }
