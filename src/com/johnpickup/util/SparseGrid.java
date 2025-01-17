@@ -62,4 +62,8 @@ public class SparseGrid<T> implements Grid<T>{
     public Set<Coord> findCells(T target) {
         return cells.entrySet().stream().filter(e -> e.getValue().equals(target)).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
+
+    public void clear() {
+        cells.clear();
+    }
 }
