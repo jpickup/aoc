@@ -105,6 +105,9 @@ class Program {
     public void addInput(long value) {
         inputs.add(value);
     }
+    public void addInputs(List<Long> values) {
+        inputs.addAll(values);
+    }
 
     public long getOutput(int index) {
         if (index < 0 || index >= outputs.size()) throw new RuntimeException("No output with index " + index);
