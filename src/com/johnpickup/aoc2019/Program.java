@@ -71,8 +71,10 @@ class Program {
         return result;
     }
 
+    volatile boolean running = true;
+
     public void execute() {
-        while (true) {
+        while (running) {
             Instruction instruction = new Instruction(memory, instructionPointer);
             if (instruction.isTerminate()) {
                 terminated = true;
@@ -80,6 +82,10 @@ class Program {
             }
             instruction.execute(this);
         }
+    }
+
+    public void stop() {
+        running = false;
     }
 
     public long getMemory(long location) {
