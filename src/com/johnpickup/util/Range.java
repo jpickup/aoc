@@ -27,10 +27,21 @@ public class Range<T extends Comparable<T>> {
     }
 
     public boolean overlaps(Range<T> other) {
-        return containsValue(other.lower) || containsValue(other.upper);
+        T maxLower = lower.compareTo(other.lower) > 0 ? lower : other.lower;
+        T minUpper = upper.compareTo(other.upper) < 0 ? upper : other.upper;
+        return maxLower.compareTo(minUpper) < 0;
     }
 
     public boolean containsValue(T value) {
         return value.compareTo(this.lower) >= 0 && value.compareTo(this.upper) <= 0;
+    }
+
+    public Range<T> intersection(Range<T> other) {
+        if (!overlaps(other)) return null;
+
+        T maxLower = lower.compareTo(other.lower) > 0 ? lower : other.lower;
+        T minUpper = upper.compareTo(other.upper) < 0 ? upper : other.upper;
+
+        return new Range<>(maxLower, minUpper);
     }
 }
