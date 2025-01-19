@@ -34,13 +34,8 @@ public class Day5 {
                         .collect(Collectors.toList());
 
                 Polymer polymer = new Polymer(lines.get(0));
-                System.out.println(polymer);
-                Polymer reduced = polymer.reduce();
-                System.out.println(reduced);
-                long part1 = reduced.length();
-                System.out.println("Part 1: " + part1);
-                long part2 = polymer.shortest().length();
-                System.out.println("Part 2: " + part2);
+                System.out.println("Part 1: " + polymer.reduce().length());
+                System.out.println("Part 2: " + polymer.shortest().length());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -50,18 +45,17 @@ public class Day5 {
         }
     }
 
-
     @EqualsAndHashCode
     @RequiredArgsConstructor
     static class Polymer {
         final List<Character> elements;
 
-        Polymer(String line) {
+        public Polymer(String line) {
             elements = new ArrayList<>();
             for (int i = 0 ; i < line.length(); i++) elements.add(line.charAt(i));
-
         }
-        Polymer reduce() {
+
+        public Polymer reduce() {
             int i = 0;
             List<Character> newElements = new ArrayList<>(elements);
             while (i < newElements.size()-1) {
@@ -84,7 +78,7 @@ public class Day5 {
             return new Polymer(elements.stream().filter(e -> Character.toUpperCase(e) != remove).collect(Collectors.toList()));
         }
 
-        Polymer shortest() {
+        public Polymer shortest() {
             Polymer result = this;
             for (char c = 'a'; c <= 'z'; c++) {
                 Polymer shorter = this.withoutElement(c).reduce();
