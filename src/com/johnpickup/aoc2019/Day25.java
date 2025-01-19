@@ -1,9 +1,9 @@
 package com.johnpickup.aoc2019;
 
-import com.johnpickup.util.DijkstraWithoutFullState;
 import com.johnpickup.util.Direction;
 import com.johnpickup.util.Sets;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
@@ -18,6 +18,14 @@ import java.util.stream.Stream;
 import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
 
 public class Day25 {
+    private static final List<String> itemsToAvoid = Arrays.asList(
+            "photons",
+            "infinite loop",
+            "escape pod",
+            "molten lava",
+            "giant electromagnet",
+            "boulder"           // we know it's too heavy
+    );
     static boolean isTest;
 
     public static void main(String[] args) {
@@ -81,7 +89,11 @@ public class Day25 {
         private Long automatedInputSupplier() {
             if (input.isEmpty()) {
                 GameAction nextInputCommand = provideInput();
-                if (nextInputCommand == null) throw new RuntimeException("No input ready");
+                if (nextInputCommand == null) {
+                    System.out.println(gameData);
+                    System.out.println(currentState);
+                    throw new RuntimeException("No input ready");
+                }
                 input.addAll(stringToAscii(nextInputCommand.command() + "\n"));
                 System.out.println("Command: " + nextInputCommand);
             }
@@ -94,6 +106,7 @@ public class Day25 {
         private void automatedOutputConsumer(Long value) {
             if (value == 10L) {
                 String line = asciiToString(output);
+                System.out.println(line);
                 outputLines.add(line);
                 output.clear();
                 if (line.equals(COMMAND)) {
@@ -110,19 +123,25 @@ public class Day25 {
 
         private void parseOutput(List<String> outputLines) {
             GameState previousState = currentState;
-            RoomState roomState = RoomState.parse(outputLines);
-            System.out.println(roomState);
-            currentState = new GameState(roomState.name, generateInventory(inventory, lastAction));
+            if (lastAction == null || lastAction instanceof Movement) {
+                RoomState roomState = RoomState.parse(outputLines);
+                System.out.println(roomState);
+                currentState = new GameState(roomState.name, inventory);
+                gameData.addGameState(currentState, roomState);
+            } else {
+                currentState = lastAction.apply(currentState);
+                inventory = new HashSet<>(currentState.inventory);
+                gameData.addGameState(currentState, gameData.gameStates.get(previousState));
+            }
             gameData.addConnection(previousState.getLocation(), lastAction, currentState.getLocation());
-            gameData.addGameState(currentState, roomState);
         }
 
         private Set<String> generateInventory(Set<String> inventory, GameAction lastAction) {
-            return lastAction.generateInventory(inventory);
+            return Optional.ofNullable(lastAction).map(a -> a.generateInventory(inventory)).orElse(inventory);
         }
 
         private GameAction provideInput() {
-            lastAction = gameSolver.nextAction();
+            lastAction = gameSolver.nextAction(currentState);
             return lastAction;
         }
 
@@ -168,12 +187,26 @@ public class Day25 {
         final Map<StateExit, String> connections = new HashMap<>();
         final Map<GameState, RoomState> gameStates = new HashMap<>();
 
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            Set<String> knownLocations = connections.keySet().stream().map(k -> k.roomName).collect(Collectors.toSet());
+            sb.append("Explored locations (").append(knownLocations.size()).append(") : ").append(knownLocations);
+            sb.append('\n');
+            sb.append("Explored states (").append(gameStates.size()).append(")");
+            sb.append('\n');
+            return sb.toString();
+        }
+
         public GameState initialState() {
             return new GameState(INITIAL_LOCATION, Collections.emptySet());
         }
 
         public void addConnection(String fromLocation, GameAction action, String toLocation) {
-            connections.put(new StateExit(fromLocation, action), toLocation);
+            if (action != null) {
+                connections.put(new StateExit(fromLocation, action), toLocation);
+                connections.put(new StateExit(toLocation, action.opposite()), fromLocation);
+            }
         }
 
         public void addGameState(GameState gameState, RoomState roomState) {
@@ -227,88 +260,112 @@ public class Day25 {
         public boolean isFinalLocation(GameState state) {
             return state.location.equals(FINAL_LOCATION);
         }
+
+        public Set<GameAction> getUnexploredMovements(GameState fromState) {
+            if (fromState.location.equals(SECURITY_CHECKPOINT)) return Collections.emptySet();
+            RoomState roomState = gameStates.get(fromState);
+            Set<GameAction> possibleMovements = roomState.directions.stream().map(Movement::new).collect(Collectors.toCollection(HashSet::new));
+            Set<GameAction> knownActions = connections.keySet().stream().filter(k -> k.roomName.equals(roomState.name)).map(StateExit::getAction).collect(Collectors.toSet());
+            possibleMovements.removeAll(knownActions);
+
+            return possibleMovements;
+        }
+
+        public Set<GameAction> getUnexploredTakeActions(GameState fromState) {
+            RoomState roomState = gameStates.get(fromState);
+            return roomState.items.stream()
+                    .filter(item -> !itemsToAvoid.contains(item))
+                    .filter(item -> !fromState.inventory.contains(item))
+                    .map(TakeItem::new).collect(Collectors.toSet());
+        }
     }
 
     @RequiredArgsConstructor
-    static class GameSolver extends DijkstraWithoutFullState<GameState> {
+    static class GameSolver {
         final Droid droid;
         final GameData gameData;
 
-        public GameAction nextAction() {
-            // TODO: how to implement?
-            return null;
-        }
+        final List<GameAction> actionsTaken = new ArrayList<>();
+        List<GameAction> movementsToTarget = null;
 
-        @Override
-        protected Set<GameState> adjacentStates(GameState gameState) {
-            Set<GameState> result = new HashSet<>();
-            // add all adjacent rooms
-            Set<String> adjacentLocations = gameData.getAdjacentLocations(gameState.location);
-            result.addAll(adjacentLocations.stream()
-                    .map(loc -> new GameState(loc, gameState.inventory))
-                    .collect(Collectors.toSet()));
-            // add all states where we collect an item
-            Set<String> availableItems = gameData.getLocationItems(gameState);
-            result.addAll(availableItems.stream()
-                    .map(item -> new GameState(gameState.location, Sets.addElement(gameState.inventory, item)))
-                    .collect(Collectors.toSet()));
+        boolean exploredMap = false;
 
-            // remove any known bad states that end the game - we can just not go there
-            return result.stream().filter(this::isTerminalStateToAvoid).collect(Collectors.toSet());
-        }
+        List<Set<String>> possibleInventories = null;
+        Set<String> inventoryToTry = null;
 
-        private static final List<String> itemsToAvoid = Arrays.asList(
-                "photons",
-                "infinite loop",
-                "escape pod",
-                "molten lava",
-                "giant electromagnet",
-                "boulder"           // we know it's too heavy
-        );
+        public GameAction nextAction(GameState currentState) {
+            if (!exploredMap) {
+                // which states have we not explored
+                Set<GameAction> unexploredActions = gameData.getUnexploredTakeActions(currentState);
 
-        private static final List<String> locationsToAvoid = Collections.emptyList();
+                if (unexploredActions.isEmpty()) {
+                    unexploredActions = gameData.getUnexploredMovements(currentState);
+                }
 
-        private boolean isTerminalStateToAvoid(GameState gs) {
-            boolean result = false;
-            // add in checks for states that cause failure
-            result |= containsItemToAvoid(gs.inventory);
-            result |= locationsToAvoid.contains(gs.location);
-            return result;
-        }
+                if (!unexploredActions.isEmpty()) {
+                    GameAction gameAction = unexploredActions.stream().findFirst().orElse(null);
+                    actionsTaken.add(0, gameAction);
+                    System.out.println("Exploring: " + gameAction);
+                    return gameAction;
+                }
 
-        private boolean containsItemToAvoid(Set<String> inventory) {
-            return inventory.stream().anyMatch(itemsToAvoid::contains);
-        }
+                if (currentState.location.equals(GameData.SECURITY_CHECKPOINT)) {
+                    movementsToTarget = actionsTaken.stream().filter(a -> a instanceof Movement).collect(Collectors.toList());
+                }
 
-        @Override
-        protected GameState initialState() {
-            return gameData.initialState();
-        }
+                // back-track
+                while (!actionsTaken.isEmpty()) {
+                    GameAction reverse = actionsTaken.remove(0).opposite();
+                    if (reverse instanceof DropItem) {
+                        continue;
+                    }
+                    System.out.println("Backtracking: " + reverse);
+                    return reverse;
+                }
+                exploredMap = true;
+            }
 
-        @Override
-        protected boolean isTargetState(GameState state) {
-            return gameData.isFinalLocation(state);
-        }
+            // navigate back to the security check
+            if (movementsToTarget != null && !movementsToTarget.isEmpty()) {
+                return movementsToTarget.remove(movementsToTarget.size()-1);
+            }
 
-        @Override
-        protected GameState targetState() {
-            // use isTargetState instead - should never be called
-            throw new RuntimeException("Not implemented");
-        }
+            // try every combination of inventory items
+            if (possibleInventories == null) {
+                Set<String> fullInventory = new HashSet<>(currentState.inventory);
+                possibleInventories = new ArrayList<>(Sets.subsets(fullInventory));
+            }
 
-        @Override
-        protected long calculateCost(GameState fromState, GameState toState) {
-            return 1;
-        }
+            if (inventoryToTry == null) {
+                inventoryToTry = possibleInventories.remove(0);
+            }
 
-        @Override
-        protected boolean statesAreConnected(GameState toState, GameState fromState) {
-            return gameData.statesAreConnected(fromState, toState);
-        }
+            if (inventoryToTry.equals(currentState.inventory)) {
+                inventoryToTry = null;
+                // try this inventory
+                return new Movement(Direction.SOUTH);
+            }
 
-        @Override
-        protected boolean findAllRoutes() {
-            return false;
+            if (inventoryToTry == null && !possibleInventories.isEmpty()) {
+                inventoryToTry = possibleInventories.remove(0);
+            }
+
+            if (inventoryToTry != null) {
+                // what's missing?
+                Set<String> missing = new HashSet<>(inventoryToTry);
+                missing.removeAll(currentState.inventory);
+                if (!missing.isEmpty()) {
+                    return missing.stream().map(TakeItem::new).findFirst().orElseThrow(() -> new RuntimeException("nothing to take"));
+                }
+
+                // what should be dropped?
+                Set<String> toDrop = new HashSet<>(currentState.inventory);
+                toDrop.removeAll(inventoryToTry);
+                if (!toDrop.isEmpty()) {
+                    return toDrop.stream().map(DropItem::new).findFirst().orElseThrow(() -> new RuntimeException("nothing to drop"));
+                }
+            }
+            throw new RuntimeException("Failed to find solution");
         }
     }
 
@@ -325,6 +382,7 @@ public class Day25 {
     }
 
     @Data
+    @EqualsAndHashCode(exclude = "description")
     static class RoomState {
         final String name;
         final String description;
@@ -382,6 +440,10 @@ public class Day25 {
         String command();
 
         Set<String> generateInventory(Set<String> inventory);
+
+        GameAction opposite();
+
+        GameState apply(GameState state);
     }
 
     @Data
@@ -408,6 +470,27 @@ public class Day25 {
         public Set<String> generateInventory(Set<String> inventory) {
             return inventory;
         }
+
+        @Override
+        public GameAction opposite() {
+            switch (direction) {
+                case NORTH:
+                    return new Movement(Direction.SOUTH);
+                case SOUTH:
+                    return new Movement(Direction.NORTH);
+                case EAST:
+                    return new Movement(Direction.WEST);
+                case WEST:
+                    return new Movement(Direction.EAST);
+                default:
+                    throw new RuntimeException("Unknown direction " + direction);
+            }
+        }
+
+        @Override
+        public GameState apply(GameState state) {
+            throw new RuntimeException("Not implemented");
+        }
     }
 
     @Data
@@ -423,6 +506,16 @@ public class Day25 {
         public Set<String> generateInventory(Set<String> inventory) {
             return Sets.addElement(inventory, item);
         }
+
+        @Override
+        public GameAction opposite() {
+            return new DropItem(item);
+        }
+
+        @Override
+        public GameState apply(GameState state) {
+            return new GameState(state.location, Sets.addElement(state.inventory, item));
+        }
     }
 
     @Data
@@ -437,6 +530,16 @@ public class Day25 {
         @Override
         public Set<String> generateInventory(Set<String> inventory) {
             return Sets.removeElement(inventory, item);
+        }
+
+        @Override
+        public GameAction opposite() {
+            return new TakeItem(item);
+        }
+
+        @Override
+        public GameState apply(GameState state) {
+            return new GameState(state.location, Sets.removeElement(state.inventory, item));
         }
     }
 }

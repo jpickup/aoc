@@ -59,6 +59,15 @@ class Program {
         outputs.clear();
     }
 
+    public void setState(Program source) {
+        memory = source.memory;
+        instructionPointer = source.instructionPointer;
+        relativeBase = source.relativeBase;
+        inputs = new ArrayList<>(source.inputs);
+        outputs = new ArrayList<>(source.outputs);
+        terminated = source.terminated;
+    }
+
     public List<Long> processInputs(List<Long> inputs) {
         this.inputs.addAll(inputs);
         try {

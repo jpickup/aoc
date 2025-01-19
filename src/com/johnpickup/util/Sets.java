@@ -58,7 +58,7 @@ public class Sets {
 
     public static <T> Set<T> removeElement(Set<T> set, T element) {
         Set<T> result = new HashSet<>(set);
-        set.remove(element);
+        result.remove(element);
         return result;
     }
 }
