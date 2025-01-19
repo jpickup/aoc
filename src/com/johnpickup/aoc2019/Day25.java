@@ -125,7 +125,6 @@ public class Day25 {
             GameState previousState = currentState;
             if (lastAction == null || lastAction instanceof Movement) {
                 RoomState roomState = RoomState.parse(outputLines);
-                System.out.println(roomState);
                 currentState = new GameState(roomState.name, inventory);
                 gameData.addGameState(currentState, roomState);
             } else {
@@ -134,10 +133,6 @@ public class Day25 {
                 gameData.addGameState(currentState, gameData.gameStates.get(previousState));
             }
             gameData.addConnection(previousState.getLocation(), lastAction, currentState.getLocation());
-        }
-
-        private Set<String> generateInventory(Set<String> inventory, GameAction lastAction) {
-            return Optional.ofNullable(lastAction).map(a -> a.generateInventory(inventory)).orElse(inventory);
         }
 
         private GameAction provideInput() {
@@ -182,7 +177,6 @@ public class Day25 {
 
     static class GameData {
         private static final String INITIAL_LOCATION = "Hull Breach";
-        private static final String FINAL_LOCATION = "Pressure-Sensitive Floor";
         private static final String SECURITY_CHECKPOINT = "Security Checkpoint";
         final Map<StateExit, String> connections = new HashMap<>();
         final Map<GameState, RoomState> gameStates = new HashMap<>();
@@ -211,54 +205,6 @@ public class Day25 {
 
         public void addGameState(GameState gameState, RoomState roomState) {
             gameStates.put(gameState, roomState);
-        }
-
-        public boolean statesAreConnected(GameState fromState, GameState toState) {
-            if (fromState.location.equals(toState.location)) {
-                return canCollectItem(fromState, toState)
-                        || canDropItem(fromState, toState);
-            }  else {
-                return roomsAreConnected(fromState.location, toState.location);
-            }
-        }
-
-        private boolean canDropItem(GameState fromState, GameState toState) {
-            // can only drop an item at the security checkpoint
-            return fromState.location.equals(SECURITY_CHECKPOINT)
-                    && (fromState.inventory.size() - 1 == toState.inventory.size())
-                        && fromState.inventory.containsAll(toState.inventory);
-        }
-
-        private boolean canCollectItem(GameState fromState, GameState toState) {
-            // same location = collects an item
-            boolean collectsItem = (fromState.inventory.size() + 1 == toState.inventory.size())
-                    && toState.inventory.containsAll(fromState.inventory);
-            return collectsItem
-                    && roomContainsItem(fromState,
-                    Sets.disjoint(fromState.inventory, toState.inventory).stream().findFirst().orElse(null));
-        }
-
-        private boolean roomsAreConnected(String fromLocation, String toLocation) {
-            return getAdjacentLocations(fromLocation).contains(toLocation);
-        }
-
-        private boolean roomContainsItem(GameState state, String item) {
-            return gameStates.get(state).items.contains(item);
-        }
-
-        public Set<String> getAdjacentLocations(String location) {
-            return connections.entrySet().stream()
-                    .filter(e -> e.getKey().roomName.equals(location))
-                    .map(Map.Entry::getValue)
-                    .collect(Collectors.toSet());
-        }
-
-        public Set<String> getLocationItems(GameState gameState) {
-            return Optional.ofNullable(gameStates.get(gameState)).map(rs -> rs.items).orElse(Collections.emptySet());
-        }
-
-        public boolean isFinalLocation(GameState state) {
-            return state.location.equals(FINAL_LOCATION);
         }
 
         public Set<GameAction> getUnexploredMovements(GameState fromState) {
@@ -439,8 +385,6 @@ public class Day25 {
     interface GameAction {
         String command();
 
-        Set<String> generateInventory(Set<String> inventory);
-
         GameAction opposite();
 
         GameState apply(GameState state);
@@ -464,11 +408,6 @@ public class Day25 {
                 default:
                     throw new RuntimeException("Unknown direction " + direction);
             }
-        }
-
-        @Override
-        public Set<String> generateInventory(Set<String> inventory) {
-            return inventory;
         }
 
         @Override
@@ -503,11 +442,6 @@ public class Day25 {
         }
 
         @Override
-        public Set<String> generateInventory(Set<String> inventory) {
-            return Sets.addElement(inventory, item);
-        }
-
-        @Override
         public GameAction opposite() {
             return new DropItem(item);
         }
@@ -525,11 +459,6 @@ public class Day25 {
         @Override
         public String command() {
             return "drop " + item;
-        }
-
-        @Override
-        public Set<String> generateInventory(Set<String> inventory) {
-            return Sets.removeElement(inventory, item);
         }
 
         @Override
