@@ -40,7 +40,7 @@ public class Sets {
         return result;
     }
 
-    public static<T>  Set<Set<T>> subsets(Set<T> set) {
+    public static <T>  Set<Set<T>> subsets(Set<T> set) {
         if (set.isEmpty()) return Collections.singleton(Collections.emptySet());
         Set<Set<T>> result = new HashSet<>();
         result.add(set);
@@ -49,6 +49,16 @@ public class Sets {
             subset.remove(element);
             result.addAll(subsets(subset));
         }
+        return result;
+    }
+
+    public static <T> Set<T> addElement(Set<T> set, T element) {
+        return union(set, Collections.singleton(element));
+    }
+
+    public static <T> Set<T> removeElement(Set<T> set, T element) {
+        Set<T> result = new HashSet<>(set);
+        set.remove(element);
         return result;
     }
 }

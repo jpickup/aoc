@@ -123,4 +123,14 @@ public class Coord implements Comparable<Coord> {
     public Coord calcDelta(Coord coord) {
         return new Coord(coord.x - this.x, coord.y - this.y);
     }
+
+    public Direction directionTo(Coord other) {
+        int dx = x - other.x;
+        int dy = y - other.y;
+        if (dx == 1 && dy == 0) return Direction.WEST;
+        if (dx == -1 && dy == 0) return Direction.EAST;
+        if (dx == 0 && dy == 1) return Direction.NORTH;
+        if (dx == 0 && dy == -1) return Direction.SOUTH;
+        throw new RuntimeException("Other coordinate is not adjacent");
+    }
 }
