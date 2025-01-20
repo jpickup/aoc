@@ -34,11 +34,9 @@ public class Day6 {
                         .collect(Collectors.toList());
 
                 Areas areas = new Areas(coords);
-                long part1 = areas.part1();
-                System.out.println("Part 1: " + part1);
-                long part2 = 0L;
-                System.out.println("Part 2: " + part2);
+                System.out.println("Part 1: " + areas.part1());
                 // 135466 too high
+                System.out.println("Part 2: " + areas.part2());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -51,15 +49,22 @@ public class Day6 {
     @RequiredArgsConstructor
     static class Areas {
         final List<Coord> points;
+        int minX;
+        int minY;
+        int maxX;
+        int maxY;
+        int width;
+        int height;
+
 
         public long part1() {
-            int minX = points.stream().map(Coord::getX).min(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
-            int minY = points.stream().map(Coord::getY).min(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
-            int maxX = points.stream().map(Coord::getX).max(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
-            int maxY = points.stream().map(Coord::getY).max(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
+            minX = points.stream().map(Coord::getX).min(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
+            minY = points.stream().map(Coord::getY).min(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
+            maxX = points.stream().map(Coord::getX).max(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
+            maxY = points.stream().map(Coord::getY).max(Integer::compareTo).orElseThrow(() -> new RuntimeException("No points"));
 
-            int width = maxX - minX;
-            int height = maxY - minY;
+            width = maxX - minX;
+            height = maxY - minY;
 
             System.out.println(width + " * " + height);
 
@@ -89,6 +94,21 @@ public class Day6 {
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
             System.out.println(byClosestCount);
             return byClosestCount.values().stream().max(Integer::compareTo).orElseThrow(() -> new RuntimeException("No max area"));
+        }
+
+        public long part2() {
+            Set<Coord> safeRegion = new HashSet<>();
+            for (int x = minX - width; x < maxX + width; x++) {
+                for (int y = minY - height; y < maxY + height; y++) {
+                    Coord c = new Coord(x, y);
+                    int distance = 0;
+                    for (Coord point : points) {
+                        distance += point.distanceFrom(c);
+                    }
+                    if (distance < 10000) safeRegion.add(c);
+                }
+            }
+            return safeRegion.size();
         }
     }
 }
