@@ -16,8 +16,8 @@ public class Coord implements Comparable<Coord> {
 
     public Coord(String s) {
         String[] parts = s.split(",");
-        x = Integer.parseInt(parts[0]);
-        y = Integer.parseInt(parts[1]);
+        x = Integer.parseInt(parts[0].trim());
+        y = Integer.parseInt(parts[1].trim());
     }
 
     public boolean inBounds(int width, int height) {
