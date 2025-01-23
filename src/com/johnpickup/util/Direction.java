@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 public enum Direction {
     NORTH('^'),
     SOUTH('v'),
-    EAST('<'),
-    WEST('>');
+    EAST('>'),
+    WEST('<');
     final char ch;
 
     public Direction left() {
@@ -47,5 +47,10 @@ public enum Direction {
             default:
                 throw new RuntimeException("Unknown dir " + this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "" + ch;
     }
 }
