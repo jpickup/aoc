@@ -19,7 +19,7 @@ public class Day15 {
     static boolean isTest;
     public static void main(String[] args) {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2018/" + day + "/" + day;
+        String prefix = "/Users/john/Development/AdventOfCode/resources/2018/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"
@@ -53,33 +53,49 @@ public class Day15 {
     static final char GOBLIN = 'G';
 
     static class Battle {
-        final CharGrid grid;
+        final int width;
+        final int height;
         List<Unit> units;
-        Set<Coord> allSpaces;
+        Set<Coord> spaces;
+        Set<Coord> walls;
 
         Battle(List<String> lines) {
-            grid = new CharGrid(lines);
-            init();
+            CharGrid grid = new CharGrid(lines);
+            width = grid.getWidth();
+            height = grid.getHeight();
+            units = new ArrayList<>();
+            units.addAll(findUnits(grid, UnitType.GOBLIN));
+            units.addAll(findUnits(grid, UnitType.ELF));
+            walls = new TreeSet<>();
+            walls.addAll(grid.findCells('#'));
+            spaces = new TreeSet<>();
+            spaces.addAll(grid.findCells('.'));
+            spaces.addAll(units.stream().map(Unit::getPosition).collect(Collectors.toSet()));
+        }
+
+        @Override
+        public String toString() {
+            CharGrid grid = new CharGrid(width, height, new char[width][height]);
+            walls.forEach(w -> grid.setCell(w, WALL));
+            spaces.forEach(w -> grid.setCell(w, SPACE));
+            units.stream().filter(Unit::isAlive).forEach(u -> grid.setCell(u.position, u.type.ch));
+            return grid.toString();
         }
 
         public long outcome() {
+            System.out.println(this);
             long round = 0;
             boolean madeProgress = true;
+            System.out.println("----- Initial -------");
+            System.out.println(this);
             while (madeProgress) {
                 madeProgress = takeTurn();
                 if (madeProgress) round++;
+                System.out.println("----- " + round + " ------");
+                System.out.println(this);
             }
             long hitPoints = units.stream().filter(Unit::isAlive).map(Unit::getHitPoints).reduce(0, Integer::sum);
             return round * hitPoints;
-        }
-
-        public void init() {
-            units = new ArrayList<>();
-            units.addAll(findUnits(UnitType.GOBLIN));
-            units.addAll(findUnits(UnitType.ELF));
-            allSpaces = new TreeSet<>();
-            allSpaces.addAll(grid.findCells('.'));
-            allSpaces.addAll(units.stream().map(Unit::getPosition).collect(Collectors.toSet()));
         }
 
         private boolean takeTurn() {
@@ -114,31 +130,38 @@ public class Day15 {
             return tookAction;
         }
 
-        Set<Unit> findUnits(UnitType type) {
+        Set<Unit> findUnits(CharGrid grid, UnitType type) {
             return grid.findCells(type.ch).stream().map(c -> new Unit(this, type, c)).collect(Collectors.toSet());
         }
 
         public boolean isEmpty(Coord coord) {
-            return '.' == grid.getCell(coord);
+            return spaces.contains(coord) &&  units.stream().noneMatch(u -> u.position.equals(coord));
         }
 
         public Set<Coord> emptySpaces() {
-            Set<Coord> result = new TreeSet<>(allSpaces);
+            Set<Coord> result = new TreeSet<>(spaces);
             result.removeAll(units.stream().filter(Unit::isAlive).map(Unit::getPosition).collect(Collectors.toSet()));
             return result;
         }
 
         public List<Coord> findPath(Coord from, Coord to) {
-            return null;
+            ShortestPathSolver pathSolver = new ShortestPathSolver(this, from, to);
+            Set<List<Coord>> routes = pathSolver.findRoutes();
+            if (routes.isEmpty()) return null;
+            List<List<Coord>> routesByLength = routes.stream().sorted(Comparator.comparingInt(List::size)).collect(Collectors.toList());
+            int shortestLength = routesByLength.get(0).size();
+            return routesByLength.stream()
+                    .filter(r -> r.size() == shortestLength)
+                    .min(Comparator.comparing(r -> r.get(0)))
+                    .orElse(null);
         }
 
-        public void moveUnit(UnitType type, Coord from, Coord to) {
-            grid.setCell(from, SPACE);
-            grid.setCell(to, type.ch);
+        public List<Unit> liveUnitsOfType(UnitType type) {
+            return units.stream().filter(Unit::isAlive).filter(u -> u.type == type).collect(Collectors.toList());
         }
     }
 
-        @RequiredArgsConstructor
+    @RequiredArgsConstructor
     static class ShortestPathSolver extends Dijkstra<Coord> {
         final Battle battle;
         final Coord from;
@@ -198,26 +221,33 @@ public class Day15 {
             hitPoints = INITIAL_HIT_POINTS;
         }
 
+        @Override
+        public String toString() {
+            return type.ch + "(" + hitPoints + ")@" + position;
+        }
+
         public Action takeMoveTurn() {
-            List<Unit> enemyUnits = battle.findUnits(type.enemy()).stream()
+            List<Unit> enemyUnits = battle.liveUnitsOfType(type.enemy()).stream()
                     .sorted(Comparator.comparing(Unit::getPosition)).collect(Collectors.toList());
             if (enemyUnits.isEmpty()) return null;
-            List<Coord> inRange = enemyUnits.stream().flatMap(u -> u.inRange().stream()).collect(Collectors.toList());
-            List<Coord> canAttack = inRange.stream().filter(c -> c.isAdjacentTo4(position)).collect(Collectors.toList());
+
+            List<Unit> canAttack = enemyUnits.stream().filter(u -> u.position.isAdjacentTo4(position)).collect(Collectors.toList());
+            List<Coord> spacesAdjacentToEnemies = enemyUnits.stream().flatMap(u -> u.adjacentSpaces().stream()).collect(Collectors.toList());
             if (canAttack.isEmpty()) {
                 // MOVE
                 List<Coord> shortestPath = null;
-                for (Unit enemyUnit : enemyUnits) {
-                    List<Coord> path = battle.findPath(position, enemyUnit.position);
+                for (Coord spaceAdjacentToEnemy : spacesAdjacentToEnemies) {
+                    List<Coord> path = battle.findPath(position, spaceAdjacentToEnemy);
+                    if (path == null) continue; // no move possible to that unit
                     if (shortestPath == null || path.size() < shortestPath.size()) shortestPath = path;
                 }
                 if (shortestPath == null) return null;
-                return new Move(this, shortestPath.get(1));
+                return new Move(this, shortestPath.get(0));
             }
             return null;
         }
 
-        private Set<Coord> inRange() {
+        private Set<Coord> adjacentSpaces() {
             Set<Coord> result = new HashSet<>();
             if (battle.isEmpty(position.north())) result.add(position.north());
             if (battle.isEmpty(position.south())) result.add(position.south());
@@ -227,7 +257,7 @@ public class Day15 {
         }
 
         public Action takeActionTurn() {
-            return battle.findUnits(type.enemy()).stream()
+            return battle.liveUnitsOfType(type.enemy()).stream()
                     .filter(u -> u.getPosition().isAdjacentTo4(position))
                     .min(Unit::compareTo)
                     .map(u -> new Attack(this, u))
@@ -247,6 +277,10 @@ public class Day15 {
         public boolean isAlive() {
             return hitPoints > 0;
         }
+
+        public void moveTo(Coord newPosition) {
+            position = newPosition;
+        }
     }
 
     interface Action {
@@ -260,7 +294,8 @@ public class Day15 {
 
         @Override
         public void perform(Battle battle) {
-            battle.moveUnit(unit.type, unit.position, newPosition);
+            System.out.println("Moving " + unit + " to " + newPosition);
+            unit.moveTo(newPosition);
         }
     }
 
@@ -271,6 +306,7 @@ public class Day15 {
 
         @Override
         public void perform(Battle battle) {
+            System.out.println("Attack of " + target + " by " + attacker);
             target.takeHit(attacker.attackPower);
         }
     }

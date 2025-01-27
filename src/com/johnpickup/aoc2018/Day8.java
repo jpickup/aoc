@@ -17,7 +17,7 @@ public class Day8 {
     static boolean isTest;
     public static void main(String[] args) {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2018/" + day + "/" + day;
+        String prefix = "/Users/john/Development/AdventOfCode/resources/2018/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"
