@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
 import static com.johnpickup.util.FileUtils.getInputFilenames;
 
-public class Day1 {
+public class Day19 {
     static boolean isTest;
     public static void main(String[] args) {
         List<String> inputFilenames = getInputFilenames(new Object(){});
@@ -22,23 +20,13 @@ public class Day1 {
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {
-                List<Integer> numbers = stream
+                List<String> lines = stream
                         .filter(s -> !s.isEmpty())
-                        .map(Integer::parseInt)
                         .collect(Collectors.toList());
 
-                Integer part1 = numbers.stream().reduce(0, Integer::sum);
+                long part1 = 0L;
                 System.out.println("Part 1: " + part1);
-
-                Set<Integer> seenBefore = new TreeSet<>();
-                int current = 0;
-                int idx = 0;
-                while (!seenBefore.contains(current)) {
-                    seenBefore.add(current);
-                    current += numbers.get(idx % numbers.size());
-                    idx ++;
-                }
-                int part2 = current;
+                long part2 = 0L;
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {

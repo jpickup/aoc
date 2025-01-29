@@ -6,7 +6,6 @@ import com.johnpickup.util.Coord3D;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +13,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
+import static com.johnpickup.util.FileUtils.getInputFilenames;
 
 public class Day11 {
     static boolean isTest;
     public static void main(String[] args) {
-        String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Users/john/Development/AdventOfCode/resources/2018/" + day + "/" + day;
-        List<String> inputFilenames = Arrays.asList(
-                prefix + "-test.txt"
-                , prefix + ".txt"
-        );
+        List<String> inputFilenames = getInputFilenames(new Object(){});
         for (String inputFilename : inputFilenames) {
             createEmptyTestFileIfMissing(inputFilename);
             long start = System.currentTimeMillis();

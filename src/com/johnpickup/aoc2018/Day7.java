@@ -13,17 +13,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
+import static com.johnpickup.util.FileUtils.getInputFilenames;
 
 public class Day7 {
     static boolean isTest;
     static int base_duration;
     public static void main(String[] args) {
-        String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Users/john/Development/AdventOfCode/resources/2018/" + day + "/" + day;
-        List<String> inputFilenames = Arrays.asList(
-                prefix + "-test.txt"
-                , prefix + ".txt"
-        );
+        List<String> inputFilenames = getInputFilenames(new Object(){});
         for (String inputFilename : inputFilenames) {
             createEmptyTestFileIfMissing(inputFilename);
             long start = System.currentTimeMillis();
