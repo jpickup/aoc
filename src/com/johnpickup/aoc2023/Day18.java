@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Day18 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day18.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day18.txt"))) {
             List<Instruction> instructions = stream.filter(s -> !s.isEmpty()).map(Instruction::parse).collect(Collectors.toList());
 
             Ground ground = new Ground();

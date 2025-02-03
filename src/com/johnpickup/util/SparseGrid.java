@@ -16,7 +16,17 @@ public class SparseGrid<T> implements Grid<T>{
     @Setter
     boolean showOrigin = false;
     @Getter
-    final Map<Coord, T> cells = new TreeMap<>();
+    final Map<Coord, T> cells;
+
+    public SparseGrid() {
+        cells = new TreeMap<>();
+    }
+
+    public SparseGrid(SparseGrid<T> source) {
+        cells = new TreeMap<>();
+        this.showOrigin = source.showOrigin;
+        this.cells.putAll(source.cells);
+    }
 
     public T getCell(Coord c) {
         return cells.get(c);

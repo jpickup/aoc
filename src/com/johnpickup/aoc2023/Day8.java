@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class Day8 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day8.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day8.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
             String instructions = lines.get(0);

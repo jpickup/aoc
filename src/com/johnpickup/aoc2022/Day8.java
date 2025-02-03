@@ -3,13 +3,13 @@ package com.johnpickup.aoc2022;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day8 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day8.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day8.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
 
             int rowCount = lines.size();

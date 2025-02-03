@@ -3,7 +3,10 @@ package com.johnpickup.aoc2021;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,7 +15,7 @@ public class Day15Path {
     int size;
 
     public static void main(String[] args) {
-        Day15Path day15 = new Day15Path("/Users/john/Development/AdventOfCode/resources/Day15Test.txt");
+        Day15Path day15 = new Day15Path("/Volumes/Users/john/Development/AdventOfCode/resources/Day15Test.txt");
         day15.solve();
     }
 

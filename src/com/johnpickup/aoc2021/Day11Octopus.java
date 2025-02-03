@@ -3,7 +3,8 @@ package com.johnpickup.aoc2021;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,7 +12,7 @@ public class Day11Octopus {
     public static void main(String[] args) throws Exception {
 
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day11Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day11Input.txt"))) {
             List<String> lines = stream.filter(Objects::nonNull).collect(Collectors.toList());
             int rows = lines.size();
             int cols = lines.get(0).length();

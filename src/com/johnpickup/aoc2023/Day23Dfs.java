@@ -6,7 +6,10 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +25,7 @@ public class Day23Dfs {
 
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day23.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day23.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
             board = Board.parse(lines);
             System.out.println(board);

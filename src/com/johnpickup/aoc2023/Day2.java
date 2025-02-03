@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class Day2 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day2.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day2.txt"))) {
             RGB max = new RGB(12, 13, 14);
             long part1 = 0, part2 = 0;
             List<Game> games = stream.filter(s -> !s.isEmpty()).map(Game::parse).collect(Collectors.toList());

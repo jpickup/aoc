@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class Day12 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day12.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day12.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
             int[][] heights = new int[lines.size()][lines.get(0).length()];
             Coord start = null;

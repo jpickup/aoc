@@ -13,7 +13,7 @@ public class Day5Vents {
 
         final int gridSize = 1000;
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day5Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day5Input.txt"))) {
 
             List<Vent> vents = stream.map(Day5Vents::parseVent)
                     .filter(Objects::nonNull)

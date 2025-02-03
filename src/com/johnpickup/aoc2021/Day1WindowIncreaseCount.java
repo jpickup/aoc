@@ -13,7 +13,7 @@ public class Day1WindowIncreaseCount {
     public static void main(String[] args) throws Exception {
         int increaseCount = 0;
         Optional<Integer> last = Optional.empty();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/Day1Input.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/Day1Input.txt"))) {
             List<Integer> integers = stream.map(Integer::parseInt).collect(Collectors.toList());
             List<Integer> windows = new ArrayList<>();
             for (int i = 2; i < integers.size(); i++) {

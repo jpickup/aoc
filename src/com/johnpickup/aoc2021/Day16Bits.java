@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,7 +14,7 @@ public class Day16Bits {
     private String input;
 
     public static void main(String[] args) {
-        Day16Bits day16 = new Day16Bits("/Users/john/Development/AdventOfCode/resources/Day16Input.txt");
+        Day16Bits day16 = new Day16Bits("/Volumes/Users/john/Development/AdventOfCode/resources/Day16Input.txt");
         long start = System.currentTimeMillis();
         day16.solve();
         long end = System.currentTimeMillis();

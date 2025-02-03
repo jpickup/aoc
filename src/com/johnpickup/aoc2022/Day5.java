@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Day5 {
     static int part = 2;
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day5.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day5.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
 
             List<Stack<Character>> stacks = new ArrayList<>();

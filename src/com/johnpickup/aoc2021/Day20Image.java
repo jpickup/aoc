@@ -3,7 +3,9 @@ package com.johnpickup.aoc2021;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,7 +13,7 @@ public class Day20Image {
     List<String> lines;
 
     public static void main(String[] args) {
-        Day20Image day20 = new Day20Image("/Users/john/Development/AdventOfCode/resources/Day20Input.txt");
+        Day20Image day20 = new Day20Image("/Volumes/Users/john/Development/AdventOfCode/resources/Day20Input.txt");
 
         Day20Data data = day20.parseInput();
         data.printImage();

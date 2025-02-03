@@ -3,6 +3,7 @@ package com.johnpickup.aoc2019;
 import com.johnpickup.util.CharGrid;
 import com.johnpickup.util.Coord;
 import com.johnpickup.util.Dijkstra;
+import com.johnpickup.util.DijkstraWithoutFullState;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -13,20 +14,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
+
 
 public class Day20 {
     static boolean isTest;
     public static void main(String[] args) {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2019/" + day + "/" + day;
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2019/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + "-test2.txt"
+                , prefix + "-test3.txt"
                 , prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
@@ -104,7 +106,8 @@ public class Day20 {
         }
 
         public long part2() {
-            return 0;
+            MazeSolverPart2 mazeSolver = new MazeSolverPart2(this);
+            return mazeSolver.lowestCost();
         }
 
         @Override
@@ -114,6 +117,15 @@ public class Day20 {
 
         public boolean hasPortal(Coord from, Coord to) {
             return portalPairs.stream().anyMatch(pair -> pair.connectsPoints(from, to));
+        }
+
+        public boolean isOuterPortal(Coord coord) {
+            return coord.getX() <= 2 || coord.getX() > grid.getWidth()-3
+                    || coord.getY() <= 2 || coord.getY() > grid.getHeight()-3;
+        }
+
+        public boolean isInnerPortal(Coord coord) {
+            return !isOuterPortal(coord);
         }
     }
 
@@ -151,6 +163,69 @@ public class Day20 {
         protected boolean findAllRoutes() {
             return false;
         }
+    }
+
+    @RequiredArgsConstructor
+    static class MazeSolverPart2 extends DijkstraWithoutFullState<CoordAtLevel> {
+        private final Maze maze;
+
+        @Override
+        protected Set<CoordAtLevel> adjacentStates(CoordAtLevel state) {
+            Set<CoordAtLevel> result = new HashSet<>();
+            addStateIfConnected(result, state, new CoordAtLevel(state.coord.north(), state.level));
+            addStateIfConnected(result, state, new CoordAtLevel(state.coord.south(), state.level));
+            addStateIfConnected(result, state, new CoordAtLevel(state.coord.east(), state.level));
+            addStateIfConnected(result, state, new CoordAtLevel(state.coord.west(), state.level));
+            addStateIfConnected(result, state, new CoordAtLevel(state.coord, state.level+1));
+            addStateIfConnected(result, state, new CoordAtLevel(state.coord, state.level-1));
+            return result;
+        }
+
+        private void addStateIfConnected(Set<CoordAtLevel> result, CoordAtLevel from, CoordAtLevel to) {
+            if (statesAreConnected(to, from)) result.add(to);
+        }
+
+        @Override
+        protected CoordAtLevel initialState() {
+            return new CoordAtLevel(maze.start, 0);
+        }
+
+        @Override
+        protected CoordAtLevel targetState() {
+            return new CoordAtLevel(maze.end, 0);
+        }
+
+        @Override
+        protected long calculateCost(CoordAtLevel fromState, CoordAtLevel toState) {
+            return 1;
+        }
+
+        @Override
+        protected boolean statesAreConnected(CoordAtLevel toState, CoordAtLevel fromState) {
+            return (toState.coord.isAdjacentTo4(fromState.coord) && toState.level == fromState.level)
+                    || hasPortal(fromState, toState);
+        }
+
+        private boolean hasPortal(CoordAtLevel fromState, CoordAtLevel toState) {
+            if (!maze.hasPortal(fromState.coord, toState.coord)) return false;
+            // figure out the levels
+            boolean goingDown = maze.isOuterPortal(fromState.coord) && maze.isInnerPortal(toState.coord);
+            boolean goingUp = maze.isInnerPortal(fromState.coord) && maze.isOuterPortal(toState.coord);
+
+            return (goingDown && fromState.level+1 == toState.level)
+                    || (goingUp && fromState.level-1 == toState.level);
+        }
+
+        @Override
+        protected boolean findAllRoutes() {
+            return false;
+        }
+    }
+
+    @Data
+    static class CoordAtLevel {
+        final Coord coord;
+        final int level;
     }
 
     @Data

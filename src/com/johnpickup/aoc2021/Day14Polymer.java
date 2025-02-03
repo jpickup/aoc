@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class Day14Polymer {
     public static void main(String[] args) {
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day14Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day14Input.txt"))) {
 
             List<String> inputs = stream.collect(Collectors.toList());
 

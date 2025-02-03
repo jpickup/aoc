@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Day6 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day6.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day6.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
             // Part 1
             //List<Long> times = Arrays.stream(lines.get(0).split(":")[1].split(" ")).filter(s -> !s.isEmpty()).map(Long::parseLong).collect(Collectors.toList());

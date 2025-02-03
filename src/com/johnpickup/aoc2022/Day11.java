@@ -16,7 +16,7 @@ public class Day11 {
     static int part = 2;
     static int divisorProduct;
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day11.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day11.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
             Map<Integer, Monkey> monkeys = new TreeMap<>();
             for (int m=0; m <= lines.size()/7; m++) {

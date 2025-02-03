@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class Day24Part2 {
     private static final boolean test = false;
-    private static final String filename = "/Users/john/Development/AdventOfCode/resources/2023/Day24" +
+    private static final String filename = "/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day24" +
             (test? "-test.txt" : ".txt");
     public static void main(String[] args) {
         long start = System.currentTimeMillis();

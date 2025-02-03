@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
+
 
 public class Day7 {
     static boolean isTest;
@@ -19,7 +19,7 @@ public class Day7 {
     public static void main(String[] args) {
         String day = new Object() {
         }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2019/" + day + "/" + day;
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2019/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 // part 1
                 //prefix + "-test.txt"
@@ -31,7 +31,7 @@ public class Day7 {
                 prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");

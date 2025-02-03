@@ -15,7 +15,7 @@ public class Day3Power {
 
         final int wordSize = 12;
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day3Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day3Input.txt"))) {
 
             List<Integer> readings = stream.map(Day3Power::parseBinary)
                     .filter(Objects::nonNull)

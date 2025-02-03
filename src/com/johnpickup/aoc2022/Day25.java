@@ -18,7 +18,7 @@ public class Day25 {
     public static void main(String[] args) {
         runTests();
 
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day25.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day25.txt"))) {
             long start = System.currentTimeMillis();
 
             BigInteger total = stream.filter(s -> !s.isEmpty())

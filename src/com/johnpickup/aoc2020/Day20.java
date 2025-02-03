@@ -15,19 +15,19 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
+
 
 public class Day20 {
     static boolean isTest;
     public static void main(String[] args) {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2020/" + day + "/" + day;
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2020/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
@@ -43,7 +43,7 @@ public class Day20 {
                 System.out.println("Part 1: " + part1);
 
                 CharGrid seaMonster = new CharGrid(Files.lines(
-                        Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day20/SeaMonster.txt"))
+                        Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2020/Day20/SeaMonster.txt"))
                         .collect(Collectors.toList()));
 
                 long part2 = image.part2(seaMonster);

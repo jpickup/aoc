@@ -26,7 +26,7 @@ public class Day10Syntax {
 
     public static void main(String[] args) throws Exception {
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day10Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day10Input.txt"))) {
             List<String> lines = stream.filter(Objects::nonNull).collect(Collectors.toList());
             System.out.println("Input size " + lines.size());
 

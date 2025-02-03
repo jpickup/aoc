@@ -12,7 +12,7 @@ public class Day25 {
     List<String> lines;
 
     public static void main(String[] args) {
-        Day25 day26 = new Day25("/Users/john/Development/AdventOfCode/resources/2021/Day25Input.txt");
+        Day25 day26 = new Day25("/Volumes/Users/john/Development/AdventOfCode/resources/2021/Day25Input.txt");
         day26.solve();
     }
 

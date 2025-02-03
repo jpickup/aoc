@@ -12,7 +12,7 @@ public class Day15DijkstraOptimised {
     int size;
 
     public static void main(String[] args) {
-        Day15DijkstraOptimised day15 = new Day15DijkstraOptimised("/Users/john/Development/AdventOfCode/resources/Day15Input.txt");
+        Day15DijkstraOptimised day15 = new Day15DijkstraOptimised("/Volumes/Users/john/Development/AdventOfCode/resources/Day15Input.txt");
         long start = System.currentTimeMillis();
         day15.solve();
         long end = System.currentTimeMillis();

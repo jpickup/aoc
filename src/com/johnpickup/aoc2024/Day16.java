@@ -13,19 +13,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.aoc2024.util.FileUtils.createEmptyTestFileIfMissing;
-
 public class Day16 {
     public static void main(String[] args) {
         String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/" + day + "/" + day;
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2024/" + day + "/" + day;
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 ,prefix + "-test2.txt"
                 , prefix + ".txt"
         );
         for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {

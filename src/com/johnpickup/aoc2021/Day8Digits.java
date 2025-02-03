@@ -11,7 +11,7 @@ public class Day8Digits {
     public static void main(String[] args) throws Exception {
 
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day8Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day8Input.txt"))) {
             List<Line> lines = stream.map(Day8Digits::parseLine).filter(Objects::nonNull).collect(Collectors.toList());
 
             int count = 0;

@@ -13,7 +13,7 @@ public class Day22ReactorPart2BigDecimal {
 
     public static void main(String[] args) {
         Day22ReactorPart2BigDecimal day22 =
-                new Day22ReactorPart2BigDecimal("/Users/john/Development/AdventOfCode/resources/Day22MyTest.txt");
+                new Day22ReactorPart2BigDecimal("/Volumes/Users/john/Development/AdventOfCode/resources/Day22MyTest.txt");
 
         //187500
 

@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class Day22 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day22.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day22.txt"))) {
             List<Brick> bricks = stream.filter(s -> !s.isEmpty()).map(Brick::parse).collect(Collectors.toList());
 
             List<Brick> dropped = dropAllMulti(bricks);

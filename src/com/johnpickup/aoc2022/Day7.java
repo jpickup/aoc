@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class Day7 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day7.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day7.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
 
             Directory rootNode = new Directory();

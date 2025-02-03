@@ -18,7 +18,7 @@ public class Day25v2 {
     private static final BigInteger FIVE = new BigInteger("5");
 
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day25-test.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day25-test.txt"))) {
             long start = System.currentTimeMillis();
 
             String result = stream.filter(s -> !s.isEmpty()).reduce("0", Snafu::add);

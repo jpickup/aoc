@@ -13,7 +13,7 @@ public class Day22ReactorPart2 {
 
     public static void main(String[] args) {
         Day22ReactorPart2 day22 =
-                new Day22ReactorPart2("/Users/john/Development/AdventOfCode/resources/Day22Input.txt");
+                new Day22ReactorPart2("/Volumes/Users/john/Development/AdventOfCode/resources/Day22Input.txt");
 
         //187500
 

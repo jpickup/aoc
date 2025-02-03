@@ -17,7 +17,7 @@ public class Day17 {
     private static final int BOARD_WIDTH = 7;
 
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day17.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day17.txt"))) {
             long start = System.currentTimeMillis();
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
             String jets = lines.get(0);

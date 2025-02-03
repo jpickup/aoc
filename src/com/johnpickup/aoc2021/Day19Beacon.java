@@ -12,8 +12,8 @@ public class Day19Beacon {
 
     public static void main(String[] args) {
         Day19Beacon day19 =
-                new Day19Beacon("/Users/john/Development/AdventOfCode/resources/Day19Input.txt");
-                //new com.johnpickup.aoc2021.Day19Beacon("/Users/john/Development/AdventOfCode/resources/Day19Input.txt");
+                new Day19Beacon("/Volumes/Users/john/Development/AdventOfCode/resources/Day19Input.txt");
+                //new com.johnpickup.aoc2021.Day19Beacon("/Volumes/Users/john/Development/AdventOfCode/resources/Day19Input.txt");
 
         day19.solve();
     }

@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public class Day13Folds {
     public static void main(String[] args) {
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day13Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day13Input.txt"))) {
 
             List<String> inputs = stream.collect(Collectors.toList());
 

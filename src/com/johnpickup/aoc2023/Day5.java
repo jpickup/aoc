@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class Day5 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day5.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day5.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
 
             List<Long> seeds = parseSeeds(lines.get(0));

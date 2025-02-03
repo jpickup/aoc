@@ -14,7 +14,7 @@ public class Day12DP {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         boolean part2 = true;
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day12.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day12.txt"))) {
             List<Springs> springLines = stream.filter(s -> !s.isEmpty()).map(Springs::parse).collect(Collectors.toList());
             if (part2) {
                 springLines = duplicateSprings(springLines);

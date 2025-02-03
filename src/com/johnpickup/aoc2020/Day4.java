@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class Day4 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2020/Day4/Day4.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2020/Day4/Day4.txt"))) {
             List<String> lines = stream.collect(Collectors.toList());
 
             List<String> linesBlock = new ArrayList<>();

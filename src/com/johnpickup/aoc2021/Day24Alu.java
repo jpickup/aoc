@@ -11,7 +11,7 @@ public class Day24Alu {
     List<String> lines;
 
     public static void main(String[] args) {
-        Day24Alu day24 = new Day24Alu("/Users/john/Development/AdventOfCode/resources/Day24Test.txt");
+        Day24Alu day24 = new Day24Alu("/Volumes/Users/john/Development/AdventOfCode/resources/Day24Test.txt");
         day24.solve("21111111111111");
     }
 

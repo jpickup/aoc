@@ -14,7 +14,7 @@ public class Day2Dive {
         int depth = 0;
         int aim = 0;
 
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/Day2Input.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/Day2Input.txt"))) {
             List<Instruction> instructions = stream.map(Day2Dive::parseInstruction)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());

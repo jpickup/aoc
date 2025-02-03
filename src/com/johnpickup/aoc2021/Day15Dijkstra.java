@@ -12,7 +12,7 @@ public class Day15Dijkstra {
     int size;
 
     public static void main(String[] args) {
-        Day15Dijkstra day15 = new Day15Dijkstra("/Users/john/Development/AdventOfCode/resources/Day15Input.txt");
+        Day15Dijkstra day15 = new Day15Dijkstra("/Volumes/Users/john/Development/AdventOfCode/resources/Day15Input.txt");
         day15.solve();
     }
 

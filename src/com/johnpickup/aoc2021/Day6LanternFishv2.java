@@ -12,7 +12,7 @@ public class Day6LanternFishv2 {
     public static void main(String[] args) throws Exception {
 
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day6Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day6Input.txt"))) {
 
             String firstLine = stream.findFirst().get();
             String[] inputs = firstLine.split(",");

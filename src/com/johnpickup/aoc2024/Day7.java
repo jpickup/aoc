@@ -16,7 +16,7 @@ public class Day7 {
     static int part = 1;
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day7/Day7.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2024/Day7/Day7.txt"))) {
             List<Equation> equations = stream.filter(s -> !s.isEmpty()).map(Equation::new).collect(Collectors.toList());
 
             System.out.println("Part 1 --------");

@@ -17,7 +17,7 @@ public class Day24 {
     private static final boolean test = false;
     private static final BigDecimal MIN_RANGE = test?BigDecimal.valueOf(7) : new BigDecimal("200000000000000");
     private static final BigDecimal MAX_RANGE = test?BigDecimal.valueOf(27) : new BigDecimal("400000000000000");
-    private static final String filename = "/Users/john/Development/AdventOfCode/resources/2023/Day24" +
+    private static final String filename = "/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day24" +
             (test? "-test.txt" : ".txt");
     public static void main(String[] args) {
         long start = System.currentTimeMillis();

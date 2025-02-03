@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class Day4Bingo {
     public static void main(String[] args) {
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day4Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day4Input.txt"))) {
 
 
             List<String> lines = stream.collect(Collectors.toList());

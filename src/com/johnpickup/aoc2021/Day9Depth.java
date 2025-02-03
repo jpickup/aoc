@@ -11,7 +11,7 @@ public class Day9Depth {
     public static void main(String[] args) throws Exception {
 
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day9Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day9Input.txt"))) {
             List<String> lines = stream.filter(Objects::nonNull).collect(Collectors.toList());
             int rows = lines.size();
             int cols = lines.get(0).length();

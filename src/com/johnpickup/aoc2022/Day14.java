@@ -8,7 +8,6 @@ import lombok.ToString;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +15,7 @@ import java.util.stream.Stream;
 
 public class Day14 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day14.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day14.txt"))) {
             List<Path> paths = stream.map(Path::parse).collect(Collectors.toList());
             Cave cave = Cave.createFrom(paths);
             Coord startPoint = Coord.builder().x(500).y(0).build();

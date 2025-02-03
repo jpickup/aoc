@@ -9,14 +9,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day12Part2 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day12.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day12.txt"))) {
             List<Springs> springLines = stream.filter(s -> !s.isEmpty()).map(Springs::parse).collect(Collectors.toList());
             //System.out.println(springLines);
             springLines = duplicateSprings(springLines);

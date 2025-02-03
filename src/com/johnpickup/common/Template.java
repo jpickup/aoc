@@ -1,26 +1,20 @@
-package com.johnpickup.aoc2025;
+package com.johnpickup.common;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.aoc2024.util.FileUtils.createEmptyTestFileIfMissing;
+import static com.johnpickup.util.FileUtils.getInputFilenames;
 
 public class Template {
     static boolean isTest;
     public static void main(String[] args) {
-        String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2025/" + day + "/" + day;
-        List<String> inputFilenames = Arrays.asList(
-                prefix + "-test.txt"
-                , prefix + ".txt"
-        );
+        List<String> inputFilenames = getInputFilenames(new Object(){});
         for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");

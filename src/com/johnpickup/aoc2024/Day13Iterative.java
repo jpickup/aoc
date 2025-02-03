@@ -21,7 +21,7 @@ public class Day13Iterative {
 
     static final long PART_B_OFFSET = 10000000000000L;
     public static void main(String[] args) {
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day13/Day13";
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2024/Day13/Day13";
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"

@@ -11,8 +11,8 @@ import java.util.stream.Stream;
  */
 public class MapComparer {
     public static void main(String[] args) {
-        String filename1="/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day21/p1.txt";
-        String filename2="/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day21/p2.txt";
+        String filename1="/Volumes/Users/john/Development/AdventOfCode/resources/2024/Day21/p1.txt";
+        String filename2="/Volumes/Users/john/Development/AdventOfCode/resources/2024/Day21/p2.txt";
         try {
             Stream<String> stream1 = Files.lines(Paths.get(filename1));
             MapFromFile map1 = new MapFromFile((stream1.collect(Collectors.toList())));

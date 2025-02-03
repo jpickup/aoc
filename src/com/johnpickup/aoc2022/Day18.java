@@ -7,7 +7,6 @@ import lombok.ToString;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +15,7 @@ import java.util.stream.Stream;
 
 public class Day18 {
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day18.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day18.txt"))) {
             long start = System.currentTimeMillis();
             Set<Cube> cubes = stream.filter(s -> !s.isEmpty()).map(Cube::parse).collect(Collectors.toSet());
 

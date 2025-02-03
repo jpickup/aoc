@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class Day16 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day16-test.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day16-test.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
             Board board = Board.parse(lines);
             Set<Beam> energised = Collections.singleton(new Beam(Direction.EAST, new Coord(0, 0)));

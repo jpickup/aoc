@@ -12,7 +12,7 @@ public class Day12Paths {
     public static void main(String[] args) throws Exception {
 
         try (Stream<String> stream = Files.lines(Paths.get(
-                "/Users/john/Development/AdventOfCode/resources/Day12Input.txt"))) {
+                "/Volumes/Users/john/Development/AdventOfCode/resources/Day12Input.txt"))) {
             List<Edge> edges = stream.map(Day12Paths::parseInput).filter(Objects::nonNull).collect(Collectors.toList());
             List<Edge> reverseEdges = edges.stream().map(e -> new Edge(e.node2, e.node1)).collect(Collectors.toList());
             edges.addAll(reverseEdges);

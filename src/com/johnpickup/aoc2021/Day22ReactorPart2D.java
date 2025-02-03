@@ -13,7 +13,7 @@ public class Day22ReactorPart2D {
 
     public static void main(String[] args) {
         Day22ReactorPart2D day22 =
-                new Day22ReactorPart2D("/Users/john/Development/AdventOfCode/resources/Day22ErrAdd.txt");
+                new Day22ReactorPart2D("/Volumes/Users/john/Development/AdventOfCode/resources/Day22ErrAdd.txt");
 
         //ErrAdd target: 2928
 

@@ -15,7 +15,7 @@ public class Day22Reactor1D {
 
     public static void main(String[] args) {
         Day22Reactor1D day22 =
-                new Day22Reactor1D("/Users/john/Development/AdventOfCode/resources/Day22Test.txt");
+                new Day22Reactor1D("/Volumes/Users/john/Development/AdventOfCode/resources/Day22Test.txt");
 
         day22.solve();
     }

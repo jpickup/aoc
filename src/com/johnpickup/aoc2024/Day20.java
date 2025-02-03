@@ -3,6 +3,7 @@ package com.johnpickup.aoc2024;
 import com.johnpickup.aoc2024.util.CharGrid;
 import com.johnpickup.aoc2024.util.Coord;
 import com.johnpickup.aoc2024.util.Dijkstra;
+import com.johnpickup.util.FileUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -10,25 +11,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.aoc2024.util.FileUtils.createEmptyTestFileIfMissing;
-
 public class Day20 {
     static boolean isTest;
     public static void main(String[] args) {
-        String day = new Object() { }.getClass().getEnclosingClass().getSimpleName();
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/" + day + "/" + day;
-        List<String> inputFilenames = Arrays.asList(
-                prefix + "-test.txt"
-                , prefix + ".txt"
-        );
-        for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+        for (String inputFilename : FileUtils.getInputFilenames(new Object() { })) {
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");

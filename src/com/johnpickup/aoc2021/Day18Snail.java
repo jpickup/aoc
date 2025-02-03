@@ -17,7 +17,7 @@ public class Day18Snail {
     static boolean debug = false;
 
     public static void main(String[] args) {
-        Day18Snail day18 = new Day18Snail("/Users/john/Development/AdventOfCode/resources/Day18Input.txt");
+        Day18Snail day18 = new Day18Snail("/Volumes/Users/john/Development/AdventOfCode/resources/Day18Input.txt");
 
         //day18.test();
 

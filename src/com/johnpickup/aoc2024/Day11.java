@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 public class Day11 {
     public static void main(String[] args) {
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/Day11/Day11";
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2024/Day11/Day11";
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 , prefix + ".txt"

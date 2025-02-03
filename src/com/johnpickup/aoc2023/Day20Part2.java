@@ -18,7 +18,7 @@ public class Day20Part2 {
 
   public static void main(String[] args) {
     long start = System.currentTimeMillis();
-    try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day20.txt"))) {
+    try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day20.txt"))) {
       List<Module> modules = stream.filter(s -> !s.isEmpty()).map(Module::parse).collect(Collectors.toList());
 
       System.out.println(modules);

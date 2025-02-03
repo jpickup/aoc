@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class Day19Part2 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day19-test2.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day19-test2.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
             Map<String, Workflow> workflows = lines.stream().filter(s -> !s.startsWith("{"))

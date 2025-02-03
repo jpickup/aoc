@@ -12,7 +12,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.johnpickup.util.FileUtils.createEmptyTestFileIfMissing;
 import static com.johnpickup.util.FileUtils.getInputFilenames;
 
 public class Day12 {
@@ -20,7 +19,7 @@ public class Day12 {
     public static void main(String[] args) {
         List<String> inputFilenames = getInputFilenames(new Object(){});
         for (String inputFilename : inputFilenames) {
-            createEmptyTestFileIfMissing(inputFilename);
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");

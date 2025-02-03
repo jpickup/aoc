@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Day12 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day12.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day12.txt"))) {
             List<Springs> springLines = stream.filter(s -> !s.isEmpty()).map(Springs::parse).collect(Collectors.toList());
 
             long part1 = springLines.stream().map(Springs::combinations).reduce(0L, Long::sum);

@@ -12,7 +12,7 @@ public class Day1IncreaseCount {
     public static void main(String[] args) throws Exception {
         int increaseCount = 0;
         Optional<Integer> last = Optional.empty();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/Day1Input.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/Day1Input.txt"))) {
             List<Integer> integers = stream.map(Integer::parseInt).collect(Collectors.toList());
 
             for (Integer integer : integers) {

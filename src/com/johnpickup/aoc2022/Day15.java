@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 public class Day15 {
     static int part = 2;
     public static void main(String[] args) {
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2022/Day15.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2022/Day15.txt"))) {
             List<String> lines = stream.filter(s -> !s.isEmpty()).collect(Collectors.toList());
 
             List<Coord> sensors = lines.stream().map(Day15::parseSensor).map(Coord::parse).collect(Collectors.toList());

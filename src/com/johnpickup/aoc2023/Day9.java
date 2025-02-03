@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Day9 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        try (Stream<String> stream = Files.lines(Paths.get("/Users/john/Development/AdventOfCode/resources/2023/Day9.txt"))) {
+        try (Stream<String> stream = Files.lines(Paths.get("/Volumes/Users/john/Development/AdventOfCode/resources/2023/Day9.txt"))) {
             List<Sequence> sequences = stream.filter(s -> !s.isEmpty()).map(Sequence::parse).collect(Collectors.toList());
             Integer part1 = sequences.stream().map(Sequence::part1).map(Sequence::getLast).reduce(0, Integer::sum);
             System.out.println(part1);

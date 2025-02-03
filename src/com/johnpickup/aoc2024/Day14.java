@@ -24,7 +24,7 @@ public class Day14 {
     static int MID_Y;
 
     public static void main(String[] args) {
-        String prefix = "/Volumes/User Data/john/Development/AdventOfCode/resources/2024/day14/Day14";
+        String prefix = "/Volumes/Users/john/Development/AdventOfCode/resources/2024/day14/Day14";
         List<String> inputFilenames = Arrays.asList(
                 prefix + "-test.txt"
                 ,prefix + ".txt"
