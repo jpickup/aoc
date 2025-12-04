@@ -7,6 +7,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
 @Getter
@@ -101,16 +106,53 @@ public class CharGrid implements Grid<Character> {
 
     @Override
     public Set<Coord> findCells(Character find) {
-        Set<Coord> result = new HashSet<>();
-        for (int y = 0; y < getHeight(); y++) {
-            for (int x = 0; x < getWidth(); x++) {
-                Coord c = new Coord(x, y);
-                if (getCell(c) == find) {
-                    result.add(c);
+        return allCells().filter(c -> getCell(c) == find).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Stream<Coord> allCells() {
+        return StreamSupport.stream(cellSpliterator(), false);
+    }
+
+    private Spliterator<Coord> cellSpliterator() {
+        return new Spliterator<>() {
+            int x = 0;
+            int y = 0;
+
+            @Override
+            public boolean tryAdvance(Consumer<? super Coord> action) {
+                if (y < height) {
+                    if (x < width) {
+                        action.accept(new Coord(x, y));
+                        x++;
+                        return true;
+                    } else {
+                        y++;
+                        x = 0;
+                        if (y < height) {
+                            action.accept(new Coord(x, y));
+                            return true;
+                        }
+                    }
                 }
+                return false;
             }
-        }
-        return result;
+
+            @Override
+            public Spliterator<Coord> trySplit() {
+                return null;
+            }
+
+            @Override
+            public long estimateSize() {
+                return (long) width * height;
+            }
+
+            @Override
+            public int characteristics() {
+                return DISTINCT | ORDERED | SIZED | NONNULL;
+            }
+        };
     }
 
     /**

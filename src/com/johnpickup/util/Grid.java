@@ -1,6 +1,7 @@
 package com.johnpickup.util;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 public interface Grid<T> {
     T getCell(Coord c);
@@ -9,5 +10,5 @@ public interface Grid<T> {
     int size();
     boolean hasCell(Coord coord);
     Set<Coord> findCells(T target);
-
+    Stream<Coord> allCells();
 }

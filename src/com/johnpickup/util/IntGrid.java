@@ -3,9 +3,14 @@ package com.johnpickup.util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
 @Getter
@@ -15,9 +20,9 @@ public class IntGrid implements Grid<Integer> {
     protected final int[][] cells;
 
     public IntGrid(List<String> lines) {
-        width = lines.get(0).length();
+        width = lines.getFirst().length();
         height = lines.size();
-        cells = new int[lines.get(0).length()][lines.size()];
+        cells = new int[lines.getFirst().length()][lines.size()];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int value = lines.get(y).charAt(x) - '0';
@@ -87,18 +92,54 @@ public class IntGrid implements Grid<Integer> {
 
     @Override
     public Set<Coord> findCells(Integer target) {
-        Set<Coord> result = new HashSet<>();
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                Coord coord = new Coord(x, y);
-                if (getCell(coord).equals(target)) {
-                    result.add(coord);
-                }
-            }
-        }
-        return result;
+        return allCells().filter(c -> Objects.equals(getCell(c), target)).collect(Collectors.toSet());
     }
 
+    @Override
+    public Stream<Coord> allCells() {
+        return StreamSupport.stream(cellSpliterator(), false);
+    }
+
+    private Spliterator<Coord> cellSpliterator() {
+        return new Spliterator<>() {
+            int x = 0;
+            int y = 0;
+
+            @Override
+            public boolean tryAdvance(Consumer<? super Coord> action) {
+                if (y < height) {
+                    if (x < width) {
+                        action.accept(new Coord(x, y));
+                        x++;
+                        return true;
+                    } else {
+                        y++;
+                        x = 0;
+                        if (y < height) {
+                            action.accept(new Coord(x, y));
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public Spliterator<Coord> trySplit() {
+                return null;
+            }
+
+            @Override
+            public long estimateSize() {
+                return (long) width * height;
+            }
+
+            @Override
+            public int characteristics() {
+                return DISTINCT | ORDERED | SIZED | NONNULL;
+            }
+        };
+    }
 
     public boolean inBounds(Coord coord) {
         return coord.inBounds(width, height);

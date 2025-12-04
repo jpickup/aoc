@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode
 public class SparseGrid<T> implements Grid<T>{
@@ -71,6 +72,11 @@ public class SparseGrid<T> implements Grid<T>{
 
     public Set<Coord> findCells(T target) {
         return cells.entrySet().stream().filter(e -> e.getValue().equals(target)).map(Map.Entry::getKey).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Stream<Coord> allCells() {
+        return cells.keySet().stream();
     }
 
     public void clear() {

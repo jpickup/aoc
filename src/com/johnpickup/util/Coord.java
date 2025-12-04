@@ -3,6 +3,9 @@ package com.johnpickup.util;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Data
 public class Coord implements Comparable<Coord> {
@@ -49,6 +52,13 @@ public class Coord implements Comparable<Coord> {
         return new Coord(x-1, y-1);
     }
 
+    public List<Coord> adjacent4() {
+        return Arrays.asList(north(), east(), south(), west());
+    }
+
+    public List<Coord> adjacent8() {
+        return Arrays.asList(north(), northEast(), east(), southEast(), south(), southWest(), west(), northWest());
+    }
     public boolean isAdjacentTo4(Coord other) {
         int dx = Math.abs(x - other.x);
         int dy = Math.abs(y - other.y);

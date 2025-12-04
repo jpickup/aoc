@@ -6,7 +6,6 @@ import com.johnpickup.util.Coord;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -57,16 +56,9 @@ public class Day4 {
         }
 
         private List<Coord> accessible() {
-            List<Coord> result = new ArrayList<>();
-            for (int y = 0; y < grid.getHeight(); y++) {
-                for (int x = 0; x < grid.getWidth(); x++) {
-                    Coord c = new Coord(x,y);
-                    if (isAccessible(c)) {
-                        result.add(c);
-                    }
-                }
-            }
-            return result;
+            return grid.allCells()
+                    .filter(this::isAccessible)
+                    .toList();
         }
 
         private boolean isAccessible(Coord c) {
@@ -74,17 +66,10 @@ public class Day4 {
             return countAdjacent(c) < 4;
         }
 
-        private int countAdjacent(Coord c) {
-            int adjcents = 0;
-            if (grid.getCell(c.north()) == PAPER) adjcents++;
-            if (grid.getCell(c.northEast()) == PAPER) adjcents++;
-            if (grid.getCell(c.east()) == PAPER) adjcents++;
-            if (grid.getCell(c.southEast()) == PAPER) adjcents++;
-            if (grid.getCell(c.south()) == PAPER) adjcents++;
-            if (grid.getCell(c.southWest()) == PAPER) adjcents++;
-            if (grid.getCell(c.west()) == PAPER) adjcents++;
-            if (grid.getCell(c.northWest()) == PAPER) adjcents++;
-            return adjcents;
+        private long countAdjacent(Coord c) {
+            return c.adjacent8().stream()
+                    .filter(a -> grid.getCell(a) == PAPER)
+                    .count();
         }
 
         public long part2() {
