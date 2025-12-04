@@ -38,6 +38,10 @@ public class Day4 {
     }
 
     private static class PaperGrid {
+
+        private static final char PAPER = '@';
+        private static final char SPACE = '.';
+
         private final CharGrid grid;
 
         public PaperGrid(CharGrid charGrid) {
@@ -66,12 +70,9 @@ public class Day4 {
         }
 
         private boolean isAccessible(Coord c) {
-            if (grid.getCell(c).equals('.')) return false;
-            return countAdjacent(c)<4;
+            if (grid.getCell(c) == SPACE) return false;
+            return countAdjacent(c) < 4;
         }
-
-        private static final char PAPER = '@';
-        private static final char SPACE = '.';
 
         private int countAdjacent(Coord c) {
             int adjcents = 0;
