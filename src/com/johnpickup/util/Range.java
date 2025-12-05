@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.function.Function;
 
 @Data
-public class Range<T extends Comparable<T>> {
+public class Range<T extends Comparable<T>> implements Comparable<Range<T>> {
     private final T lower;
     private final T upper;
 
@@ -35,6 +35,12 @@ public class Range<T extends Comparable<T>> {
         return maxLower.compareTo(minUpper) < 0;
     }
 
+    public boolean overlapsInclusive(Range<T> other) {
+        T maxLower = lower.compareTo(other.lower) > 0 ? lower : other.lower;
+        T minUpper = upper.compareTo(other.upper) < 0 ? upper : other.upper;
+        return maxLower.compareTo(minUpper) <= 0;
+    }
+
     public boolean containsValue(T value) {
         return value.compareTo(this.lower) >= 0 && value.compareTo(this.upper) <= 0;
     }
@@ -50,7 +56,7 @@ public class Range<T extends Comparable<T>> {
 
     public Collection<Range<T>> combineWith(Range<T> other) {
         // ranges are disjoint
-        if (!overlaps(other)) {
+        if (!overlapsInclusive(other)) {
             return Arrays.asList(this, other);
         }
 
@@ -62,5 +68,12 @@ public class Range<T extends Comparable<T>> {
 
     public static <T extends Comparable<T>> Collection<Range<T>> combine(Range<T> r1, Range<T> r2) {
         return r1.combineWith(r2);
+    }
+
+    @Override
+    public int compareTo(Range<T> o) {
+        int compareLower = lower.compareTo(o.lower);
+        if (compareLower != 0) return compareLower;
+        return upper.compareTo(o.upper);
     }
 }
