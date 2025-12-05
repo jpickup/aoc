@@ -52,6 +52,10 @@ public class Coord implements Comparable<Coord> {
         return new Coord(x-1, y-1);
     }
 
+    public List<Coord> adjacent(boolean includeDiagonal) {
+        return includeDiagonal ? adjacent8() : adjacent4();
+    }
+
     public List<Coord> adjacent4() {
         return Arrays.asList(north(), east(), south(), west());
     }
