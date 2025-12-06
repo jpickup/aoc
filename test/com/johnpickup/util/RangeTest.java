@@ -8,6 +8,12 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class RangeTest {
+    @Test
+    public void testParseConstructor() {
+        Range<Integer> r = new Range<Integer>("1-2", Integer::parseInt);
+        assertThat(r.getLower(), is(1));
+        assertThat(r.getUpper(), is(2));
+    }
 
     @Test
     public void intersectionOfDisjoint() {
@@ -74,7 +80,7 @@ public class RangeTest {
     }
 
     @Test
-    public void combineDAdjacent() {
+    public void combineAdjacent() {
         Range<Integer> r1 = new Range<>(1,3);
         Range<Integer> r2 = new Range<>(3,6);
         Collection<Range<Integer>> combined = Range.combine(r1, r2);
