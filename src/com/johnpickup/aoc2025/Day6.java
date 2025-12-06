@@ -62,10 +62,8 @@ public class Day6 {
         String operatorLine = lines.removeLast();
         int colIndex = 0;
         long part2 = 0;
-
         char operator = operatorLine.charAt(0);
         List<String> values = new ArrayList<>();
-
         while (colIndex < operatorLine.length()) {
             if (!values.isEmpty() && operatorLine.charAt(colIndex) != ' ') {
                 part2 += applyPart2Operator(operator, values);
@@ -81,8 +79,8 @@ public class Day6 {
             values = newValues;
             colIndex++;
         }
+        // the last one isn't picked up but can't be bothered fixing the condition!
         part2 += applyPart2Operator(operator, values);
-
         return part2;
     }
 
@@ -130,7 +128,8 @@ public class Day6 {
         DataRow(String line) {
             values = Arrays.stream(line.split(" "))
                     .filter(f -> !f.isEmpty())
-                    .map(Long::parseLong).toList();
+                    .map(Long::parseLong)
+                    .toList();
         }
 
         public long getValue(int i) {
@@ -152,9 +151,7 @@ public class Day6 {
         public long applyPart1(List<Long> values, int operatorIndex) {
             Character operator = operators.get(operatorIndex);
             long identity = operator=='+'?0L:1L;
-            return values.stream().reduce(identity, operator=='+'?Long::sum:(a,b)->a*b);
+            return values.stream().reduce(identity, operator == '+' ? Long::sum : (a,b)->a*b);
         }
     }
-
-
 }
