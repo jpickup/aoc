@@ -72,7 +72,7 @@ public class Day7 {
 //                System.out.println(grid);
 //                System.out.printf("%d%n", locations.values().stream().reduce(0L, Long::sum));
             }
-            countTimelines += locations.values().stream().reduce(0L, Long::sum);
+            countTimelines = locations.values().stream().reduce(0L, Long::sum);
         }
 
         private TreeMap<Coord, Long> iterateLevel(TreeMap<Coord, Long> locations) {

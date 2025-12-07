@@ -23,7 +23,9 @@ public class FileUtils {
         String prefix = resourceDirectory.getAbsolutePath() + "/" + day;
         createEmptyTestFileIfMissing(prefix + "-test.txt");
         createEmptyTestFileIfMissing(prefix + ".txt");
-        return Arrays.stream(resourceDirectory.listFiles((dir, name) -> name.endsWith(".txt")))
+        createEmptyTestFileIfMissing( resourceDirectory.getAbsolutePath() + "/instructions.txt");
+        return Arrays.stream(resourceDirectory.listFiles((dir, name) ->
+                        name.endsWith(".txt") && !name.startsWith("instructions")))
                 .map(file -> file.getAbsolutePath())
                 .sorted(FileUtils::sortTestFilesFirst)
                 .collect(Collectors.toList());
@@ -41,6 +43,11 @@ public class FileUtils {
     public static List<String> getInputFilenames(Object obj) {
         Class<?> enclosingClass = obj.getClass().getEnclosingClass();
         String day = enclosingClass.getSimpleName();
+        return getInputFilenames(obj, day);
+    }
+
+    public static List<String> getInputFilenames(Object obj, String day) {
+        Class<?> enclosingClass = obj.getClass().getEnclosingClass();
         String year = enclosingClass.getName().replace("com.johnpickup.aoc", "").replace("."+ day, "");
         return getInputFilenames(year, day);
     }
