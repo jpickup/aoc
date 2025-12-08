@@ -75,4 +75,11 @@ public class Coord3D implements Comparable<Coord3D> {
         return new Coord3D(x + dx, y + dy, z + dz);
     }
 
+    // Ignoring sqrt
+    public static long straightLineDistanceSqr(Coord3D c1, Coord3D c2) {
+        long dx = (long) (c1.getX() - c2.getX()) * (c1.getX() - c2.getX());
+        long dy = (long) (c1.getY() - c2.getY()) * (c1.getY() - c2.getY());
+        long dz = (long) (c1.getZ() - c2.getZ()) * (c1.getZ() - c2.getZ());
+        return dx + dy + dz;
+    }
 }
