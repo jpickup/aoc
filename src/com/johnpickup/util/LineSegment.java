@@ -14,6 +14,8 @@ public abstract class LineSegment {
 
     public abstract boolean crosses(LineSegment other);
 
+    public abstract boolean contains(Coord coord);
+
     @RequiredArgsConstructor
     static class VerticalLineSegment extends LineSegment {
         final int x;
@@ -30,6 +32,11 @@ public abstract class LineSegment {
             } else {
                 return false;
             }
+        }
+
+        @Override
+        public boolean contains(Coord coord) {
+            return (x == coord.x) && y.containsValue(coord.y);
         }
     }
 
@@ -49,6 +56,11 @@ public abstract class LineSegment {
             } else {
                 return false;
             }
+        }
+
+        @Override
+        public boolean contains(Coord coord) {
+            return (y == coord.y) && x.containsValue(coord.x);
         }
     }
 }

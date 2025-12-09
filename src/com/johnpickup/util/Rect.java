@@ -22,6 +22,13 @@ public class Rect<T extends Comparable<T>> implements Comparable<Rect<T>> {
         this.y = y;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Rect( %s,%s - %s,%s )",
+                x.getLower().toString(), y.getLower().toString(),
+                x.getUpper().toString(), y.getUpper().toString());
+    }
+
     public T left() {
         return x.getLower();
     }
