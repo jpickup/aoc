@@ -54,6 +54,15 @@ public class Range<T extends Comparable<T>> implements Comparable<Range<T>> {
         return new Range<>(maxLower, minUpper);
     }
 
+    public Range<T> intersectionInclusive(Range<T> other) {
+        if (!overlapsInclusive(other)) return null;
+
+        T maxLower = lower.compareTo(other.lower) > 0 ? lower : other.lower;
+        T minUpper = upper.compareTo(other.upper) < 0 ? upper : other.upper;
+
+        return new Range<>(maxLower, minUpper);
+    }
+
     public Collection<Range<T>> combineWith(Range<T> other) {
         // ranges are disjoint
         if (!overlapsInclusive(other)) {

@@ -21,6 +21,10 @@ public class CharGrid implements Grid<Character> {
     final int height;
     final char[][] cells;
 
+    public CharGrid(int width, int height) {
+        this(width, height, new char[width][height]);
+    }
+
     public CharGrid(CharGrid source) {
         width = source.getWidth();
         height = source.getHeight();
