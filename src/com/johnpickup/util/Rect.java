@@ -44,7 +44,7 @@ public class Rect<T extends Comparable<T>> implements Comparable<Rect<T>> {
 
     public Rect<T> intersection(Rect<T> other) {
         if (!intersects(other)) return null;
-        return new Rect(x.intersection(other.x), y.intersection(other.y));
+        return new Rect<>(x.intersection(other.x), y.intersection(other.y));
     }
 
     public boolean intersectsInclusive(Rect<T> other) {
@@ -54,7 +54,7 @@ public class Rect<T extends Comparable<T>> implements Comparable<Rect<T>> {
 
     public Rect<T> intersectionInclusive(Rect<T> other) {
         if (!intersectsInclusive(other)) return null;
-        return new Rect(x.intersectionInclusive(other.x), y.intersectionInclusive(other.y));
+        return new Rect<>(x.intersectionInclusive(other.x), y.intersectionInclusive(other.y));
     }
 
     @Override
