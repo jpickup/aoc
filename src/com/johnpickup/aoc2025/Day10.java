@@ -30,7 +30,7 @@ public class Day10 {
 
                 long part1 = part1(machines);
                 System.out.println("Part 1: " + part1);
-                long part2 = 0L;
+                long part2 = part2(machines);
                 System.out.println("Part 2: " + part2);
 
             } catch (IOException e) {
@@ -42,7 +42,11 @@ public class Day10 {
     }
 
     static long part1(List<Machine> machines) {
-        return machines.stream().map(Machine::minimumPresses).reduce(0L, Long::sum);
+        return machines.stream().map(Machine::minimumStatePresses).reduce(0L, Long::sum);
+    }
+
+    static long part2(List<Machine> machines) {
+        return machines.stream().map(Machine::minimumJoltagePresses).reduce(0L, Long::sum);
     }
 
     @Data
@@ -51,6 +55,7 @@ public class Day10 {
         private final MachineState targetState;
         private final List<ButtonAction> buttonActions;
         private final List<Integer> joltages;
+        private final MachineJoltageState targetJoltageState;
 
         public static Machine parse(String line) {
             String[] parts = line.split(" ");
@@ -61,17 +66,31 @@ public class Day10 {
                 buttons.add(new ButtonAction(parts[i].substring(1, parts[i].length()-1)));
             }
 
-            List<Integer> joltages = Arrays.stream(joltagePart.split(",")).map(Integer::parseInt).toList();;
-            return new Machine(new MachineState(targetPart), buttons, joltages);
+            List<Integer> joltages = Arrays.stream(joltagePart.split(",")).map(Integer::parseInt).toList();
+
+            return new Machine(new MachineState(targetPart), buttons, joltages, MachineJoltageState.of(joltages));
         }
 
-        public long minimumPresses() {
+        public long minimumStatePresses() {
             // bfs
             int depth = 0;
             Set<MachineState> levelStates = Collections.singleton(MachineState.initialState(targetState.size()));
             Set<MachineState> knownStates = new HashSet<>(levelStates); // ignore these if seen before
             while (!levelStates.contains(targetState)) {
                 levelStates = nextStates(levelStates, knownStates);
+                depth++;
+            }
+            return depth;
+        }
+
+        public long minimumJoltagePresses() {
+            // bfs - doesn't work. chinese remainder theorem?
+            int depth = 0;
+            Set<MachineJoltageState> levelStates = Collections.singleton(MachineJoltageState.initialState(targetState.size()));
+            Set<MachineJoltageState> knownStates = new HashSet<>(levelStates); // ignore these if seen before
+            while (!levelStates.contains(targetJoltageState)) {
+                levelStates = nextJoltageStates(levelStates, knownStates);
+                depth++;
             }
             return depth;
         }
@@ -87,9 +106,26 @@ public class Day10 {
                 }
             }
             knownStates.addAll(result);
+            if (currentStates.equals(result)) throw new RuntimeException("No progress made");
+            return result;
+        }
+
+        Set<MachineJoltageState> nextJoltageStates(Set<MachineJoltageState> currentStates, Set<MachineJoltageState> knownStates) {
+            Set<MachineJoltageState> result = new HashSet<>();
+            for (MachineJoltageState currentState : currentStates) {
+                for (ButtonAction buttonAction : buttonActions) {
+                    MachineJoltageState nextState = currentState.apply(buttonAction);
+                    if (!knownStates.contains(nextState) && nextState.isValidForTarget(targetJoltageState)) {
+                        result.add(nextState);
+                    }
+                }
+            }
+            knownStates.addAll(result);
+            if (currentStates.equals(result)) throw new RuntimeException("No progress made");
             return result;
         }
     }
+
 
     @RequiredArgsConstructor
     @Data
@@ -113,9 +149,10 @@ public class Day10 {
         }
 
         public MachineState apply(ButtonAction buttonAction) {
-            MachineState result = new MachineState(this.buttons);
-            buttonAction.buttonNumbers.forEach(bn -> result.buttons[bn] = !result.buttons[bn]);
-            return result;
+            boolean[] result = new boolean[size()];
+            if (size() >= 0) System.arraycopy(this.buttons, 0, result, 0, size());
+            buttonAction.buttonNumbers.forEach(bn -> result[bn] = !result[bn]);
+            return new MachineState(result);
         }
 
         public int size() {
@@ -123,6 +160,47 @@ public class Day10 {
         }
     }
 
+    @RequiredArgsConstructor
+    @Data
+    static class MachineJoltageState {
+        private final int[] joltages;
+
+        public static MachineJoltageState initialState(int size) {
+            return new MachineJoltageState(new int[size]);
+        }
+
+        public static MachineJoltageState of(List<Integer> joltages) {
+            int[] result = new int[joltages.size()];
+            for (int i = 0; i < joltages.size(); i++) {
+                result[i] = joltages.get(i);
+            }
+            return new MachineJoltageState(result);
+        }
+
+        @Override
+        public String toString() {
+            return Arrays.toString(joltages);
+        }
+
+        public MachineJoltageState apply(ButtonAction buttonAction) {
+            int[] result = new int[size()];
+            if (size() >= 0) System.arraycopy(this.joltages, 0, result, 0, size());
+            buttonAction.buttonNumbers.forEach(bn -> result[bn] ++);
+            return new MachineJoltageState(result);
+        }
+
+        public int size() {
+            return joltages.length;
+        }
+
+        public boolean isValidForTarget(MachineJoltageState targetState) {
+            boolean result = true;
+            for (int i = 0; i < size(); i++) {
+                result &= joltages[i] <= targetState.joltages[i];
+            }
+            return result;
+        }
+    }
     @Data
     static class ButtonAction {
         private final Set<Integer> buttonNumbers;
