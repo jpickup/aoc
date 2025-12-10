@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 public abstract class LineSegment {
     public static LineSegment createFrom(Coord c1, Coord c2) {
+        if (c1.equals(c2))
+            throw new RuntimeException("Segment requires two different points");
         if (c1.getX() == c2.getX())
             return VerticalLineSegment.of(c1.getX(), c1.getY(), c2.getY());
         else if (c1.getY() == c2.getY())
@@ -28,7 +30,8 @@ public abstract class LineSegment {
         @Override
         public boolean crosses(LineSegment other) {
             if (other instanceof HorizontalLineSegment) {
-                return y.containsValue(((HorizontalLineSegment)other).y);
+                int otherY = ((HorizontalLineSegment) other).y;
+                return y.containsValue(otherY) && y.getUpper().compareTo(otherY) != 0;
             } else {
                 return false;
             }
@@ -52,7 +55,8 @@ public abstract class LineSegment {
         @Override
         public boolean crosses(LineSegment other) {
             if (other instanceof VerticalLineSegment) {
-                return x.containsValue(((VerticalLineSegment)other).x);
+                int otherX = ((VerticalLineSegment) other).x;
+                return x.containsValue(otherX) && x.getUpper().compareTo(otherX) != 0;
             } else {
                 return false;
             }

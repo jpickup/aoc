@@ -150,10 +150,6 @@ public class Day9 {
                     }
                 }
             }
-
-
-
-
             return grid.toString();
         }
 
@@ -165,10 +161,13 @@ public class Day9 {
             LineSegment vert = LineSegment.createFrom(new Coord(r.left(), r.top()), new Coord(r.left(), Integer.MAX_VALUE));
             LineSegment horz = LineSegment.createFrom(new Coord(r.left(), r.top()), new Coord(Integer.MAX_VALUE, r.top()));
 
-            long vertCrossCount = segments.stream().filter(s -> s.crosses(vert)).count();
-            long horzCrossCount = segments.stream().filter(s -> s.crosses(horz)).count();
+            long vertCrossCount = segments.stream().filter(s -> s.crosses(vert) && !s.equals(horz)).count();
+            long horzCrossCount = segments.stream().filter(s -> s.crosses(horz) && !s.equals(vert)).count();
 
-            return (vertCrossCount % 2 == 1) && (horzCrossCount % 2 == 1);
+            boolean result = (vertCrossCount % 2 == 1) && (horzCrossCount % 2 == 1);
+            System.out.printf("%s enclosed V=%d H=%d : %s%n", r, vertCrossCount, horzCrossCount, result?"Y":"N");
+
+            return result;
         }
 
         private List<LineSegment> generateSegments(List<Coord> tiles) {
