@@ -1,0 +1,33 @@
+digraph "day11-test2" {
+  rankdir=LR;
+  node [shape=circle] aaa;
+  "aaa" -> "fft";
+  node [shape=circle] ccc;
+  "ccc" -> "ddd";
+  "ccc" -> "eee";
+  node [shape=circle] bbb;
+  "bbb" -> "tty";
+  node [shape=circle] eee;
+  "eee" -> "dac";
+  node [shape=circle] ddd;
+  "ddd" -> "hub";
+  node [shape=circle] ggg;
+  "ggg" -> "out";
+  node [shape=circle] dac;
+  "dac" -> "fff";
+  node [shape=circle] fff;
+  "fff" -> "ggg";
+  "fff" -> "hhh";
+  node [shape=circle] hhh;
+  "hhh" -> "out";
+  node [shape=circle] svr;
+  "svr" -> "aaa";
+  "svr" -> "bbb";
+  node [shape=circle] out;
+  node [shape=circle] hub;
+  "hub" -> "fff";
+  node [shape=circle] fft;
+  "fft" -> "ccc";
+  node [shape=circle] tty;
+  "tty" -> "ccc";
+}
