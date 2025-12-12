@@ -31,7 +31,8 @@ public abstract class LineSegment {
         public boolean crosses(LineSegment other) {
             if (other instanceof HorizontalLineSegment) {
                 int otherY = ((HorizontalLineSegment) other).y;
-                return y.containsValue(otherY) && y.getUpper().compareTo(otherY) != 0;
+//                return y.containsValue(otherY) && y.getUpper().compareTo(otherY) != 0;
+                return otherY > y.getLower() && otherY < y.getUpper();
             } else {
                 return false;
             }
@@ -56,7 +57,8 @@ public abstract class LineSegment {
         public boolean crosses(LineSegment other) {
             if (other instanceof VerticalLineSegment) {
                 int otherX = ((VerticalLineSegment) other).x;
-                return x.containsValue(otherX) && x.getUpper().compareTo(otherX) != 0;
+                //return x.containsValue(otherX) && x.getUpper().compareTo(otherX) != 0;
+                return otherX > x.getLower() && otherX < x.getUpper();
             } else {
                 return false;
             }
