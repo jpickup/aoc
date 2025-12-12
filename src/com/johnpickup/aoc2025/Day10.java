@@ -14,10 +14,12 @@ import static com.johnpickup.util.FileUtils.getInputFilenames;
 
 public class Day10 {
     static boolean isTest;
+
     public static void main(String[] args) {
-        List<String> inputFilenames = getInputFilenames(new Object(){});
+        List<String> inputFilenames = getInputFilenames(new Object() {
+        });
         for (String inputFilename : inputFilenames) {
-            
+
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
@@ -59,11 +61,11 @@ public class Day10 {
 
         public static Machine parse(String line) {
             String[] parts = line.split(" ");
-            String targetPart = parts[0].substring(1, parts[0].length()-1);
-            String joltagePart = parts[parts.length-1].substring(1, parts[parts.length-1].length()-1);
+            String targetPart = parts[0].substring(1, parts[0].length() - 1);
+            String joltagePart = parts[parts.length - 1].substring(1, parts[parts.length - 1].length() - 1);
             List<ButtonAction> buttons = new ArrayList<>();
-            for (int i = 1; i < parts.length-1; i++) {
-                buttons.add(new ButtonAction(parts[i].substring(1, parts[i].length()-1)));
+            for (int i = 1; i < parts.length - 1; i++) {
+                buttons.add(new ButtonAction(parts[i].substring(1, parts[i].length() - 1)));
             }
 
             List<Integer> joltages = Arrays.stream(joltagePart.split(",")).map(Integer::parseInt).toList();
@@ -78,18 +80,6 @@ public class Day10 {
             Set<MachineState> knownStates = new HashSet<>(levelStates); // ignore these if seen before
             while (!levelStates.contains(targetState)) {
                 levelStates = nextStates(levelStates, knownStates);
-                depth++;
-            }
-            return depth;
-        }
-
-        public long minimumJoltagePresses() {
-            // bfs - doesn't work. chinese remainder theorem?
-            int depth = 0;
-            Set<MachineJoltageState> levelStates = Collections.singleton(MachineJoltageState.initialState(targetState.size()));
-            Set<MachineJoltageState> knownStates = new HashSet<>(levelStates); // ignore these if seen before
-            while (!levelStates.contains(targetJoltageState)) {
-                levelStates = nextJoltageStates(levelStates, knownStates);
                 depth++;
             }
             return depth;
@@ -110,13 +100,53 @@ public class Day10 {
             return result;
         }
 
-        Set<MachineJoltageState> nextJoltageStates(Set<MachineJoltageState> currentStates, Set<MachineJoltageState> knownStates) {
+        public long minimumJoltagePresses() {
+            int depth = 0;
+            Set<MachineJoltageState> levelStates = Collections.singleton(MachineJoltageState.initialState(targetState.size()));
+            Map<ButtonAction, Integer> maxPushesByButton = new HashMap<>();
+
+            for (ButtonAction buttonAction : buttonActions) {
+                maxPushesByButton.put(buttonAction, calcMaxPushesForJoltage(buttonAction));
+            }
+
+            System.out.println(maxPushesByButton);
+
+            Set<ButtonSequence> knownButtonSequences = new HashSet<>(); // ignore these if seen before
+            Set<MachineJoltageState> knownStates = new HashSet<>(levelStates);
+            knownButtonSequences.add(ButtonSequence.initial(buttonActions));
+            while (!levelStates.contains(targetJoltageState)) {
+                levelStates = nextJoltageStates(levelStates, ButtonSequence.initial(buttonActions), knownButtonSequences, knownStates, maxPushesByButton);
+                depth++;
+            }
+            System.out.println("Solved " + this);
+            return depth;
+        }
+
+        // from the target joltages, which action in this button can be performed the least times,
+        // that's the most times we can push this button
+        private int calcMaxPushesForJoltage(ButtonAction buttonAction) {
+            int result = Integer.MAX_VALUE;
+
+            for (int buttonNumber : buttonAction.buttonNumbers) {
+                int targetForButton = targetJoltageState.getJoltages()[buttonNumber];
+                if (targetForButton < result) result = targetForButton;
+            }
+            return result;
+        }
+
+        Set<MachineJoltageState> nextJoltageStates(Set<MachineJoltageState> currentStates, ButtonSequence sequenceToGetHere, Set<ButtonSequence> knownButtonSequences, Set<MachineJoltageState> knownStates, Map<ButtonAction, Integer> maxPushesByButton) {
             Set<MachineJoltageState> result = new HashSet<>();
             for (MachineJoltageState currentState : currentStates) {
                 for (ButtonAction buttonAction : buttonActions) {
-                    MachineJoltageState nextState = currentState.apply(buttonAction);
-                    if (!knownStates.contains(nextState) && nextState.isValidForTarget(targetJoltageState)) {
-                        result.add(nextState);
+                    if (sequenceToGetHere.getButtonPushes().get(buttonAction) < maxPushesByButton.get(buttonAction)) {
+                        ButtonSequence nextButtonSequence = sequenceToGetHere.pushButton(buttonAction);
+                        if (!knownButtonSequences.contains(nextButtonSequence)) {
+                            MachineJoltageState nextState = currentState.apply(buttonAction);
+                            if (nextState.isValidForTarget(targetJoltageState)) {
+                                knownButtonSequences.add(nextButtonSequence);
+                                result.add(nextState);
+                            }
+                        }
                     }
                 }
             }
@@ -126,11 +156,31 @@ public class Day10 {
         }
     }
 
+    @Data
+    static class ButtonSequence {
+        private final Map<ButtonAction, Integer> buttonPushes = new HashMap<>();
+
+        public static ButtonSequence initial(Collection<ButtonAction> possibleActions) {
+            ButtonSequence result = new ButtonSequence();
+            for (ButtonAction possibleAction : possibleActions) {
+                result.buttonPushes.put(possibleAction, 0);
+            }
+            return result;
+        }
+
+        public ButtonSequence pushButton(ButtonAction action) {
+            ButtonSequence result = new ButtonSequence();
+            result.buttonPushes.putAll(this.buttonPushes);
+            result.buttonPushes.put(action, result.buttonPushes.getOrDefault(action, 0) + 1);
+            return result;
+        }
+    }
 
     @RequiredArgsConstructor
     @Data
     static class MachineState {
         private final boolean[] buttons;
+
         public MachineState(String text) {
             buttons = new boolean[text.length()];
             for (int i = 0; i < text.length(); i++) buttons[i] = text.charAt(i) == '#';
@@ -185,7 +235,7 @@ public class Day10 {
         public MachineJoltageState apply(ButtonAction buttonAction) {
             int[] result = new int[size()];
             if (size() >= 0) System.arraycopy(this.joltages, 0, result, 0, size());
-            buttonAction.buttonNumbers.forEach(bn -> result[bn] ++);
+            buttonAction.buttonNumbers.forEach(bn -> result[bn]++);
             return new MachineJoltageState(result);
         }
 
@@ -201,11 +251,18 @@ public class Day10 {
             return result;
         }
     }
+
     @Data
     static class ButtonAction {
         private final Set<Integer> buttonNumbers;
+
         public ButtonAction(String text) {
             buttonNumbers = Arrays.stream(text.split(",")).map(Integer::parseInt).collect(Collectors.toSet());
+        }
+
+        @Override
+        public String toString() {
+            return buttonNumbers.stream().map(bn -> Integer.toString(bn)).reduce("", String::concat);
         }
     }
 
