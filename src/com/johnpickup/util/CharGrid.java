@@ -48,6 +48,15 @@ public class CharGrid implements Grid<Character> {
         }
     }
 
+    public CharGrid(int width, int height, char blank) {
+        this(width, height);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                cells[x][y] = blank;
+            }
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
