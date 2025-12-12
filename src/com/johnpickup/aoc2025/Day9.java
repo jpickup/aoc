@@ -145,7 +145,7 @@ public class Day9 {
                     Coord coord = new Coord(x, y);
                     grid.setCell(coord, '.');
                     for (LineSegment segment : segments) {
-                        if (segment.contains(coord))
+                        if (segment.contains(coord.getX(), coord.getY()))
                             grid.setCell(coord, '+');
                     }
                 }
@@ -158,8 +158,8 @@ public class Day9 {
          * then we are enclosed if both numbers are odd
          */
         private boolean isEnclosedByBoundary(Rect<Integer> r, List<LineSegment> segments) {
-            LineSegment vert = LineSegment.createFrom(new Coord(r.left(), r.top()), new Coord(r.left(), Integer.MAX_VALUE));
-            LineSegment horz = LineSegment.createFrom(new Coord(r.left(), r.top()), new Coord(Integer.MAX_VALUE, r.top()));
+            LineSegment vert = LineSegment.createFrom(r.left(), r.top(), r.left(), Integer.MAX_VALUE);
+            LineSegment horz = LineSegment.createFrom(r.left(), r.top(),Integer.MAX_VALUE, r.top());
 
             long vertCrossCount = segments.stream().filter(s -> s.crosses(vert) && !s.equals(horz)).count();
             long horzCrossCount = segments.stream().filter(s -> s.crosses(horz) && !s.equals(vert)).count();
@@ -174,7 +174,7 @@ public class Day9 {
             List<LineSegment> result = new ArrayList<>();
             Coord prev = tiles.getLast();
             for (Coord curr : tiles) {
-                result.add(LineSegment.createFrom(prev, curr));
+                result.add(LineSegment.createFrom(prev.getX(), prev.getY(), curr.getX(), curr.getY()));
                 prev = curr;
             }
             return result;
