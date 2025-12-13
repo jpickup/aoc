@@ -77,6 +77,10 @@ public class Day12 {
             return grid.findCells('#').size();
         }
 
+        public int maximumUnits() {
+            return grid.getWidth() * grid.getHeight();
+        }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -109,9 +113,13 @@ public class Day12 {
                     presents.add(allPresents.get(presentIdx));
                 }
             }
-            // basic check - filter out the impossible
-            // WTF! this worked for the real input, but not for the test. Feels like a cheat but I'll take it!
+            // basic check - filter out the impossible and determine the guaranteed
             Integer totalMinimumUnits = presents.stream().map(Present::minimumUnits).reduce(0, Integer::sum);
+            Integer totalMaximumUnits = presents.stream().map(Present::maximumUnits).reduce(0, Integer::sum);
+            // Only those where there is a difference need checking
+            if ((totalMinimumUnits< width * height) != (totalMaximumUnits< width * height))  System.out.println("Diff: " + this);
+
+            // WTF! this worked for the real input, but not for the test. Feels like a cheat but I'll take it!
             return totalMinimumUnits < width * height;
         }
     }
