@@ -14,15 +14,16 @@ import java.util.stream.Stream;
 
 import static com.johnpickup.util.FileUtils.getInputFilenames;
 
-public class Day10 {
+public class Day10DoesntWork {
     static boolean isTest;
     public static void main(String[] args) {
-        List<String> inputFilenames = getInputFilenames("2025", "Day10");
+        List<String> inputFilenames = getInputFilenames(new Object(){});
         for (String inputFilename : inputFilenames) {
-
+            
             long start = System.currentTimeMillis();
             System.out.println(inputFilename);
             isTest = inputFilename.contains("test");
+            if (!inputFilename.contains("prob")) continue;
             try (Stream<String> stream = Files.lines(Paths.get(inputFilename))) {
                 List<Machine> machines = stream
                         .filter(s -> !s.isEmpty())
@@ -59,7 +60,6 @@ public class Day10 {
         private final MachineState targetState;
         private final List<ButtonAction> buttonActions;
         private final List<Integer> joltages;
-        private final MachineJoltageState initialJoltageState;
         private final MachineJoltageState targetJoltageState;
         private final Set<Set<ButtonAction>> allPossibleActions;
 
@@ -72,9 +72,7 @@ public class Day10 {
                 buttons.add(new ButtonAction(parts[i].substring(1, parts[i].length() - 1)));
             }
             List<Integer> joltages = Arrays.stream(joltagePart.split(",")).map(Integer::parseInt).toList();
-            return new Machine(line, new MachineState(targetPart), buttons, joltages,
-                    MachineJoltageState.initialState(targetPart.length()), MachineJoltageState.of(joltages),
-                    generatePossibleActions(buttons));
+            return new Machine(line, new MachineState(targetPart), buttons, joltages, MachineJoltageState.of(joltages), generatePossibleActions(buttons));
         }
 
         public long minimumStatePresses() {
@@ -87,8 +85,9 @@ public class Day10 {
         }
 
         public long minimumJoltagePresses() {
+            System.out.printf("***** SOLVING %s%n", this.description);
             long solution = minimumJoltagePressesToState(targetJoltageState);
-            System.out.printf("%s = %d%n", this.description, solution);
+            System.out.printf("***** %s = %d%n", this.description, solution);
             return solution;
         }
 
@@ -100,43 +99,46 @@ public class Day10 {
             return result;
         }
 
-        private static final int NO_SOLUTION = 1000000;
-
-        private final Map<MachineJoltageState, Long> cachedResults = new HashMap<>();
+        private static final int FAILED_TO_SOLVE = 1000000;
 
         public long minimumJoltagePressesToState(MachineJoltageState to) {
-            if (cachedResults.containsKey(to)) return cachedResults.get(to);
+            int multiplier = 1;
+            while (to.allEven() && to.isValid() && !to.solved()) {
+                to = to.divideByTwo();
+                multiplier *= 2;
+            }
 
-            if (!to.isValid()) return NO_SOLUTION;
-            //System.out.printf("Looking for %s%n", to);
+            System.out.printf("Looking for %s%n", to);
             // get the parity of the target state joltage
-            if (to.solved()) return 0;     // all done
             boolean[] targetParity = to.parity();
-            MachineState nextState = new MachineState(targetParity);
+            if (allFalse(targetParity)) return 0;     // all done
 
+            MachineState nextState = new MachineState(targetParity);
             MachineState fromState = MachineState.initialState(targetState.size());
             Map<Set<ButtonAction>, MachineState> possibleStates = allPossibleSubsequentStates(fromState).entrySet().stream()
                     .filter(e -> e.getValue().equals(nextState))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            System.out.printf("Possible states %d%n", possibleStates.size());
 
-            if (possibleStates.isEmpty()) return NO_SOLUTION;
+            if (possibleStates.isEmpty()) return FAILED_TO_SOLVE;
 
-            // try each possible state and take the minimum
-            long minimum = NO_SOLUTION;
+            MachineJoltageState from = MachineJoltageState.initialState(targetState.size());
+            // recurse each and take the least
+            long minimum = FAILED_TO_SOLVE;
             for (Map.Entry<Set<ButtonAction>, MachineState> possibleState : possibleStates.entrySet()) {
                 int stepsForThis = possibleState.getKey().size();
-                MachineJoltageState afterActions = initialJoltageState.applyActions(possibleState.getKey());
+                MachineJoltageState afterActions = from.applyActions(possibleState.getKey());
                 MachineJoltageState newTarget = calculateNewTarget(to, afterActions);
 
-                newTarget = newTarget.divideByTwo();
+                if (!newTarget.isValid()) continue;
                 long stepsNext = minimumJoltagePressesToState(newTarget);
-
-                long totalSteps = stepsForThis + (2 * stepsNext);
-                //System.out.printf("totalSteps %d = stepsForThis %d + (2 * stepsNext %d)%n",totalSteps, stepsForThis, stepsNext);
-                if (stepsNext < NO_SOLUTION && totalSteps < minimum) minimum = totalSteps;
+                long totalSteps = multiplier * (stepsForThis + stepsNext);
+                System.out.printf("totalSteps %d = multiplier %d * (stepsForThis %d + stepsNext %d)%n",totalSteps, multiplier, stepsForThis, stepsNext);
+                if (totalSteps < FAILED_TO_SOLVE && totalSteps < minimum) minimum = totalSteps;
             }
             //System.out.printf("Found %d for for %s%n", minimum, to);
-            cachedResults.put(to, minimum);
+            if (minimum == FAILED_TO_SOLVE) throw new RuntimeException("Can't solve");
+            System.out.printf("Found %d for for %s%n", minimum, to);
             return minimum;
         }
 
@@ -148,10 +150,18 @@ public class Day10 {
             return result;
         }
 
+        private boolean allFalse(boolean[] parity) {
+            boolean result = true;
+            for (boolean b : parity) {
+                result &= (!b);
+            }
+            return result;
+        }
+
         private static Set<Set<ButtonAction>> generatePossibleActions(List<ButtonAction> buttonActions) {
             Set<Set<ButtonAction>> result = new HashSet<>();
             int maxVal = 0x1 << buttonActions.size();
-            for (int i = 0; i < maxVal; i++) {
+            for (int i = 1; i < maxVal; i++) {
                 Set<ButtonAction> oneSet = new HashSet<>();
                 int bitMask = i;
                 for (ButtonAction buttonAction : buttonActions) {
@@ -177,6 +187,7 @@ public class Day10 {
 
         @Override
         public String toString() {
+            //return Arrays.stream(this.buttons).map(b -> b?"#":".").reduce("", String::concat);
             String result = "";
             for (boolean button : buttons) result += button ? "#" : ".";
             return result;
@@ -260,6 +271,14 @@ public class Day10 {
             boolean result = true;
             for (int i = 0; i < size(); i++) {
                 result &= joltages[i] >= 0;
+            }
+            return result;
+        }
+
+        public boolean allEven() {
+            boolean result = true;
+            for (int i = 0; i < size(); i++) {
+                result &= joltages[i] % 2 == 0;
             }
             return result;
         }
